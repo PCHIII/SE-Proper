@@ -47,6 +47,60 @@ const resource = (name: string, kind: string, size: string, description: string,
   id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), name, kind, size, description, contents,
 })
 
+const aiAgentAccessBlueprint = `# AI Agent Access Policy & Approval Workflow
+
+> Portfolio demo sample. All names, systems, and decisions below are fictional.
+
+## Agent profile
+
+| Field | Example |
+| --- | --- |
+| Agent | Order Assist QA |
+| Identity | agent-order-assist-qa |
+| Business purpose | Summarize test order issues for the support team |
+| Human sponsor | Jordan Lee, Support Operations |
+| Backup sponsor | Morgan Patel, Support Operations |
+| Environment | Non-production only |
+| Review cadence | Every 90 days |
+| Access expiry | 30 days after approval |
+
+The agent has its own non-human identity. The sponsor is accountable for its purpose but does not lend the agent their personal credentials or inherited permissions.
+
+## Example policy
+
+**Policy:** Support QA agent — read-only, non-production
+
+- Permit only the registered agent identity and approved runtime.
+- Allow read access to the synthetic order-support dataset and test-status API.
+- Deny customer production records, write actions, credential stores, and unlisted tools.
+- Require a business justification, named sponsor, resource-owner approval, and an expiry date.
+- Require security approval for any production, write, export, or elevated-risk request.
+- Revoke access when the agent is retired, its sponsor is no longer responsible, or its purpose changes.
+
+## Approval route
+
+1. **Sponsor submits** the agent identity, business purpose, requested resources, actions, environment, and duration.
+2. **Identity governance checks** that the identity is unique, linked to an active employee sponsor, and within policy.
+3. **Resource owner reviews** each requested application or dataset and approves or rejects its specific scope with a reason.
+4. **Security reviews elevated access** when the request includes production data, writes, exports, or sensitive tools.
+5. **Provision only approved permissions**, record the decision, and set the expiry and next review date.
+6. **Review or revoke** at the scheduled review, on sponsor change, or when the agent is no longer needed.
+
+## Example request and decision
+
+- **Requested:** Read orders-test records and call test-status in the staging environment for 30 days.
+- **Business reason:** Help support staff identify recurring issues in synthetic test orders.
+- **Sponsor:** Jordan Lee, Support Operations.
+- **Dataset owner:** Avery Brooks — approved read-only test data; production data excluded.
+- **API owner:** Casey Rivera — approved GET /test-status only; write routes excluded.
+- **Security reviewer:** Sam Kim — approved non-production scope; no elevated access requested.
+- **Decision:** Approved with the listed limits. Expires after 30 days; review on day 25.
+
+## Audit record to retain
+
+Record the agent identity, sponsor, purpose, requested and approved scopes, each owner's decision and reason, security review where required, provisioned permissions, expiry, review outcome, and revocation date. Never store tokens, passwords, customer records, or other secrets in this sample.
+`
+
 export const initialUseCases: UseCase[] = [
   {
     id: 'govern-ai-agent-access',
@@ -62,7 +116,7 @@ export const initialUseCases: UseCase[] = [
     outcome: 'The governance pattern makes each agent’s human accountability visible, gives resource owners control over approvals, and creates a reviewable path to limit or remove access.',
     lessons: 'Keep the business sponsor who owns the agent’s purpose distinct from the application or data owner who approves access to that resource. Linking an agent to a person establishes accountability; it should not make the agent inherit that person’s credentials or permissions.',
     reusable: 'For each agent, capture its unique identity, accountable human sponsor, business purpose, approved tools and data, allowed actions, resource owners, approval record, access expiry, review date, and retirement owner.',
-    resources: [],
+    resources: [resource('ai-agent-access-policy-and-approval-workflow.md', 'Markdown', '4 KB', 'Fictional access policy, owner approval route, sample decision, and audit checklist.', aiAgentAccessBlueprint)],
     contributions: [],
   },
   {
