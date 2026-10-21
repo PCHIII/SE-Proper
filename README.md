@@ -1,12 +1,16 @@
 # SE Proper
 
-SE Proper is a portfolio demo for sharing reusable Solutions Engineering work.
+SE Proper is a portfolio demo for sharing reusable Solutions Engineering work and building on solutions shared by other SEs. A visual AI Q&A prototype shows how a technical solution could become a customer-facing business-value story.
 
 ## Current stage
 
 This first frontend milestone uses fictional, in-memory sample data. Search, browse, detail views, and the create/contribute flows work in the current browser session. New posts, contributions, and selected files are **not shared with other visitors or saved after a refresh**. The public database and file storage backend will be added later.
 
 The demo has no sign-in. Names are self-reported, and the eventual hosted demo will make posts and attachments public. Use fictional examples only; do not enter confidential customer information, credentials, tokens, or personal data.
+
+## Business-value story prototype
+
+Use-case detail pages include a nonfunctional preview of an AI-guided business-value story workflow. The concept asks about the customer's business goal, the change delivered, and evidence of impact, then shows how those answers could shape a customer story. AI Q&A and story generation are not active in this demo.
 
 ## Run locally
 

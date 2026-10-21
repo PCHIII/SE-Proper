@@ -130,7 +130,7 @@ function App() {
           </div>
         </header>
 
-        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> sample content and anything you add live only in this browser tab. Posts and files are not shared or saved yet.</span></div>
+        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> sample content and anything you add live only in this browser tab. Posts and files are not shared or saved. Business-value story Q&amp;A is a visual preview; AI generation isn’t active.</span></div>
 
         <div className="page-content">
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
@@ -258,6 +258,7 @@ function DashboardPage({ cases, navigate }: { cases: UseCase[]; navigate: (path:
 }
 
 function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string) => void }) {
+  const [storyOpen, setStoryOpen] = useState(false)
   const totalFiles = item.resources.length + item.contributions.reduce((sum, contribution) => sum + contribution.resources.length, 0)
   return <div className="inner-page detail-page">
     <button className="back-link" onClick={() => navigate('/explore')}><Icon name="arrowLeft" size={16} /> Back to use cases</button>
@@ -273,7 +274,37 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
     </div><aside className="detail-side-column"><div className="resource-panel"><div className="resource-panel-head"><div><div className="eyebrow eyebrow-quiet">ATTACHED FILES</div><h3>Resources <span>{totalFiles}</span></h3></div><span className="resource-head-icon"><Icon name="file" size={18} /></span></div>{item.resources.length ? <div className="resource-list">{item.resources.map((resource) => <ResourceRow resource={resource} key={resource.id} />)}</div> : <p className="no-resource">No files attached to the original use case.</p>}<p className="resource-notice"><Icon name="shield" size={14} /> Prototype files stay in this browser session.</p></div>
       <div className="quick-facts"><div className="eyebrow eyebrow-quiet">AT A GLANCE</div><div><span>Category</span><strong>{item.category}</strong></div><div><span>Shared by</span><strong>{item.author}</strong></div><div><span>Last activity</span><strong>{item.updated}</strong></div><div><span>Community additions</span><strong>{item.contributions.length}</strong></div></div>
       <div className="detail-callout"><div className="callout-icon"><Icon name="spark" size={17} /></div><strong>Have a different approach?</strong><p>Keep the original intact and add your contribution alongside it.</p><button className="text-button" onClick={() => navigate(`/contribute/${item.id}`)}>Share what you learned <Icon name="arrow" size={14} /></button></div>
+      <div className="value-story-card"><div className="value-story-card-top"><span className="callout-icon"><Icon name="spark" size={17} /></span><span className="value-story-card-label">BUSINESS VALUE</span></div><h3>Tell the business value</h3><p>Connect the customer challenge and technical solution to an outcome decision-makers care about.</p><button className="button button-outline button-full" onClick={() => setStoryOpen(true)}>Explore the AI Q&amp;A <Icon name="arrow" size={15} /></button></div>
     </aside></div>
+    {storyOpen && <BusinessValueStoryDialog item={item} onClose={() => setStoryOpen(false)} />}
+  </div>
+}
+
+function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: () => void }) {
+  return <div className="modal-backdrop value-story-backdrop" onClick={(event) => { if (event.target === event.currentTarget) onClose() }}>
+    <section className="preview-dialog value-story-dialog" role="dialog" aria-modal="true" aria-labelledby="value-story-title">
+      <div className="preview-dialog-top">
+        <div><div className="eyebrow eyebrow-quiet">AI BUSINESS VALUE Q&amp;A</div><h2 id="value-story-title">Turn this solution into a customer story</h2></div>
+        <button className="icon-button" onClick={onClose} aria-label="Close business value story preview"><Icon name="close" size={18} /></button>
+      </div>
+      <div className="value-story-context"><span className="value-story-context-icon"><Icon name="file" size={16} /></span><div><span>BASED ON THIS USE CASE</span><strong>{item.title}</strong></div></div>
+      <div className="value-story-preview-note"><p>The questions and outline below illustrate how this workflow could shape a customer story from the details in this use case.</p></div>
+      <section className="story-preview-section">
+        <div className="story-preview-heading"><span className="story-ai-mark"><Icon name="spark" size={15} /></span><div><strong>Value discovery</strong><span>A future guided conversation</span></div></div>
+        <p className="story-assistant-message">Let’s connect the technical work to the outcome the customer needs. A few questions can help shape a clear, credible story.</p>
+        <div className="story-question-list" aria-label="Example business value questions">
+          <div><span>01</span> What business goal was the customer trying to reach?</div>
+          <div><span>02</span> What changed for the people or process after this solution?</div>
+          <div><span>03</span> What metric or evidence could demonstrate the impact?</div>
+        </div>
+      </section>
+      <section className="story-outline-section"><div className="eyebrow eyebrow-quiet">STORY OUTLINE</div><h3>A value story the customer can share</h3><div className="story-outline-grid">
+        <div><span>THE CHALLENGE</span><p>{item.ask}</p></div>
+        <div><span>THE SOLUTION</span><p>{item.solution}</p></div>
+        <div><span>THE BUSINESS OUTCOME</span><p>{item.outcome === 'Not specified' ? 'Add the customer’s desired outcome and how success could be measured.' : item.outcome}</p></div>
+      </div></section>
+      <div className="value-story-dialog-footer"><span><Icon name="shield" size={14} /> Customer context stays in control of the story.</span><button className="button button-dark" onClick={onClose}>Got it</button></div>
+    </section>
   </div>
 }
 
