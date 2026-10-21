@@ -49,6 +49,23 @@ const resource = (name: string, kind: string, size: string, description: string,
 
 export const initialUseCases: UseCase[] = [
   {
+    id: 'govern-ai-agent-access',
+    title: 'Govern AI agent access with accountable ownership',
+    summary: 'Link every AI agent identity to a responsible person, then gate its tools and data access through least-privilege policies and owner approvals.',
+    category: 'Identity & Access Management',
+    tags: ['AI Agents', 'IGA', 'Access Policies', 'Approvals'], author: 'Jordan Lee', date: 'Oct 21, 2026', updated: 'Oct 21, 2026',
+    ask: 'A fictional enterprise started piloting AI agents that could call internal APIs and use business data. Security and application owners needed each agent to have a clearly accountable human, access limited to its approved purpose, and an auditable approval process for new permissions.',
+    context: 'Enterprise identity governance · Synthetic AI agent scenario', technologies: 'Identity Governance, non-human identities, access policies, approval workflows',
+    constraints: 'Each agent needs its own identity rather than shared human credentials. Business sponsorship must remain tied to an employee, while access approvals are routed to the owners of the requested applications or data. Permissions should be limited, time-bound, reviewable, and revocable.',
+    solution: 'Register a distinct non-human identity for each agent and link it to an accountable employee sponsor. Define access policies around the agent’s purpose, approved tools and data, allowed actions, risk level, and expiry. Route requests to the owners of the target applications or data, require a business justification, and provision access only after approval. Add periodic owner reviews and revoke access when the agent or its business need ends.',
+    implementation: '1. Inventory the agent and record its purpose, technical identity, business sponsor, and backup contact. 2. Create a policy template that scopes approved applications, data, tools, actions, environment, and assignment duration. 3. Route each request to the relevant application or data owner; require an additional security approver for elevated access. 4. Record the decision and justification, grant only the approved scope, and set an expiry or review date. 5. Reassign sponsorship if the owner leaves, and disable the identity and remove its access when the agent is retired.',
+    outcome: 'The governance pattern makes each agent’s human accountability visible, gives resource owners control over approvals, and creates a reviewable path to limit or remove access.',
+    lessons: 'Keep the business sponsor who owns the agent’s purpose distinct from the application or data owner who approves access to that resource. Linking an agent to a person establishes accountability; it should not make the agent inherit that person’s credentials or permissions.',
+    reusable: 'For each agent, capture its unique identity, accountable human sponsor, business purpose, approved tools and data, allowed actions, resource owners, approval record, access expiry, review date, and retirement owner.',
+    resources: [],
+    contributions: [],
+  },
+  {
     id: 'scim-provisioning',
     title: 'Automate identity provisioning with SCIM',
     summary: 'A repeatable pattern for connecting an HR source to a SaaS identity provider and keeping access in sync.',
