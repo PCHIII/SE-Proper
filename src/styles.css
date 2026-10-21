@@ -626,3 +626,11 @@ html[data-theme="dark"] .value-story-dialog-footer { border-top-color: #3c443f; 
   .story-outline-grid { grid-template-columns: 1fr; }
   .value-story-dialog-footer { align-items: start; flex-direction: column; }
 }
+
+@media (max-width: 640px) {
+  .case-card { padding: 19px 16px 15px; text-align: center; }
+  .case-card-top { justify-content: center; flex-wrap: wrap; gap: 7px 10px; }
+  .case-card h3 { max-width: 100%; margin-top: 15px; }
+  .case-summary { text-align: center; }
+  .tag-row { justify-content: center; }
+}
