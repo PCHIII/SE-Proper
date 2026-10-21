@@ -185,7 +185,7 @@ function HomePage({ cases, navigate }: { cases: UseCase[]; navigate: (path: stri
       </div>
       <div className="hero-stats">
         <Stat value={String(cases.length).padStart(2, '0')} label="USE CASES" /><Stat value={String(allContributions).padStart(2, '0')} label="CONTRIBUTIONS" /><Stat value={String(allFiles).padStart(2, '0')} label="SHARED RESOURCES" />
-        <div className="stats-caption"><span className="footer-dot" /> A little more collective every day</div>
+        <div className="stats-caption"><span className="footer-dot" /> A little more knowledge collected every day</div>
       </div>
     </section>
 

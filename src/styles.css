@@ -484,3 +484,85 @@ html[data-theme="light"] .theme-toggle:hover { border-color: #a9bf8a; background
   .activity-byline, .activity-body > p { font-size: 10px; }
   .detail-heading-main > p, .info-body > p, .context-line, .implementation-grid p, .lesson-grid p { font-size: 12px; }
 }
+
+/* Readability pass: keep functional copy and labels comfortably legible. */
+.brand-name small, .sidebar-label, .sidebar-tip strong, .sidebar-tip p, .sidebar-footer,
+.breadcrumb, .breadcrumb strong, .public-mode, .prototype-notice, .page-footer,
+.eyebrow, .eyebrow-quiet, .art-card-head, .art-people, .art-people strong,
+.floating-note b, .floating-note small, .stat span, .stats-caption, .category-name,
+.category-count, .category-pill, .card-date, .tag, .author-chip, .card-counts span,
+.results-line, .filter-select, .sort-select, .filter-select select, .sort-select select,
+.community-metrics div div span, .activity-byline, .activity-byline time,
+.activity-title, .activity-body > p, .activity-parent, .activity-parent button,
+.live-pill, .side-callout p, .demo-note p, .demo-note strong, .back-link,
+.detail-heading-main > p, .detail-meta, .button-caption, .info-body > p,
+.context-line, .context-line span, .implementation-grid p, .implementation-grid span,
+.outcome-box strong, .outcome-box p, .lesson-grid strong, .lesson-grid p,
+.resource-info > span, .resource-info small, .quick-fact-row, .detail-callout p,
+.detail-callout .text-button, .contribution-kind, .contribution-head-text strong,
+.contribution-by, .contribution-status, .contribution-expanded-body > p,
+.empty-contributions strong, .empty-contributions p, .empty-contributions .button,
+.form-section-heading > span, .form-section-heading h2 small, .form-section-heading p,
+.form-field > span, .form-field > span i, .form-field small, .form-disclaimer,
+.preview-public-label, .preview-summary, .preview-author, .preview-block p,
+.preview-block > span, .preview-files > span:first-child, .preview-file-name,
+.preview-disclaimer, .form-error, .dropzone strong, .dropzone > span:not(.dropzone-icon),
+.dropzone small, .selected-file strong, .selected-file small, .publish-notice strong,
+.publish-notice p, .aside-card > p, .aside-card li, .aside-card li span,
+.storage-aside-note, .parent-reference > div span, .parent-reference strong,
+.parent-reference small, .parent-reference > .text-button {
+  font-size: 12px;
+}
+
+.nav-item, .hero-search input, .hero-search .button, .hero-actions .button,
+.text-button, .button, .library-search input, .theme-toggle, .form-field input,
+.form-field textarea, .form-field select { font-size: 14px; }
+
+.hero-copy > p, .case-summary, .page-intro p, .form-page-header > p,
+.empty-state p, .detail-heading-main > p, .info-body > p, .context-line,
+.implementation-grid p, .lesson-grid p, .aside-card > p, .aside-card li,
+.publish-notice p, .preview-summary, .preview-block p { font-size: 14px; }
+
+.avatar-me, .avatar-small, .avatar-medium, .avatar-tiny { font-size: 12px; }
+
+@media (max-width: 640px) {
+  .topbar { gap: 8px; }
+  .topbar-actions { gap: 7px; }
+  .public-mode { flex-basis: 8px; font-size: 0; line-height: 0; }
+  .hero-search .button { font-size: 0; }
+  .category-count, .category-pill, .card-date, .tag, .author-chip,
+  .card-counts span, .results-line, .activity-byline, .activity-byline time,
+  .activity-title, .activity-body > p, .activity-parent, .activity-parent button,
+  .live-pill, .side-callout p, .demo-note p, .demo-note strong, .back-link,
+  .detail-heading-main > p, .detail-meta, .info-body > p, .context-line,
+  .context-line span, .implementation-grid p, .implementation-grid span,
+  .outcome-box strong, .outcome-box p, .lesson-grid strong, .lesson-grid p,
+  .quick-fact-row, .detail-callout p, .detail-callout .text-button,
+  .contribution-kind, .contribution-head-text strong, .contribution-by,
+  .contribution-status, .contribution-expanded-body > p,
+  .empty-contributions strong, .empty-contributions p, .empty-contributions .button,
+  .form-section-heading > span, .form-section-heading h2 small,
+  .form-section-heading p, .form-field > span, .form-field > span i,
+  .resource-info > span, .resource-info small, .form-field small,
+  .form-disclaimer, .button-caption, .preview-author, .preview-file-name,
+  .preview-public-label, .preview-block > span, .preview-files > span:first-child, .preview-disclaimer,
+  .dropzone strong, .dropzone > span:not(.dropzone-icon), .dropzone small,
+  .selected-file strong, .selected-file small, .storage-aside-note,
+  .parent-reference > div span, .parent-reference strong, .parent-reference small {
+    font-size: 12px;
+  }
+  .hero-stats { gap: 8px; }
+  .stat { min-width: 0; }
+  .stat span { font-size: 12px; letter-spacing: 0; line-height: 1.25; }
+  .page-footer { font-size: 12px; }
+  .hero-copy > p, .case-summary, .page-intro p, .form-page-header > p,
+  .activity-byline, .activity-body > p, .detail-heading-main > p, .info-body > p,
+  .context-line, .implementation-grid p, .lesson-grid p, .aside-card > p,
+  .aside-card li, .publish-notice p, .preview-summary, .preview-block p {
+    font-size: 14px;
+  }
+  .nav-item, .hero-search input, .hero-actions .button, .text-button, .button,
+  .library-search input, .theme-toggle, .form-field input, .form-field textarea,
+  .form-field select { font-size: 14px; }
+  .hero-search .button { font-size: 0; }
+}
