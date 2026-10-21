@@ -454,6 +454,24 @@ html[data-theme="light"] .theme-toggle { color: #394638; border-color: #d5dbd3; 
 html[data-theme="light"] .theme-toggle:hover { border-color: #a9bf8a; background: #edf2e8; }
 
 @media (max-width: 640px) {
+  .topbar { gap: 8px; }
+  .breadcrumb { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; }
+  .breadcrumb > strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topbar-actions { flex: 0 0 auto; gap: 7px; }
+  .public-mode { flex: 0 0 8px; font-size: 0; line-height: 0; }
+  .public-mode .footer-dot { width: 8px; height: 8px; }
+  .hero-art { display: none; }
+  .hero-search { gap: 8px; }
+  .hero-search .button { flex: 0 0 40px; width: 40px; min-width: 40px; padding: 0; overflow: hidden; font-size: 0; }
+  .hero-search .button svg { flex: 0 0 auto; }
+  .detail-meta { flex-wrap: wrap; gap: 6px; }
+  .detail-meta > span:not(.avatar):not(.meta-divider) { white-space: nowrap; }
+  .meta-divider { flex: 0 0 3px; }
+  .contribution-card-head { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: start; gap: 8px; }
+  .contribution-head-text { min-width: 0; flex: initial; }
+  .contribution-head-text strong { word-break: normal; overflow-wrap: anywhere; }
+  .contribution-status { grid-column: 2; grid-row: 2; max-width: 100%; margin: 0; justify-self: start; }
+  .contribution-card-head > svg { grid-column: 3; grid-row: 1; margin: 2px 0 0 auto; }
   .theme-toggle { min-height: 31px; padding-inline: 8px; font-size: 10px; }
   .hero-search { min-height: 52px; }
   .hero-search input { font-size: 13px; }
