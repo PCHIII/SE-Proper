@@ -634,3 +634,36 @@ html[data-theme="dark"] .value-story-dialog-footer { border-top-color: #3c443f; 
   .case-summary { text-align: center; }
   .tag-row { justify-content: center; }
 }
+
+@media (max-width: 640px) {
+  .category-tile {
+    grid-template-columns: 31px minmax(0, 1fr) 15px;
+    grid-template-rows: minmax(16px, auto) minmax(14px, auto);
+    align-content: center;
+    column-gap: 9px;
+    row-gap: 3px;
+    min-height: 70px;
+    padding-block: 12px;
+  }
+
+  .category-name {
+    min-width: 0;
+    align-self: end;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .category-count {
+    min-width: 0;
+    align-self: start;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .category-tile > svg {
+    align-self: center;
+    justify-self: end;
+    width: 15px;
+    height: 15px;
+  }
+}
