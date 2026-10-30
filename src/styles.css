@@ -671,6 +671,7 @@ html[data-theme="dark"] .value-story-dialog-footer { border-top-color: #3c443f; 
 .artifact-icon { display: grid; place-items: center; width: 22px; height: 22px; color: #6f64b8; border: 1px solid #e8e5f5; border-radius: 6px; background: #f8f7fd; }
 .demo-evidence { overflow: hidden; border: 1px solid #e8e8ef; border-radius: 11px; background: #fff; }
 .demo-evidence-heading { display: flex; align-items: center; gap: 10px; padding: 16px 17px 13px; }
+.demo-evidence-heading .eyebrow-quiet { font-size: 14px; letter-spacing: 1.1px; }
 .demo-evidence-heading h2 { margin: 4px 0 0; color: #373b4e; font: 750 17px 'Manrope', sans-serif; }
 .demo-evidence-heading .section-icon { flex: 0 0 auto; }
 .demo-preview { padding: 0 17px; }
@@ -696,7 +697,7 @@ html[data-theme="dark"] .demo-ai-summary > p, html[data-theme="dark"] .demo-mome
 html[data-theme="dark"] .demo-moment, html[data-theme="dark"] .demo-transcript, html[data-theme="dark"] .demo-sample-notice { border-color: #303535; }
 html[data-theme="dark"] .demo-transcript summary { color: #d1d7d0; }
 html[data-theme="dark"] .demo-transcript pre { color: #bdc4bc; background: #1b1f1f; }
-@media (max-width: 640px) { .demo-evidence-heading { padding-inline: 13px; }.demo-preview { padding-inline: 13px; }.demo-preview-screen { min-height: 160px; }.demo-ai-summary { margin-inline: 13px; }.demo-moments { padding-inline: 13px; }.demo-transcript { margin-inline: 13px; }.demo-sample-notice { padding-inline: 13px; } }
+@media (max-width: 640px) { .demo-evidence-heading { padding-inline: 13px; }.demo-evidence-heading .eyebrow-quiet { font-size: 13px; }.demo-preview { padding-inline: 13px; }.demo-preview-screen { min-height: 160px; }.demo-ai-summary { margin-inline: 13px; }.demo-moments { padding-inline: 13px; }.demo-transcript { margin-inline: 13px; }.demo-sample-notice { padding-inline: 13px; } }
 .about-page .page-intro { margin-bottom: 22px; }
 .about-purpose { display: grid; grid-template-columns: 46px 1fr; gap: 16px; align-items: start; padding: 22px; border: 1px solid #e8e6f2; border-radius: 12px; background: linear-gradient(115deg, #fbfaff, #fff 74%); }
 .about-purpose-icon { display: grid; place-items: center; width: 42px; height: 42px; color: #7266bd; border-radius: 11px; background: #efedfb; }
