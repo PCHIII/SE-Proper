@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type Resource, type UseCase } from './data'
+import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type Resource, type UseCase } from './data'
 
-type Route = { page: 'home' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute'; id?: string; query?: string }
+type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute'; id?: string; query?: string }
 
 function routeFromHash(): Route {
   const route = window.location.hash.slice(1) || '/'
@@ -9,6 +9,7 @@ function routeFromHash(): Route {
   const query = new URLSearchParams(queryString).get('q') || ''
   if (path.startsWith('/use-cases/')) return { page: 'detail', id: path.split('/')[2] }
   if (path.startsWith('/contribute/')) return { page: 'contribute', id: path.split('/')[2] }
+  if (path === '/about') return { page: 'about' }
   if (path === '/explore') return { page: 'explore', query }
   if (path === '/dashboard') return { page: 'dashboard' }
   if (path === '/create') return { page: 'create' }
@@ -29,6 +30,8 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m17 8-5-5-5 5M12 3v12" /></>,
     clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
     file: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h8" /></>,
+    video: <><rect x="3" y="5" width="13" height="14" rx="2" /><path d="m16 10 5-3v10l-5-3" /><path d="m8 9 4 3-4 3z" /></>,
+    transcript: <><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="M7 8h10M7 12h7" /></>,
     spark: <><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" /><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" /></>,
     shield: <><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" /><path d="m9 12 2 2 4-4" /></>,
     close: <><path d="m18 6-12 12M6 6l12 12" /></>,
@@ -107,6 +110,7 @@ function App() {
           <NavItem icon="grid" label="Explore use cases" active={route.page === 'explore' || route.page === 'detail'} onClick={() => navigate('/explore')} />
           <NavItem icon="plus" label="Create use case" active={route.page === 'create'} onClick={() => navigate('/create')} />
           <NavItem icon="users" label="Community dashboard" active={route.page === 'dashboard'} onClick={() => navigate('/dashboard')} />
+          <NavItem icon="file" label="About SE Proper" active={route.page === 'about'} onClick={() => navigate('/about')} />
         </nav>
         <div className="sidebar-bottom">
           <div className="sidebar-tip">
@@ -134,6 +138,7 @@ function App() {
 
         <div className="page-content">
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
+          {route.page === 'about' && <AboutPage navigate={navigate} />}
           {route.page === 'explore' && <ExplorePage cases={useCases} initialQuery={route.query || ''} navigate={navigate} />}
           {route.page === 'dashboard' && <DashboardPage cases={useCases} navigate={navigate} />}
           {route.page === 'create' && <UseCaseForm onCancel={() => navigate('/explore')} onSubmit={publishUseCase} />}
@@ -152,7 +157,28 @@ function NavItem({ icon, label, active, onClick }: { icon: string; label: string
 }
 
 function pageTitle(page: Route['page']) {
-  return ({ home: 'Home', explore: 'Explore use cases', dashboard: 'Community dashboard', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution' })[page]
+  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Community dashboard', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution' })[page]
+}
+
+function AboutPage({ navigate }: { navigate: (path: string) => void }) {
+  return <div className="inner-page about-page">
+    <PageIntro eyebrow="ABOUT SE PROPER" title="Good solutions should travel." text="SE Proper helps Solutions Engineers turn one-off customer work into practical knowledge the whole team can find, reuse, and improve." action={<button className="button button-primary" onClick={() => navigate('/create')}><Icon name="plus" size={17} /> Share a use case</button>} />
+    <section className="about-purpose"><span className="about-purpose-icon"><Icon name="spark" size={20} /></span><div><div className="eyebrow eyebrow-quiet">OUR PURPOSE</div><h2>Solve it once. Share it. Build on it.</h2><p>Custom scripts, integrations, demo flows, and hard-won lessons often stay scattered across personal folders and old conversations. SE Proper gives each solution a useful home so the next SE can start with what already works and add what they learn.</p></div></section>
+    <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">WHAT SEs CAN SHARE</div><h2>Useful deliverables, in context</h2><p>A use case captures the customer problem and the solution together with the materials that help another SE apply it.</p></div><div className="about-deliverables">
+      <article className="about-deliverable"><span className="about-card-icon about-lilac"><Icon name="file" size={19} /></span><h3>Solution write-ups</h3><p>Customer ask, technical approach, implementation notes, outcomes, constraints, and lessons learned.</p></article>
+      <article className="about-deliverable"><span className="about-card-icon about-mint"><Icon name="upload" size={19} /></span><h3>Reusable artifacts</h3><p>Scripts, API examples, configuration, checklists, diagrams, and other supporting files.</p></article>
+      <article className="about-deliverable"><span className="about-card-icon about-peach"><Icon name="video" size={19} /></span><h3>Demo evidence</h3><p>When available, recordings and meeting transcripts attached to the use case, with useful segments and viewer questions or challenges surfaced.</p></article>
+      <article className="about-deliverable"><span className="about-card-icon about-blue"><Icon name="users" size={19} /></span><h3>Community contributions</h3><p>Separate variations, improvements, and troubleshooting notes that keep the original solution intact.</p></article>
+    </div></section>
+    <section className="about-section about-features-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HOW THE APP WORKS</div><h2>Find it, understand it, build on it.</h2></div><div className="about-feature-grid">
+      <article><span><Icon name="search" size={17} /></span><div><strong>Search and browse</strong><p>Find use cases by problem, category, technology, or tag.</p></div></article>
+      <article><span><Icon name="plus" size={17} /></span><div><strong>Publish a solution</strong><p>Capture the ask, approach, implementation, and files in a guided flow.</p></div></article>
+      <article><span><Icon name="users" size={17} /></span><div><strong>Contribute an improvement</strong><p>Add your own approach without replacing the original author’s work.</p></div></article>
+      <article><span><Icon name="video" size={17} /></span><div><strong>Connect demo moments</strong><p>See how a recording, transcript, AI summary, and timestamped audience feedback could sit with a use case.</p></div></article>
+    </div></section>
+    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts and uploads in the current browser session. The demo recording and AI summary are illustrative sample content; recording integrations and live AI processing are not active.</p></div>
+    <div className="about-cta"><div><strong>Have something another SE could reuse?</strong><span>Share a use case and give the next person a head start.</span></div><button className="button button-dark" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div>
+  </div>
 }
 
 function HomePage({ cases, navigate }: { cases: UseCase[]; navigate: (path: string) => void }) {
@@ -237,10 +263,12 @@ function PageIntro({ eyebrow, title, text, action }: { eyebrow: string; title: s
 }
 
 function CaseCard({ item, onClick }: { item: UseCase; onClick: () => void }) {
+  const artifactLabels = [item.demo && ['video', 'Demo recording'], item.demo && ['transcript', 'Transcript'], item.demo && ['spark', 'AI summary'], item.resources.length > 0 && ['file', `${item.resources.length} file${item.resources.length === 1 ? '' : 's'}`]].filter(Boolean) as [string, string][]
   return <button className="case-card" onClick={onClick}>
     <div className="case-card-top"><span className="category-pill">{item.category}</span><span className="card-date"><Icon name="clock" size={13} /> {item.date}</span></div>
     <h3>{item.title}</h3><p className="case-summary">{item.summary}</p>
     <div className="tag-row">{item.tags.slice(0, 3).map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
+    {artifactLabels.length > 0 && <span className="artifact-icons" aria-label={`Included artifacts: ${artifactLabels.map(([, label]) => label).join(', ')}`}>{artifactLabels.map(([icon, label]) => <span className="artifact-icon" title={label} aria-label={label} key={label}><Icon name={icon} size={13} /></span>)}</span>}
     <div className="case-card-footer"><span className="author-chip"><span className={`avatar avatar-tiny ${avatarColor(item.author)}`}>{initials(item.author)}</span><span>{item.author}</span></span><span className="card-counts"><span><Icon name="users" size={14} /> {item.contributions.length}</span><span><Icon name="file" size={14} /> {item.resources.length}</span></span></div>
     <span className="card-corner-arrow"><Icon name="arrow" size={15} /></span>
   </button>
@@ -266,6 +294,7 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
     <div className="detail-layout"><div className="detail-main-column">
       <InfoSection icon="search" eyebrow="THE CUSTOMER ASK" title="The challenge"><p>{item.ask}</p>{item.context && item.context !== 'Not specified' && <div className="context-line"><span>CONTEXT</span>{item.context}</div>}</InfoSection>
       <InfoSection icon="spark" eyebrow="THE APPROACH" title="Solution overview"><p>{item.solution}</p>{item.outcome !== 'Not specified' && <div className="outcome-box"><span className="outcome-check">✓</span><div><strong>Outcome</strong><p>{item.outcome}</p></div></div>}</InfoSection>
+      {item.demo && <DemoEvidence demo={item.demo} />}
       <InfoSection icon="file" eyebrow="HOW IT WORKS" title="Implementation notes"><p>{item.implementation}</p><div className="implementation-grid"><div><span>TECHNOLOGIES</span><p>{item.technologies}</p></div><div><span>CONSTRAINTS</span><p>{item.constraints}</p></div></div></InfoSection>
       {(item.lessons !== 'Not specified' || item.reusable !== 'Not specified') && <InfoSection icon="spark" eyebrow="FOR THE NEXT SE" title="Lessons & reusable notes"><div className="lesson-grid">{item.lessons !== 'Not specified' && <div><strong>Lessons learned</strong><p>{item.lessons}</p></div>}{item.reusable !== 'Not specified' && <div><strong>Reusable notes</strong><p>{item.reusable}</p></div>}</div></InfoSection>}
       <section className="contribution-section"><div className="detail-section-heading"><div className="section-icon"><Icon name="users" size={18} /></div><div><div className="eyebrow eyebrow-quiet">BUILD ON THIS SOLUTION</div><h2>Contributions <span>{item.contributions.length}</span></h2></div></div>
@@ -310,6 +339,20 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
 
 function InfoSection({ icon, eyebrow, title, children }: { icon: string; eyebrow: string; title: string; children: ReactNode }) {
   return <section className="info-section"><div className="detail-section-heading"><div className="section-icon"><Icon name={icon} size={18} /></div><div><div className="eyebrow eyebrow-quiet">{eyebrow}</div><h2>{title}</h2></div></div><div className="info-body">{children}</div></section>
+}
+
+function DemoEvidence({ demo }: { demo: DemoArtifact }) {
+  return <section className="demo-evidence">
+    <div className="demo-evidence-heading"><span className="section-icon"><Icon name="video" size={18} /></span><div><div className="eyebrow eyebrow-quiet">DEMO ATTACHED TO THIS USE CASE</div><h2>Recording &amp; meeting insights</h2></div></div>
+    <div className="demo-preview">
+      <div className="demo-preview-screen"><span className="demo-preview-pill">SAMPLE PREVIEW · NOT A REAL RECORDING</span><span className="demo-play"><Icon name="video" size={21} /></span><div className="demo-preview-caption"><strong>{demo.title}</strong><span>{demo.provider}</span></div><span className="demo-duration"><Icon name="clock" size={12} /> {demo.duration}</span></div>
+      <div className="demo-meta"><span><Icon name="video" size={14} /> Recording</span><span><Icon name="transcript" size={14} /> AI transcript</span><span><Icon name="spark" size={14} /> AI summary</span></div>
+    </div>
+    <div className="demo-ai-summary"><div className="demo-summary-title"><span className="demo-ai-icon"><Icon name="spark" size={14} /></span><div><strong>AI meeting summary</strong><span>Generated from the demo transcript · review against the source</span></div></div><p>{demo.summary}</p></div>
+    <div className="demo-moments"><div className="demo-moments-heading"><div><div className="eyebrow eyebrow-quiet">USEFUL MOMENTS</div><strong>Demo segments &amp; viewer feedback</strong></div><span>{demo.moments.length} timestamps</span></div><div className="demo-moment-list">{demo.moments.map((moment) => <article className="demo-moment" key={`${moment.time}-${moment.label}`}><time>{moment.time}</time><div><span className={`moment-kind moment-${moment.kind}`}>{moment.label}</span><p>{moment.text}</p></div></article>)}</div></div>
+    <details className="demo-transcript"><summary><span><Icon name="transcript" size={15} /> View AI transcript sample</span><Icon name="chevron" size={15} /></summary><pre>{demo.transcript}</pre></details>
+    <p className="demo-sample-notice"><Icon name="shield" size={13} /> Fictional sample content. Real meeting recordings and transcripts may include sensitive information.</p>
+  </section>
 }
 
 function ContributionCard({ contribution }: { contribution: Contribution }) {

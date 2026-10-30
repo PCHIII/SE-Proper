@@ -8,6 +8,23 @@ export type Resource = {
   file?: File
 }
 
+export type DemoMoment = {
+  time: string
+  label: string
+  kind: 'solution' | 'question' | 'challenge'
+  text: string
+}
+
+export type DemoArtifact = {
+  title: string
+  provider: string
+  duration: string
+  recordedAt: string
+  summary: string
+  transcript: string
+  moments: DemoMoment[]
+}
+
 export type Contribution = {
   id: string
   title: string
@@ -40,6 +57,7 @@ export type UseCase = {
   lessons: string
   reusable: string
   resources: Resource[]
+  demo?: DemoArtifact
   contributions: Contribution[]
 }
 
@@ -117,6 +135,21 @@ export const initialUseCases: UseCase[] = [
     lessons: 'Keep the business sponsor who owns the agent’s purpose distinct from the application or data owner who approves access to that resource. Linking an agent to a person establishes accountability; it should not make the agent inherit that person’s credentials or permissions.',
     reusable: 'For each agent, capture its unique identity, accountable human sponsor, business purpose, approved tools and data, allowed actions, resource owners, approval record, access expiry, review date, and retirement owner.',
     resources: [resource('ai-agent-access-policy-and-approval-workflow.md', 'Markdown', '4 KB', 'Fictional access policy, owner approval route, sample decision, and audit checklist.', aiAgentAccessBlueprint)],
+    demo: {
+      title: 'Assigning an owner to a discovered AI agent',
+      provider: 'Zoom meeting · fictional sample',
+      duration: '08:42',
+      recordedAt: 'Oct 21, 2026',
+      summary: 'The SE demonstrates how an unowned AI agent appears in the inventory, how a business sponsor is assigned, and how access requests route to resource owners. Viewers asked how ownership is maintained when a sponsor leaves and whether the agent inherits that person’s permissions. The demo clarifies that the sponsor is accountable for the agent’s purpose; the agent keeps its own identity and access scope.',
+      transcript: 'SE: This agent was discovered without a listed owner, so it is flagged for ownership review.\nViewer 1: What happens if the person who owns it leaves the company?\nSE: We flag the sponsor change and require reassignment. The agent has its own identity; it does not inherit the sponsor’s permissions.\nViewer 2: Can the application owner approve only the API scope they manage?\nSE: Yes. Each resource owner approves only their application or data scope, and the grant can expire.',
+      moments: [
+        { time: '00:38', label: 'Discovered agent', kind: 'solution', text: 'An agent with no accountable owner is marked for review, similar to an orphaned account.' },
+        { time: '02:14', label: 'Viewer question', kind: 'question', text: 'What happens if the person who owns the agent leaves the company?' },
+        { time: '02:42', label: 'Ownership challenge', kind: 'challenge', text: 'The sponsor must be reassigned; the agent keeps a separate identity and does not inherit the sponsor’s permissions.' },
+        { time: '05:16', label: 'Viewer question', kind: 'question', text: 'Can each application owner approve only the scope they manage?' },
+        { time: '05:48', label: 'Access approval', kind: 'solution', text: 'Resource owners approve their own scope, with an expiry and review date.' },
+      ],
+    },
     contributions: [],
   },
   {
