@@ -1,7 +1,23 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type Resource, type UseCase } from './data'
+import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
 
-type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute'; id?: string; query?: string }
+type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute' | 'integrations'; id?: string; query?: string }
+
+const integrationProviders = [
+  { name: 'Salesforce', category: 'CRM', description: 'Bring account and opportunity context into reusable use cases.', fields: [['Client ID', 'demo-client-id'], ['Client secret', '••••••••••••']] },
+  { name: 'Gong', category: 'Conversation intelligence', description: 'Link call transcripts, objections, and customer language to the solution.', fields: [['Access key', 'demo-access-key'], ['Secret', '••••••••••••']] },
+  { name: 'Consensus Live', category: 'Demo platform', description: 'Connect tailored live demos and the moments that support a customer story.', fields: [['API key', 'demo-api-key'], ['Secret', '••••••••••••']] },
+  { name: 'Homerun Presales', category: 'Presales workflow', description: 'Link evaluation plans, technical blockers, and presales activity.', fields: [['API key', 'demo-api-key'], ['Secret', '••••••••••••']] },
+  { name: 'Jira', category: 'Product feedback', description: 'Connect customer-driven feature requests and issues to field solutions.', fields: [['Email', 'se@example.com'], ['API token', '••••••••••••']] },
+] as const
+
+const sampleSourceRecords: Record<string, LinkedSource> = {
+  Salesforce: { provider: 'Salesforce', title: 'Customer opportunity', detail: 'Opportunity · Solution validation' },
+  Gong: { provider: 'Gong', title: 'Customer discovery conversation', detail: 'Call transcript · 32:14' },
+  'Consensus Live': { provider: 'Consensus Live', title: 'Personalized product walkthrough', detail: 'Live demo · 06:18' },
+  'Homerun Presales': { provider: 'Homerun Presales', title: 'Technical evaluation plan', detail: 'Evaluation · In progress' },
+  Jira: { provider: 'Jira', title: 'Customer product feedback', detail: 'Product request · Open' },
+}
 
 function routeFromHash(): Route {
   const route = window.location.hash.slice(1) || '/'
@@ -12,6 +28,7 @@ function routeFromHash(): Route {
   if (path === '/about') return { page: 'about' }
   if (path === '/explore') return { page: 'explore', query }
   if (path === '/dashboard') return { page: 'dashboard' }
+  if (path === '/integrations') return { page: 'integrations' }
   if (path === '/create') return { page: 'create' }
   return { page: 'home' }
 }
@@ -24,6 +41,7 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" /></>,
     plus: <><path d="M12 5v14M5 12h14" /></>,
     users: <><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="10" cy="7" r="4" /><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
+    plug: <><path d="M12 22v-5M9 8V2M15 8V2M18 8v4a6 6 0 0 1-12 0V8z" /></>,
     arrow: <><path d="M5 12h14M13 6l6 6-6 6" /></>,
     arrowLeft: <><path d="M19 12H5m6 6-6-6 6-6" /></>,
     chevron: <path d="m9 18 6-6-6-6" />,
@@ -48,6 +66,7 @@ function App() {
   const [useCases, setUseCases] = useState<UseCase[]>(initialUseCases)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => localStorage.getItem('se-proper-theme') === 'light' ? 'light' : 'dark')
+  const [connectedIntegrations, setConnectedIntegrations] = useState<string[]>([])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -81,6 +100,7 @@ function App() {
       solution: values.solution.trim(), implementation: values.implementation.trim() || 'No additional implementation details provided.',
       outcome: values.outcome.trim() || 'Not specified', lessons: values.lessons.trim() || 'Not specified',
       reusable: values.reusable.trim() || 'Not specified', resources: files.map((file) => fileToResource(file, values.fileDescription)), contributions: [],
+      sources: (values.linkedSourceProviders || '').split(',').filter(Boolean).map((provider) => sampleSourceRecords[provider]).filter((source): source is LinkedSource => Boolean(source)),
     }
     setUseCases((items) => [newCase, ...items])
     navigate(`/use-cases/${newCase.id}`)
@@ -111,6 +131,7 @@ function App() {
           <NavItem icon="grid" label="Explore use cases" active={route.page === 'explore' || route.page === 'detail'} onClick={() => navigate('/explore')} />
           <NavItem icon="plus" label="Create use case" active={route.page === 'create'} onClick={() => navigate('/create')} />
           <NavItem icon="users" label="Community dashboard" active={route.page === 'dashboard'} onClick={() => navigate('/dashboard')} />
+          <NavItem icon="plug" label="Integrations" active={route.page === 'integrations'} onClick={() => navigate('/integrations')} />
           <NavItem icon="file" label="About SE Proper" active={route.page === 'about'} onClick={() => navigate('/about')} />
         </nav>
         <div className="sidebar-bottom">
@@ -135,13 +156,14 @@ function App() {
           </div>
         </header>
 
-        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> seeded examples and sample downloads are visible to every visitor. New posts and uploads stay in this browser tab. Business-value story Q&amp;A is a visual preview; AI generation isn’t active.</span></div>
+        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> seeded examples and sample downloads are visible to every visitor. New posts, uploads, and connection states stay in this browser tab. Credential fields are visual examples; values are never sent or saved. Business-value Q&amp;A is a preview; AI generation isn’t active.</span></div>
 
         <div className="page-content">
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
           {route.page === 'about' && <AboutPage navigate={navigate} />}
           {route.page === 'explore' && <ExplorePage cases={useCases} initialQuery={route.query || ''} navigate={navigate} />}
           {route.page === 'dashboard' && <DashboardPage cases={useCases} navigate={navigate} />}
+          {route.page === 'integrations' && <IntegrationsPage connected={connectedIntegrations} onToggle={(provider) => setConnectedIntegrations((current) => current.includes(provider) ? current.filter((name) => name !== provider) : [...current, provider])} />}
           {route.page === 'create' && <UseCaseForm onCancel={() => navigate('/explore')} onSubmit={publishUseCase} />}
           {route.page === 'detail' && activeCase && <DetailPage item={activeCase} navigate={navigate} />}
           {route.page === 'contribute' && activeCase && <ContributionForm item={activeCase} onCancel={() => navigate(`/use-cases/${activeCase.id}`)} onSubmit={(values, files) => addContribution(activeCase.id, values, files)} />}
@@ -158,7 +180,35 @@ function NavItem({ icon, label, active, onClick }: { icon: string; label: string
 }
 
 function pageTitle(page: Route['page']) {
-  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Community dashboard', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution' })[page]
+  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Community dashboard', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', integrations: 'Integrations' })[page]
+}
+
+function IntegrationsPage({ connected, onToggle }: { connected: string[]; onToggle: (provider: string) => void }) {
+  const [notice, setNotice] = useState('')
+  return <div className="inner-page integrations-page">
+    <PageIntro eyebrow="CONNECTED WORKSPACE" title="Integrations" text="Bring the tools around an SE’s work into one reusable field story. Connect states and credentials below are visual demo interactions only." />
+    <div className="integration-page-summary"><span className="integration-summary-icon"><Icon name="grid" size={18} /></span><div><strong>{connected.length} of {integrationProviders.length} demo connections</strong><span>Sample records are linked across the use-case library.</span></div><span className="integration-demo-pill"><span className="footer-dot" /> Demo mode</span></div>
+    <div className="integration-grid">{integrationProviders.map((provider) => {
+      const isConnected = connected.includes(provider.name)
+      return <article className={`integration-card ${isConnected ? 'integration-card-connected' : ''}`} key={provider.name}>
+        <div className="integration-card-top"><span className={`integration-mark integration-mark-${slug(provider.name)}`}><IntegrationLogo provider={provider.name} /></span><span className={`integration-status ${isConnected ? 'integration-status-connected' : ''}`}><i />{isConnected ? 'Connected · demo' : 'Not connected'}</span></div>
+        <div className="eyebrow eyebrow-quiet">{provider.category}</div><h2>{provider.name}</h2><p>{provider.description}</p>
+        <div className="integration-fields">{provider.fields.map(([label, placeholder]) => <label className="integration-field" key={label}><span>{label}</span><input type={label.toLowerCase().includes('secret') || label.toLowerCase().includes('token') || label.toLowerCase().includes('key') ? 'password' : 'text'} placeholder={placeholder} autoComplete="off" /></label>)}</div>
+        <div className="integration-card-footer"><span>Illustrative fields only</span><button className={isConnected ? 'button button-outline' : 'button button-primary'} onClick={() => { onToggle(provider.name); setNotice(`${provider.name} demo connection ${isConnected ? 'disconnected' : 'connected'}. No credentials were sent or saved.`) }}>{isConnected ? 'Disconnect' : 'Connect'} <Icon name="arrow" size={14} /></button></div>
+      </article>
+    })}</div>
+    <div className="integration-security-note"><span><Icon name="shield" size={17} /></span><p><strong>Prototype only.</strong> These fields are placeholders for the visual flow. They do not authenticate with Salesforce, Gong, Consensus, Homerun, or Jira, and entered values are never saved or transmitted.</p></div>
+    {notice && <div className="integration-toast" role="status">{notice}</div>}
+  </div>
+}
+
+function IntegrationLogo({ provider }: { provider: string }) {
+  if (provider === 'Salesforce') return <svg className="tool-logo tool-logo-salesforce" viewBox="0 0 40 32" aria-hidden="true"><path d="M13.7 27.7c-4 0-7.2-3-7.2-6.8 0-3.6 3-6.6 6.8-6.8.7-5 4.9-8.6 10-8.6 4 0 7.5 2.2 9.1 5.6 1.1-.6 2.4-1 3.8-1 4.4 0 7.9 3.3 7.9 7.4 2.4 1 4 3.1 4 5.6 0 3.1-2.7 5.6-6 5.6H13.7Z" transform="translate(-4 0) scale(.88 1)" fill="currentColor" /></svg>
+  if (provider === 'Gong') return <svg className="tool-logo tool-logo-gong" viewBox="0 0 48 32" aria-hidden="true"><text x="24" y="23" textAnchor="middle" fill="currentColor" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="700" letterSpacing="-1.7">gong</text></svg>
+  if (provider === 'Consensus Live') return <svg className="tool-logo tool-logo-consensus" viewBox="0 0 40 40" aria-hidden="true"><path d="M29.4 11.2a13 13 0 1 0 0 17.6" fill="none" stroke="currentColor" strokeWidth="5.2" strokeLinecap="round" /><circle cx="29.5" cy="11" r="3.2" fill="#f48a58" /><circle cx="29.5" cy="29" r="3.2" fill="#f48a58" /></svg>
+  if (provider === 'Homerun Presales') return <svg className="tool-logo tool-logo-homerun" viewBox="0 0 40 40" aria-hidden="true"><path d="M9 11v18M31 11v18M9 20h22" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9" cy="11" r="3" fill="currentColor" /><circle cx="31" cy="29" r="3" fill="currentColor" /></svg>
+  if (provider === 'Jira') return <svg className="tool-logo tool-logo-jira" viewBox="0 0 40 40" aria-hidden="true"><path d="M25.3 5H13.8c0 6.4 5.2 11.6 11.6 11.6h4.8V9.9A4.9 4.9 0 0 0 25.3 5Z" fill="#1868DB" /><path d="M19.6 16.6h-9.8c0 5.4 4.4 9.8 9.8 9.8h4.2v-5.6a4.2 4.2 0 0 0-4.2-4.2Z" fill="#2684FF" /><path d="M14.6 26.4h-5c0 4 3.2 7.2 7.2 7.2h2.9v-3.6a3.6 3.6 0 0 0-3.6-3.6Z" fill="#4C9AFF" /></svg>
+  return <svg className="tool-logo tool-logo-generic" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="currentColor" /><path d="M15 20h10M20 15v10" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
 }
 
 function AboutPage({ navigate }: { navigate: (path: string) => void }) {
@@ -172,13 +222,14 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
       <article className="about-deliverable"><span className="about-card-icon about-blue"><Icon name="users" size={19} /></span><h3>Community contributions</h3><p>Separate variations, improvements, and troubleshooting notes that keep the original solution intact.</p></article>
     </div></section>
     <section className="about-section about-value-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MAKE THE IMPACT CLEAR</div><h2>Connect the technical work to business value</h2><p>Technical detail explains how a solution works. A strong customer story also explains why it matters—to the people, process, and goals behind the ask.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span><h3>Help every SE tell the “why”</h3><p>The Business Value component gives SEs a place to shape a clear, credible story from a use case. Guided questions help surface the customer’s goal, what changed, and what evidence could show the impact—so the outcome is easy to explain to decision-makers.</p><button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Business value story outline"><div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div><div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div><div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div></div></div></section>
+    <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">CONNECTED CONTEXT</div><h2>Bring the field story together</h2><p>CRM records, customer conversations, demos, evaluation plans, and product feedback can give a reusable solution the context and evidence another SE needs.</p><button className="text-button" onClick={() => navigate('/integrations')}>Explore integrations <Icon name="arrow" size={15} /></button></div></section>
     <section className="about-section about-features-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HOW THE APP WORKS</div><h2>Find it, understand it, build on it.</h2></div><div className="about-feature-grid">
       <article><span><Icon name="search" size={17} /></span><div><strong>Search and browse</strong><p>Find use cases by problem, category, technology, or tag.</p></div></article>
       <article><span><Icon name="plus" size={17} /></span><div><strong>Publish a solution</strong><p>Capture the ask, approach, implementation, and files in a guided flow.</p></div></article>
       <article><span><Icon name="users" size={17} /></span><div><strong>Contribute an improvement</strong><p>Add your own approach without replacing the original author’s work.</p></div></article>
       <article><span><Icon name="video" size={17} /></span><div><strong>Connect demo moments</strong><p>See how a recording, transcript, AI summary, and timestamped audience feedback could sit with a use case.</p></div></article>
     </div></section>
-    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts and uploads in the current browser session. The demo recording and AI summary are illustrative sample content; recording integrations and live AI processing are not active.</p></div>
+    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts, uploads, and connection states in the current browser session. Credential fields are illustrative only; there are no live service connections.</p></div>
     <div className="about-cta"><div><strong>Have something another SE could reuse?</strong><span>Share a use case and give the next person a head start.</span></div><button className="button button-dark" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div>
   </div>
 }
@@ -243,20 +294,22 @@ function ExplorePage({ cases, initialQuery, navigate }: { cases: UseCase[]; init
   const [query, setQuery] = useState(initialQuery)
   const [category, setCategory] = useState('All categories')
   const [tag, setTag] = useState('All tags')
+  const [source, setSource] = useState('All sources')
   const [sort, setSort] = useState('newest')
   const availableTags = Array.from(new Set(cases.flatMap((item) => item.tags))).sort()
+  const availableSources = Array.from(new Set(cases.flatMap((item) => item.sources?.map((linked) => linked.provider) || []))).sort()
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase()
     return cases.filter((item) => {
       const text = [item.title, item.summary, item.ask, item.solution, item.implementation, item.technologies, item.lessons, item.category, ...item.tags].join(' ').toLowerCase()
-      return (!needle || text.includes(needle)) && (category === 'All categories' || item.category === category) && (tag === 'All tags' || item.tags.includes(tag))
+      return (!needle || text.includes(needle)) && (category === 'All categories' || item.category === category) && (tag === 'All tags' || item.tags.includes(tag)) && (source === 'All sources' || item.sources?.some((linked) => linked.provider === source))
     }).sort((a, b) => sort === 'most' ? b.contributions.length - a.contributions.length : sort === 'updated' ? Date.parse(b.updated) - Date.parse(a.updated) : Date.parse(b.date) - Date.parse(a.date))
-  }, [cases, category, query, sort, tag])
+  }, [cases, category, query, sort, source, tag])
   return <div className="inner-page">
     <PageIntro eyebrow="THE SHARED LIBRARY" title="Explore use cases" text="Practical starting points from the field. Search what you need, then build on what you find." action={<button className="button button-primary" onClick={() => navigate('/create')}><Icon name="plus" size={17} /> New use case</button>} />
-    <div className="library-toolbar"><label className="library-search"><Icon name="search" size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by problem, tool, or keyword" aria-label="Search use cases" />{query && <button className="clear-search" onClick={() => setQuery('')} aria-label="Clear search"><Icon name="close" size={16} /></button>}</label><label className="filter-select"><Icon name="filter" size={16} /><select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter by category">{categories.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select tag-filter"><select value={tag} onChange={(event) => setTag(event.target.value)} aria-label="Filter by tag"><option>All tags</option>{availableTags.map((item) => <option key={item}>{item}</option>)}</select></label><label className="sort-select"><span>Sort:</span><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort use cases"><option value="newest">Newest</option><option value="updated">Recently updated</option><option value="most">Most contributed</option></select></label></div>
+    <div className="library-toolbar"><label className="library-search"><Icon name="search" size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by problem, tool, or keyword" aria-label="Search use cases" />{query && <button className="clear-search" onClick={() => setQuery('')} aria-label="Clear search"><Icon name="close" size={16} /></button>}</label><label className="filter-select"><Icon name="filter" size={16} /><select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter by category">{categories.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select tag-filter"><select value={tag} onChange={(event) => setTag(event.target.value)} aria-label="Filter by tag"><option>All tags</option>{availableTags.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select source-filter"><select value={source} onChange={(event) => setSource(event.target.value)} aria-label="Filter by connected source"><option>All sources</option>{availableSources.map((item) => <option key={item}>{item}</option>)}</select></label><label className="sort-select"><span>Sort:</span><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort use cases"><option value="newest">Newest</option><option value="updated">Recently updated</option><option value="most">Most contributed</option></select></label></div>
     <div className="results-line"><span><strong>{filtered.length}</strong> use cases</span>{query && <span className="result-query">matching “{query}”</span>}<span className="results-demo"><span className="footer-dot" /> Public demo content</span></div>
-    {filtered.length ? <div className="case-grid">{filtered.map((item) => <CaseCard key={item.id} item={item} onClick={() => navigate(`/use-cases/${item.id}`)} />)}</div> : <EmptyState title="No matches yet" text="Try another keyword or clear the category and tag filters to see more of the library." action={<button className="button button-outline" onClick={() => { setQuery(''); setCategory('All categories'); setTag('All tags') }}>Clear filters</button>} />}
+    {filtered.length ? <div className="case-grid">{filtered.map((item) => <CaseCard key={item.id} item={item} onClick={() => navigate(`/use-cases/${item.id}`)} />)}</div> : <EmptyState title="No matches yet" text="Try another keyword or clear the category, tag, and source filters to see more of the library." action={<button className="button button-outline" onClick={() => { setQuery(''); setCategory('All categories'); setTag('All tags'); setSource('All sources') }}>Clear filters</button>} />}
   </div>
 }
 
@@ -270,6 +323,7 @@ function CaseCard({ item, onClick }: { item: UseCase; onClick: () => void }) {
     <div className="case-card-top"><span className="category-pill">{item.category}</span><span className="card-date"><Icon name="clock" size={13} /> {item.date}</span></div>
     <h3>{item.title}</h3><p className="case-summary">{item.summary}</p>
     <div className="tag-row">{item.tags.slice(0, 3).map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
+    {item.sources && item.sources.length > 0 && <div className="case-source-row" aria-label={`Linked sources: ${item.sources.map((source) => source.provider).join(', ')}`}>{item.sources.slice(0, 2).map((source) => <span className="case-source-chip" key={`${source.provider}-${source.title}`}>{source.provider}</span>)}{item.sources.length > 2 && <span className="case-source-more">+{item.sources.length - 2}</span>}</div>}
     {artifactLabels.length > 0 && <span className="artifact-icons" aria-label={`Included artifacts: ${artifactLabels.map(([, label]) => label).join(', ')}`}>{artifactLabels.map(([icon, label]) => <span className="artifact-icon" title={label} aria-label={label} key={label}><Icon name={icon} size={13} /></span>)}</span>}
     <div className="case-card-footer"><span className="author-chip"><span className={`avatar avatar-tiny ${avatarColor(item.author)}`}>{initials(item.author)}</span><span>{item.author}</span></span><span className="card-counts"><span><Icon name="users" size={14} /> {item.contributions.length}</span><span><Icon name="file" size={14} /> {item.resources.length}</span></span></div>
     <span className="card-corner-arrow"><Icon name="arrow" size={15} /></span>
@@ -278,9 +332,12 @@ function CaseCard({ item, onClick }: { item: UseCase; onClick: () => void }) {
 
 function DashboardPage({ cases, navigate }: { cases: UseCase[]; navigate: (path: string) => void }) {
   const contributions = cases.flatMap((item) => item.contributions.map((contribution) => ({ ...contribution, parent: item }))).sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+  const linkedRecords = cases.flatMap((item) => item.sources || [])
+  const sourceCounts = integrationProviders.map((provider) => ({ name: provider.name, count: linkedRecords.filter((source) => source.provider === provider.name).length })).filter((provider) => provider.count > 0)
   return <div className="inner-page">
     <PageIntro eyebrow="COMMUNITY ACTIVITY" title="A better answer, together." text="See what the community has shared lately, then add a useful variation of your own." action={<button className="button button-primary" onClick={() => navigate('/create')}><Icon name="plus" size={17} /> Share a solution</button>} />
-    <div className="community-metrics"><div><span className="metric-icon metric-lilac"><Icon name="grid" size={18} /></span><div><strong>{cases.length}</strong><span>use cases shared</span></div></div><div><span className="metric-icon metric-mint"><Icon name="users" size={18} /></span><div><strong>{contributions.length}</strong><span>ideas contributed</span></div></div><div><span className="metric-icon metric-peach"><Icon name="file" size={18} /></span><div><strong>{cases.reduce((sum, item) => sum + item.resources.length + item.contributions.reduce((n, c) => n + c.resources.length, 0), 0)}</strong><span>resources attached</span></div></div></div>
+    <div className="community-metrics"><div><span className="metric-icon metric-lilac"><Icon name="grid" size={18} /></span><div><strong>{cases.length}</strong><span>use cases shared</span></div></div><div><span className="metric-icon metric-mint"><Icon name="users" size={18} /></span><div><strong>{contributions.length}</strong><span>ideas contributed</span></div></div><div><span className="metric-icon metric-peach"><Icon name="file" size={18} /></span><div><strong>{cases.reduce((sum, item) => sum + item.resources.length + item.contributions.reduce((n, c) => n + c.resources.length, 0), 0)}</strong><span>resources attached</span></div></div><div><span className="metric-icon metric-blue"><Icon name="grid" size={18} /></span><div><strong>{linkedRecords.length}</strong><span>linked source records</span></div></div></div>
+    <section className="integration-activity"><div><div className="eyebrow eyebrow-quiet">FIELD CONTEXT</div><h2>Connected sources in the library</h2><p>Example CRM records, call context, demos, evaluations, and product feedback linked to shared use cases.</p></div><div className="integration-activity-sources">{sourceCounts.map((source) => <span key={source.name}><strong>{source.count}</strong>{source.name}</span>)}<button className="text-button" onClick={() => navigate('/integrations')}>Manage integrations <Icon name="arrow" size={14} /></button></div></section>
     <div className="dashboard-columns"><section className="activity-panel"><div className="panel-heading"><div><div className="eyebrow eyebrow-quiet">BUILDING ON GOOD WORK</div><h2>Recent contributions</h2></div><span className="live-pill"><span className="footer-dot" /> Community feed</span></div>
       {contributions.length ? <div className="activity-list">{contributions.map((entry) => <article className="activity-item" key={entry.id}><span className={`avatar avatar-medium ${avatarColor(entry.author)}`}>{initials(entry.author)}</span><div className="activity-body"><div className="activity-byline"><strong>{entry.author}</strong><span>added a contribution</span><time>{entry.date}</time></div><button className="activity-title" onClick={() => navigate(`/use-cases/${entry.parent.id}`)}>{entry.title}</button><p>{entry.description}</p><div className="activity-parent"><span>On</span><button onClick={() => navigate(`/use-cases/${entry.parent.id}`)}>{entry.parent.title}</button></div></div></article>)}</div> : <EmptyState title="Be the first to contribute" text="Find a use case and add a useful variation or lesson learned." action={<button className="button button-outline" onClick={() => navigate('/explore')}>Explore use cases</button>} />}
     </section><aside className="dashboard-side"><div className="side-callout"><span className="callout-icon"><Icon name="spark" size={18} /></span><div className="eyebrow eyebrow-quiet">THE IDEA</div><h3>Every contribution gives the next SE a head start.</h3><p>Found a different approach, a gotcha, or a useful file? Add it to the original solution.</p><button className="button button-dark button-full" onClick={() => navigate('/explore')}>Find something to build on <Icon name="arrow" size={15} /></button></div><div className="demo-note"><Icon name="shield" size={17} /><p><strong>Public demo</strong><br />Names are self-reported. Please use fictional examples and never upload sensitive information.</p></div></aside></div>
@@ -296,6 +353,7 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
     <div className="detail-layout"><div className="detail-main-column">
       <InfoSection icon="search" eyebrow="THE CUSTOMER ASK" title="The challenge"><p>{item.ask}</p>{item.context && item.context !== 'Not specified' && <div className="context-line"><span>CONTEXT</span>{item.context}</div>}</InfoSection>
       <InfoSection icon="spark" eyebrow="THE APPROACH" title="Solution overview"><p>{item.solution}</p>{item.outcome !== 'Not specified' && <div className="outcome-box"><span className="outcome-check">✓</span><div><strong>Outcome</strong><p>{item.outcome}</p></div></div>}</InfoSection>
+      {item.sources && item.sources.length > 0 && <InfoSection icon="grid" eyebrow="LINKED FIELD CONTEXT" title="Linked sample records"><LinkedSourceList sources={item.sources} /></InfoSection>}
       {item.demo && <DemoEvidence demo={item.demo} />}
       <InfoSection icon="file" eyebrow="HOW IT WORKS" title="Implementation notes"><p>{item.implementation}</p><div className="implementation-grid"><div><span>TECHNOLOGIES</span><p>{item.technologies}</p></div><div><span>CONSTRAINTS</span><p>{item.constraints}</p></div></div></InfoSection>
       {(item.lessons !== 'Not specified' || item.reusable !== 'Not specified') && <InfoSection icon="spark" eyebrow="FOR THE NEXT SE" title="Lessons & reusable notes"><div className="lesson-grid">{item.lessons !== 'Not specified' && <div><strong>Lessons learned</strong><p>{item.lessons}</p></div>}{item.reusable !== 'Not specified' && <div><strong>Reusable notes</strong><p>{item.reusable}</p></div>}</div></InfoSection>}
@@ -334,9 +392,14 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
         <div><span>THE SOLUTION</span><p>{item.solution}</p></div>
         <div><span>THE BUSINESS OUTCOME</span><p>{item.outcome === 'Not specified' ? 'Add the customer’s desired outcome and how success could be measured.' : item.outcome}</p></div>
       </div></section>
+      {item.sources && item.sources.length > 0 && <div className="value-story-sources"><strong>Evidence linked to this use case</strong><div>{item.sources.map((source) => <span key={`${source.provider}-${source.title}`}>{source.provider}</span>)}</div></div>}
       <div className="value-story-dialog-footer"><span><Icon name="shield" size={14} /> Customer context stays in control of the story.</span><button className="button button-dark" onClick={onClose}>Got it</button></div>
     </section>
   </div>
+}
+
+function LinkedSourceList({ sources }: { sources: LinkedSource[] }) {
+  return <div className="linked-source-list">{sources.map((source) => <article className="linked-source-item" key={`${source.provider}-${source.title}`}><span className={`linked-source-mark integration-mark-${slug(source.provider)}`}><IntegrationLogo provider={source.provider} /></span><div><strong>{source.title}</strong><span>{source.provider} <i>·</i> {source.detail}</span></div><span className="linked-source-demo">Sample</span></article>)}<p>Fictional linked records shown for this prototype.</p></div>
 }
 
 function InfoSection({ icon, eyebrow, title, children }: { icon: string; eyebrow: string; title: string; children: ReactNode }) {
@@ -387,6 +450,10 @@ function UseCaseForm({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: (
         <div className="field-grid"><TextAreaField name="outcome" label="Outcome" placeholder="What did the solution accomplish?" /><TextAreaField name="lessons" label="Lessons learned" placeholder="What would you tell the next SE?" /></div>
         <TextAreaField name="reusable" label="Reusable components or notes" placeholder="What can someone reuse directly?" />
       </FormSection>
+      <FormSection number="04" title="Link field context" help="Add fictional sample records to show where this solution came from. These examples are not imported from live tools.">
+        <div className="source-picker-intro"><Icon name="grid" size={16} /><span>Select the sample source records that help explain this use case.</span></div>
+        <div className="source-picker">{integrationProviders.map((provider) => <label key={provider.name}><input type="checkbox" name="linkedSourceProviders" value={provider.name} /><span><strong>{provider.name}</strong><small>{provider.category}</small></span></label>)}</div>
+      </FormSection>
       <AttachmentPicker />
       <div className="publish-notice"><Icon name="shield" size={18} /><div><strong>Public portfolio demo</strong><p>Your display name, use case, and any attached files will be public when a backend is connected. Use fictional examples and never include credentials, personal data, or confidential customer information.</p></div></div>
       <div className="form-actions"><button className="button button-quiet" type="button" onClick={onCancel}>Cancel</button><div><span className="form-disclaimer">Prototype only · not saved to a server</span><button className="button button-primary" type="submit">Preview use case <Icon name="arrow" size={16} /></button></div></div>
@@ -396,7 +463,8 @@ function UseCaseForm({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: (
 }
 
 function PreviewDialog({ values, files, onEdit, onPublish }: { values: Record<string, string>; files: File[]; onEdit: () => void; onPublish: () => void }) {
-  return <div className="modal-backdrop"><section className="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title"><div className="preview-dialog-top"><div><div className="eyebrow eyebrow-quiet">READY TO SHARE?</div><h2 id="preview-title">Preview your use case</h2></div><button className="icon-button" onClick={onEdit} aria-label="Close preview"><Icon name="close" size={18} /></button></div><div className="preview-public-label"><Icon name="shield" size={15} /> This will be public. Author names are self-reported.</div><span className="category-pill preview-category">{values.category}</span><h3>{values.title}</h3><p className="preview-summary">{values.summary}</p><div className="preview-author">Shared by <strong>{values.author}</strong>{values.tags && <span> · {values.tags}</span>}</div><div className="preview-block"><span>CUSTOMER ASK</span><p>{values.ask}</p></div><div className="preview-block"><span>SOLUTION OVERVIEW</span><p>{values.solution}</p></div>{files.length > 0 && <div className="preview-files"><span>ATTACHED IN THIS SESSION</span>{files.map((file) => <span className="preview-file-name" key={`${file.name}-${file.lastModified}`}><Icon name="file" size={14} /> {file.name} <small>{formatSize(file.size)}</small></span>)}</div>}<div className="preview-actions"><button className="button button-outline" onClick={onEdit}>Back to edit</button><button className="button button-primary" onClick={onPublish}>Publish use case <Icon name="arrow" size={16} /></button></div><div className="preview-disclaimer">Prototype only · your post and files will be cleared when you refresh this page.</div></section></div>
+  const linkedProviders = (values.linkedSourceProviders || '').split(',').filter(Boolean)
+  return <div className="modal-backdrop"><section className="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title"><div className="preview-dialog-top"><div><div className="eyebrow eyebrow-quiet">READY TO SHARE?</div><h2 id="preview-title">Preview your use case</h2></div><button className="icon-button" onClick={onEdit} aria-label="Close preview"><Icon name="close" size={18} /></button></div><div className="preview-public-label"><Icon name="shield" size={15} /> This will be public. Author names are self-reported.</div><span className="category-pill preview-category">{values.category}</span><h3>{values.title}</h3><p className="preview-summary">{values.summary}</p><div className="preview-author">Shared by <strong>{values.author}</strong>{values.tags && <span> · {values.tags}</span>}</div><div className="preview-block"><span>CUSTOMER ASK</span><p>{values.ask}</p></div><div className="preview-block"><span>SOLUTION OVERVIEW</span><p>{values.solution}</p></div>{linkedProviders.length > 0 && <div className="preview-files"><span>LINKED SAMPLE SOURCES</span>{linkedProviders.map((provider) => <span className="preview-file-name" key={provider}><Icon name="grid" size={14} /> {provider}</span>)}</div>}{files.length > 0 && <div className="preview-files"><span>ATTACHED IN THIS SESSION</span>{files.map((file) => <span className="preview-file-name" key={`${file.name}-${file.lastModified}`}><Icon name="file" size={14} /> {file.name} <small>{formatSize(file.size)}</small></span>)}</div>}<div className="preview-actions"><button className="button button-outline" onClick={onEdit}>Back to edit</button><button className="button button-primary" onClick={onPublish}>Publish use case <Icon name="arrow" size={16} /></button></div><div className="preview-disclaimer">Prototype only · your post and files will be cleared when you refresh this page.</div></section></div>
 }
 
 function ContributionForm({ item, onCancel, onSubmit }: { item: UseCase; onCancel: () => void; onSubmit: (values: Record<string, string>, files: File[]) => void }) {
@@ -487,7 +555,8 @@ function handleFormSubmit(event: FormEvent<HTMLFormElement>, callback: (values: 
   if (!form.reportValidity()) return
   const data = new FormData(form)
   const values: Record<string, string> = {}
-  data.forEach((value, key) => { if (typeof value === 'string' && key !== 'attachments') values[key] = value })
+  data.forEach((value, key) => { if (typeof value === 'string' && key !== 'attachments' && key !== 'linkedSourceProviders') values[key] = value })
+  values.linkedSourceProviders = data.getAll('linkedSourceProviders').filter((value): value is string => typeof value === 'string').join(',')
   const files = data.getAll('attachments').filter((value): value is File => value instanceof File && value.name.length > 0)
   callback(values, files)
 }

@@ -25,6 +25,12 @@ export type DemoArtifact = {
   moments: DemoMoment[]
 }
 
+export type LinkedSource = {
+  provider: string
+  title: string
+  detail: string
+}
+
 export type Contribution = {
   id: string
   title: string
@@ -58,6 +64,7 @@ export type UseCase = {
   reusable: string
   resources: Resource[]
   demo?: DemoArtifact
+  sources?: LinkedSource[]
   contributions: Contribution[]
 }
 
@@ -150,6 +157,10 @@ export const initialUseCases: UseCase[] = [
         { time: '05:48', label: 'Access approval', kind: 'solution', text: 'Resource owners approve their own scope, with an expiry and review date.' },
       ],
     },
+    sources: [
+      { provider: 'Salesforce', title: 'AI Agent Governance Evaluation', detail: 'Opportunity · Technical validation' },
+      { provider: 'Gong', title: 'Agent access and ownership review', detail: 'Call transcript · 08:42' },
+    ],
     contributions: [],
   },
   {
@@ -167,6 +178,10 @@ export const initialUseCases: UseCase[] = [
     lessons: 'Resolve attribute ownership before building mappings. A clear reactivation path is as important as deprovisioning.',
     reusable: 'Start with the included attribute mapping worksheet and run the lifecycle checklist for each pilot group.',
     resources: [resource('scim-mapping-example.csv', 'CSV', '18 KB', 'Synthetic attribute mapping worksheet.', 'source,target,required\nworker_id,externalId,true\nwork_email,userName,true\ndepartment,department,false\nmanager_email,manager.value,false')],
+    sources: [
+      { provider: 'Homerun Presales', title: 'SCIM lifecycle evaluation', detail: 'Evaluation plan · Complete' },
+      { provider: 'Jira', title: 'Add SCIM group mapping visibility', detail: 'Product request · Done' },
+    ],
     contributions: [
       { id: 'c-scim-1', title: 'Add a safe reactivation check', type: 'Workflow improvement', description: 'Before reactivating an account, check that the HR record is still active and that the primary email matches the current worker profile.', implementation: 'Add a preflight lookup by immutable worker ID and stop the reactivation if the HR status is inactive.', context: 'Workday, SCIM 2.0', author: 'Priya Nair', date: 'Oct 20, 2026', validation: 'Tested in demo or development environment', resources: [] },
       { id: 'c-scim-2', title: 'SCIM pagination troubleshooting notes', type: 'Troubleshooting or lesson learned', description: 'If a directory import appears incomplete, verify that the client follows the pagination cursor until the response has no next page.', author: 'Alex Kim', date: 'Oct 19, 2026', validation: 'Proposed', resources: [] },
@@ -218,6 +233,10 @@ export const initialUseCases: UseCase[] = [
     lessons: 'Put a visible environment label on every reset screen. Avoid destructive buttons that rely on a remembered account context.',
     reusable: 'Use the preflight checklist before customer sessions and after each reset.',
     resources: [resource('demo-reset-checklist.md', 'MD', '2 KB', 'Checklist for synthetic demo environments.', '# Demo reset checklist\n\n- Confirm the environment label\n- Verify the demo tenant ID\n- Clear only session-scoped records\n- Re-seed synthetic examples\n- Run the preflight smoke test')],
+    sources: [
+      { provider: 'Consensus Live', title: 'Synthetic tenant reset walkthrough', detail: 'Personalized live demo · 06:18' },
+      { provider: 'Salesforce', title: 'Demo environment readiness', detail: 'Opportunity · Solution validation' },
+    ],
     contributions: [],
   },
   {
