@@ -203,11 +203,11 @@ function IntegrationsPage({ connected, onToggle }: { connected: string[]; onTogg
 }
 
 function IntegrationLogo({ provider }: { provider: string }) {
-  if (provider === 'Salesforce') return <svg className="tool-logo tool-logo-salesforce" viewBox="0 0 40 32" aria-hidden="true"><path d="M13.7 27.7c-4 0-7.2-3-7.2-6.8 0-3.6 3-6.6 6.8-6.8.7-5 4.9-8.6 10-8.6 4 0 7.5 2.2 9.1 5.6 1.1-.6 2.4-1 3.8-1 4.4 0 7.9 3.3 7.9 7.4 2.4 1 4 3.1 4 5.6 0 3.1-2.7 5.6-6 5.6H13.7Z" transform="translate(-4 0) scale(.88 1)" fill="currentColor" /></svg>
-  if (provider === 'Gong') return <svg className="tool-logo tool-logo-gong" viewBox="0 0 48 32" aria-hidden="true"><text x="24" y="23" textAnchor="middle" fill="currentColor" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="700" letterSpacing="-1.7">gong</text></svg>
-  if (provider === 'Consensus Live') return <svg className="tool-logo tool-logo-consensus" viewBox="0 0 40 40" aria-hidden="true"><path d="M29.4 11.2a13 13 0 1 0 0 17.6" fill="none" stroke="currentColor" strokeWidth="5.2" strokeLinecap="round" /><circle cx="29.5" cy="11" r="3.2" fill="#f48a58" /><circle cx="29.5" cy="29" r="3.2" fill="#f48a58" /></svg>
-  if (provider === 'Homerun Presales') return <svg className="tool-logo tool-logo-homerun" viewBox="0 0 40 40" aria-hidden="true"><path d="M9 11v18M31 11v18M9 20h22" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9" cy="11" r="3" fill="currentColor" /><circle cx="31" cy="29" r="3" fill="currentColor" /></svg>
-  if (provider === 'Jira') return <svg className="tool-logo tool-logo-jira" viewBox="0 0 40 40" aria-hidden="true"><path d="M25.3 5H13.8c0 6.4 5.2 11.6 11.6 11.6h4.8V9.9A4.9 4.9 0 0 0 25.3 5Z" fill="#1868DB" /><path d="M19.6 16.6h-9.8c0 5.4 4.4 9.8 9.8 9.8h4.2v-5.6a4.2 4.2 0 0 0-4.2-4.2Z" fill="#2684FF" /><path d="M14.6 26.4h-5c0 4 3.2 7.2 7.2 7.2h2.9v-3.6a3.6 3.6 0 0 0-3.6-3.6Z" fill="#4C9AFF" /></svg>
+  if (provider === 'Salesforce') return <img className="tool-logo tool-logo-salesforce" src="/integrations/salesforce.svg" alt="" />
+  if (provider === 'Gong') return <img className="tool-logo tool-logo-gong" src="/integrations/gong.svg" alt="" />
+  if (provider === 'Consensus Live') return <img className="tool-logo tool-logo-consensus" src="/integrations/consensus.svg" alt="" />
+  if (provider === 'Homerun Presales') return <img className="tool-logo tool-logo-homerun" src="/integrations/homerun-presales.png" alt="" />
+  if (provider === 'Jira') return <img className="tool-logo tool-logo-jira" src="/integrations/jira.svg" alt="" />
   return <svg className="tool-logo tool-logo-generic" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="currentColor" /><path d="M15 20h10M20 15v10" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
 }
 
