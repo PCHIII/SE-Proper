@@ -149,8 +149,45 @@ html[data-theme="dark"] .source-picker label { border-color: #383f3d; background
 html[data-theme="dark"] .integration-activity-sources > span { color: #a0a8a1; border-color: #393f3e; background: #1c2020; }html[data-theme="dark"] .integration-activity-sources > span strong { color: #c1f653; }
 html[data-theme="dark"] .integration-status-connected { color: #b7e694; }
 html[data-theme="dark"] .integration-toast { color: #c4e8c8; border-color: #43583f; background: #202820; }
+.integration-card-admin-only { opacity: .62; filter: grayscale(1); }
+.integration-admin-badge { display: inline-flex; align-items: center; padding: 5px 8px; color: #6f7481; border: 1px solid #dfe1e7; border-radius: 20px; background: #f2f3f6; font-size: 10px; font-weight: 750; white-space: nowrap; }
+.integration-card-admin-only .integration-field input:disabled { cursor: not-allowed; }
+.integration-card-admin-only .button:disabled { cursor: not-allowed; opacity: .7; }
+html[data-theme="dark"] .integration-admin-badge { color: #afb5b0; border-color: #424845; background: #303634; }
+.meeting-sources-section { margin-bottom: 22px; }
+.integration-section-heading { display: flex; align-items: start; justify-content: space-between; gap: 18px; margin: 0 0 13px; }
+.integration-section-heading h2 { margin: 5px 0 4px; color: #414659; font: 750 19px 'Manrope', sans-serif; }
+.integration-section-heading p { max-width: 620px; margin: 0; color: #858b9a; font-size: 12px; line-height: 1.55; }
+.meeting-source-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.meeting-source-card { min-width: 0; padding: 17px; border: 1px solid #e9ebf0; border-radius: 11px; background: #fff; box-shadow: 0 3px 10px #30324b05; }
+.meeting-source-card-connected { border-color: #cfe5d8; box-shadow: inset 3px 0 #65a984; }
+.meeting-source-card-top { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-bottom: 14px; }
+.meeting-source-mark { display: grid; place-items: center; width: 38px; height: 38px; color: #5d66bd; border: 1px solid #e4e7f2; border-radius: 10px; background: #f2f3fa; font: 800 17px 'Manrope', sans-serif; }
+.meeting-source-mark-zoom { color: #2878bb; border-color: #dcecf8; background: #edf7fd; }
+.meeting-source-mark-google-meet { color: #43856a; border-color: #dcece4; background: #eff8f2; }
+.meeting-source-mark > img { display: block; width: 25px; height: 25px; object-fit: contain; }
+.meeting-source-mark-microsoft-teams > img { width: 28px; height: 28px; }
+.meeting-source-mark-google-meet > img { width: 27px; height: 22px; }
+.meeting-source-card h3 { margin: 0 0 5px; color: #3e4355; font: 750 16px 'Manrope', sans-serif; }
+.meeting-source-card > p { min-height: 38px; margin: 0 0 14px; color: #7e8494; font-size: 12px; line-height: 1.55; }
+.meeting-source-card > .button { min-height: 32px; height: 32px; padding-inline: 11px; font-size: 11px; }
+.meeting-source-preview { margin-top: 13px; padding-top: 11px; border-top: 1px solid #eff0f4; color: #777d8d; font-size: 11px; }
+.meeting-source-preview summary { cursor: pointer; color: #6258aa; font-weight: 700; }
+.meeting-source-preview > div { display: grid; gap: 4px; padding-top: 9px; }
+.meeting-source-preview strong { color: #4b5061; font-size: 11px; }
+.meeting-source-preview span, .meeting-source-preview p { margin: 0; color: #858b9a; font-size: 10px; line-height: 1.5; }
+html[data-theme="dark"] .integration-section-heading h2, html[data-theme="dark"] .meeting-source-card h3, html[data-theme="dark"] .meeting-source-preview strong { color: #e1e5e0; }
+html[data-theme="dark"] .integration-section-heading p, html[data-theme="dark"] .meeting-source-card > p, html[data-theme="dark"] .meeting-source-preview, html[data-theme="dark"] .meeting-source-preview span, html[data-theme="dark"] .meeting-source-preview p { color: #a0a8a1; }
+html[data-theme="dark"] .meeting-source-card { border-color: #383f3d; background: #222626; }
+html[data-theme="dark"] .meeting-source-card-connected { border-color: #44533a; box-shadow: inset 3px 0 #b9fa36; }
+html[data-theme="dark"] .meeting-source-mark { color: #c0c7ff; border-color: #414656; background: #303440; }
+html[data-theme="dark"] .meeting-source-mark-zoom { color: #9dd4fa; border-color: #344653; background: #26343d; }
+html[data-theme="dark"] .meeting-source-mark-google-meet { color: #a3d8b5; border-color: #36493d; background: #29352d; }
+html[data-theme="dark"] .meeting-source-preview { border-color: #363d3b; }
+html[data-theme="dark"] .meeting-source-preview summary { color: #c1f653; }
 @media (max-width: 850px) { .integration-grid { grid-template-columns: 1fr; }.integration-activity { align-items: stretch; flex-direction: column; }.integration-activity-sources { justify-content: start; } }
-@media (max-width: 640px) { .integration-page-summary { align-items: start; flex-wrap: wrap; }.integration-demo-pill { margin-left: auto; }.integration-fields, .source-picker { grid-template-columns: 1fr; }.integration-card { padding: 14px; }.integration-activity-sources { gap: 5px; }.integration-activity-sources > span { min-width: 62px; }.integration-activity-sources .text-button { margin: 6px 0 0; }.community-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }.integration-toast { right: 12px; bottom: 12px; } }
+@media (max-width: 850px) { .meeting-source-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .integration-page-summary { align-items: start; flex-wrap: wrap; }.integration-demo-pill { margin-left: auto; }.integration-section-heading { align-items: start; flex-direction: column; gap: 9px; }.integration-fields, .source-picker { grid-template-columns: 1fr; }.integration-card, .meeting-source-card { padding: 14px; }.integration-activity-sources { gap: 5px; }.integration-activity-sources > span { min-width: 62px; }.integration-activity-sources .text-button { margin: 6px 0 0; }.community-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }.integration-toast { right: 12px; bottom: 12px; } }
 
 .contribution-expanded-body > .contribution-implementation { margin-top: 7px; color: #858b9a; }
 .contribution-implementation strong { color: #656b7b; }

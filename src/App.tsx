@@ -11,6 +11,12 @@ const integrationProviders = [
   { name: 'Jira', category: 'Product feedback', description: 'Connect customer-driven feature requests and issues to field solutions.', fields: [['Email', 'se@example.com'], ['API token', '••••••••••••']] },
 ] as const
 
+const meetingProviders = [
+  { name: 'Microsoft Teams', icon: 'microsoft-teams.svg', description: 'Choose a meeting recording or transcript from your own Teams account.', meeting: 'Northstar discovery and solution review', detail: 'Transcript · 32 min · Oct 28, 2026' },
+  { name: 'Zoom', icon: 'zoom.svg', description: 'Bring a meeting recording or transcript from your own Zoom account.', meeting: 'Acme technical validation call', detail: 'Transcript · 41 min · Oct 24, 2026' },
+  { name: 'Google Meet', icon: 'google-meet.svg', description: 'Choose a meeting transcript from your own Google Meet account.', meeting: 'Contoso deployment planning', detail: 'Transcript · 27 min · Oct 21, 2026' },
+] as const
+
 const sampleSourceRecords: Record<string, LinkedSource> = {
   Salesforce: { provider: 'Salesforce', title: 'Customer opportunity', detail: 'Opportunity · Solution validation' },
   Gong: { provider: 'Gong', title: 'Customer discovery conversation', detail: 'Call transcript · 32:14' },
@@ -66,7 +72,7 @@ function App() {
   const [useCases, setUseCases] = useState<UseCase[]>(initialUseCases)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => localStorage.getItem('se-proper-theme') === 'light' ? 'light' : 'dark')
-  const [connectedIntegrations, setConnectedIntegrations] = useState<string[]>([])
+  const [connectedMeetingSources, setConnectedMeetingSources] = useState<string[]>([])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -163,7 +169,7 @@ function App() {
           {route.page === 'about' && <AboutPage navigate={navigate} />}
           {route.page === 'explore' && <ExplorePage cases={useCases} initialQuery={route.query || ''} navigate={navigate} />}
           {route.page === 'dashboard' && <DashboardPage cases={useCases} navigate={navigate} />}
-          {route.page === 'integrations' && <IntegrationsPage connected={connectedIntegrations} onToggle={(provider) => setConnectedIntegrations((current) => current.includes(provider) ? current.filter((name) => name !== provider) : [...current, provider])} />}
+          {route.page === 'integrations' && <IntegrationsPage connected={connectedMeetingSources} onToggle={(provider) => setConnectedMeetingSources((current) => current.includes(provider) ? current.filter((name) => name !== provider) : [...current, provider])} />}
           {route.page === 'create' && <UseCaseForm onCancel={() => navigate('/explore')} onSubmit={publishUseCase} />}
           {route.page === 'detail' && activeCase && <DetailPage item={activeCase} navigate={navigate} />}
           {route.page === 'contribute' && activeCase && <ContributionForm item={activeCase} onCancel={() => navigate(`/use-cases/${activeCase.id}`)} onSubmit={(values, files) => addContribution(activeCase.id, values, files)} />}
@@ -184,21 +190,30 @@ function pageTitle(page: Route['page']) {
 }
 
 function IntegrationsPage({ connected, onToggle }: { connected: string[]; onToggle: (provider: string) => void }) {
-  const [notice, setNotice] = useState('')
   return <div className="inner-page integrations-page">
-    <PageIntro eyebrow="CONNECTED WORKSPACE" title="Integrations" text="Bring the tools around an SE’s work into one reusable field story. Connect states and credentials below are visual demo interactions only." />
-    <div className="integration-page-summary"><span className="integration-summary-icon"><Icon name="grid" size={18} /></span><div><strong>{connected.length} of {integrationProviders.length} demo connections</strong><span>Sample records are linked across the use-case library.</span></div><span className="integration-demo-pill"><span className="footer-dot" /> Demo mode</span></div>
+    <PageIntro eyebrow="CONNECTED WORKSPACE" title="Integrations" text="Connect your own meeting account to preview meeting material for a use case. Workspace integrations are managed separately by admins." />
+    <section className="meeting-sources-section">
+      <div className="integration-section-heading"><div><div className="eyebrow">PERSONAL SOURCES</div><h2>My meeting sources</h2><p>Connect your own account. Imported meeting material stays in this browser demo and is not shared automatically.</p></div><span className="integration-demo-pill"><span className="footer-dot" /> Simulated</span></div>
+      <div className="meeting-source-grid">{meetingProviders.map((provider) => {
+        const isConnected = connected.includes(provider.name)
+        return <article className={`meeting-source-card ${isConnected ? 'meeting-source-card-connected' : ''}`} key={provider.name}>
+          <div className="meeting-source-card-top"><span className={`meeting-source-mark meeting-source-mark-${slug(provider.name)}`}><img src={`${import.meta.env.BASE_URL}integrations/${provider.icon}`} alt="" /></span><span className={`integration-status ${isConnected ? 'integration-status-connected' : ''}`}><i />{isConnected ? 'Connected · demo' : 'Not connected'}</span></div>
+          <h3>{provider.name}</h3><p>{provider.description}</p>
+          <button type="button" className={isConnected ? 'button button-outline' : 'button button-primary'} onClick={() => onToggle(provider.name)}>{isConnected ? 'Disconnect' : 'Connect my account'} <Icon name="arrow" size={14} /></button>
+          {isConnected && <details className="meeting-source-preview"><summary>Preview fictional meeting</summary><div><strong>{provider.meeting}</strong><span>{provider.detail}</span><p>Sample only. No meeting content was accessed or imported.</p></div></details>}
+        </article>
+      })}</div>
+    </section>
+    <div className="integration-page-summary"><span className="integration-summary-icon"><Icon name="grid" size={18} /></span><div><strong>Workspace integrations</strong><span>Only workspace admins can configure shared integrations.</span></div><span className="integration-demo-pill"><span className="footer-dot" /> Admin only</span></div>
     <div className="integration-grid">{integrationProviders.map((provider) => {
-      const isConnected = connected.includes(provider.name)
-      return <article className={`integration-card ${isConnected ? 'integration-card-connected' : ''}`} key={provider.name}>
-        <div className="integration-card-top"><span className={`integration-mark integration-mark-${slug(provider.name)}`}><IntegrationLogo provider={provider.name} /></span><span className={`integration-status ${isConnected ? 'integration-status-connected' : ''}`}><i />{isConnected ? 'Connected · demo' : 'Not connected'}</span></div>
+      return <article className="integration-card integration-card-admin-only" key={provider.name} aria-disabled="true">
+        <div className="integration-card-top"><span className={`integration-mark integration-mark-${slug(provider.name)}`}><IntegrationLogo provider={provider.name} /></span><span className="integration-admin-badge">Admin only</span></div>
         <div className="eyebrow eyebrow-quiet">{provider.category}</div><h2>{provider.name}</h2><p>{provider.description}</p>
-        <form className="integration-fields" onSubmit={(event) => event.preventDefault()}>{provider.fields.map(([label, placeholder]) => <label className="integration-field" key={label}><span>{label}</span><input type={label.toLowerCase().includes('secret') || label.toLowerCase().includes('token') || label.toLowerCase().includes('key') ? 'password' : 'text'} placeholder={placeholder} autoComplete="off" /></label>)}</form>
-        <div className="integration-card-footer"><span>Illustrative fields only</span><button type="button" className={isConnected ? 'button button-outline' : 'button button-primary'} onClick={() => { onToggle(provider.name); setNotice(`${provider.name} demo connection ${isConnected ? 'disconnected' : 'connected'}. No credentials were sent or saved.`) }}>{isConnected ? 'Disconnect' : 'Connect'} <Icon name="arrow" size={14} /></button></div>
+        <form className="integration-fields" onSubmit={(event) => event.preventDefault()}>{provider.fields.map(([label, placeholder]) => <label className="integration-field" key={label}><span>{label}</span><input disabled type={label.toLowerCase().includes('secret') || label.toLowerCase().includes('token') || label.toLowerCase().includes('key') ? 'password' : 'text'} placeholder={placeholder} autoComplete="off" /></label>)}</form>
+        <div className="integration-card-footer"><span>Admin access required</span><button type="button" className="button button-outline" disabled>Connect <Icon name="arrow" size={14} /></button></div>
       </article>
     })}</div>
-    <div className="integration-security-note"><span><Icon name="shield" size={17} /></span><p><strong>Prototype only.</strong> These fields are placeholders for the visual flow. They do not authenticate with Salesforce, Gong, Consensus, Homerun, or Jira, and entered values are never saved or transmitted.</p></div>
-    {notice && <div className="integration-toast" role="status">{notice}</div>}
+    <div className="integration-security-note"><span><Icon name="shield" size={17} /></span><p><strong>Prototype only.</strong> The meeting connections and previews are simulated. The demo has no sign-in or role checks, and admin permissions are represented visually. Workspace providers do not authenticate, and their placeholder credential fields are disabled.</p></div>
   </div>
 }
 
