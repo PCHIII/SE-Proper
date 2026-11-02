@@ -864,3 +864,30 @@ html[data-theme="dark"] .about-cta { background: #252a23; }
   .about-cta { align-items: stretch; }
   .about-cta .button { justify-content: center; }
 }
+
+.exchange-intro { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:24px; }
+.exchange-intro h1 { font:750 34px 'Manrope',sans-serif; margin:8px 0; }
+.exchange-intro p { max-width:650px; line-height:1.7; color:#7e8494; }
+.exchange-intro > .button { flex-shrink:0; }
+.exchange-banner { display:flex; flex-direction:column; gap:8px; padding:20px; background:#f2f4ec; border:1px solid #e2e7d7; border-radius:12px; margin-bottom:24px; font-size:13px; line-height:1.6; }
+.exchange-toolbar { display:flex; align-items:end; gap:16px; margin:24px 0; }
+.exchange-toolbar label { display:grid; gap:7px; font-size:12px; }.exchange-search { flex:1; }.exchange-toolbar > span { padding-bottom:12px; font-size:12px; }
+.exchange-page input,.exchange-page textarea,.exchange-page select { width:100%; padding:11px 12px; border:1px solid #dfe3e7; border-radius:7px; background:#fff; color:#414659; font:inherit; }
+.exchange-page textarea { min-height:100px; resize:vertical; }
+.exchange-compose,.exchange-request { padding:25px; border:1px solid #e5e8ed; border-radius:13px; background:#fff; }
+.exchange-compose,.exchange-discussion form { display:grid; gap:16px; }.exchange-compose label,.exchange-discussion label { display:grid; gap:7px; font-size:12px; font-weight:650; }
+.exchange-compose .button,.exchange-discussion form .button { justify-self:start; }.exchange-compose small { color:#7e8494; }
+.exchange-requests { display:grid; gap:18px; }.exchange-request h2 { font:750 21px 'Manrope',sans-serif; margin:16px 0 6px; }.exchange-request p { font-size:13px; line-height:1.75; }.exchange-author { color:#858b9a; margin-top:0; }
+.exchange-request-meta,.exchange-request-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:11px; }.exchange-request-actions { margin-top:22px; flex-wrap:wrap; }
+.exchange-status { padding:6px 9px; border-radius:20px; color:#6e5b9a; background:#f1edf9; font-weight:700; }.exchange-status.resolved { color:#427855; background:#edf6ed; }
+.exchange-discussion { border-top:1px solid #e5e8ed; margin-top:22px; padding-top:16px; }.exchange-discussion h3 { font-size:16px; }.exchange-reply { padding:16px; background:#f7f8fa; border-radius:8px; margin:12px 0; font-size:12px; }.exchange-discussion form { margin-top:24px; }
+html[data-theme="dark"] .exchange-compose,html[data-theme="dark"] .exchange-request { background:#222626; border-color:#383f3d; }
+html[data-theme="dark"] .exchange-banner { background:#293024; border-color:#414c35; }
+html[data-theme="dark"] .exchange-page input,html[data-theme="dark"] .exchange-page textarea,html[data-theme="dark"] .exchange-page select { background:#191d1c; color:#e1e5e0; border-color:#414744; }
+html[data-theme="dark"] .exchange-reply { background:#191d1c; }html[data-theme="dark"] .exchange-discussion { border-color:#383f3d; }
+html[data-theme="dark"] .exchange-status { background:#343042; color:#d0bfe9; }html[data-theme="dark"] .exchange-status.resolved { background:#2b3b29; color:#b7e694; }
+@media(max-width:700px) { .exchange-intro { align-items:start; flex-direction:column; }.exchange-toolbar { flex-wrap:wrap; }.exchange-search { min-width:100%; }.exchange-request { padding:18px; }.exchange-intro h1 { font-size:28px; } }
+
+.nav-icon { position:relative; display:inline-flex; flex-shrink:0; }
+.signal-count { position:absolute; top:-9px; right:-9px; display:grid; place-items:center; min-width:17px; height:17px; padding:0 4px; border-radius:20px; background:#c83f50; color:#fff; border:2px solid #fff; font:750 10px/1 'Manrope',sans-serif; }
+html[data-theme="dark"] .signal-count { border-color:#191d1c; background:#e36571; color:#fff; }

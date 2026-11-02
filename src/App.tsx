@@ -1,3 +1,4 @@
+import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
 
@@ -46,6 +47,7 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     search: <><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 4.5 4.5" /></>,
     grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" /></>,
     plus: <><path d="M12 5v14M5 12h14" /></>,
+    bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></>,
     users: <><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="10" cy="7" r="4" /><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
     plug: <><path d="M12 22v-5M9 8V2M15 8V2M18 8v4a6 6 0 0 1-12 0V8z" /></>,
     arrow: <><path d="M5 12h14M13 6l6 6-6 6" /></>,
@@ -70,6 +72,20 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
 function App() {
   const [route, setRoute] = useState<Route>(routeFromHash)
   const [useCases, setUseCases] = useState<UseCase[]>(initialUseCases)
+  const [requests, setRequests] = useState<HelpRequest[]>(sampleRequests)
+  const [seenRequests, setSeenRequests] = useState<string[]>(() => {
+    try { const stored: unknown = JSON.parse(localStorage.getItem('se-proper-seen-signals') || '[]'); return Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : [] } catch { return [] }
+  })
+  const unseenSignals = requests.filter(request => !seenRequests.includes(request.id) && !request.caseId).length
+  useEffect(() => {
+    if (route.page !== 'dashboard') return
+    setSeenRequests(current => {
+      const next = Array.from(new Set([...current, ...requests.map(request => request.id)]))
+      try { localStorage.setItem('se-proper-seen-signals', JSON.stringify(next)) } catch { /* Keep read state in memory if storage is unavailable. */ }
+      return next
+    })
+  }, [route.page, requests])
+  const [requestDraft, setRequestDraft] = useState<HelpRequest | null>(null)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => localStorage.getItem('se-proper-theme') === 'light' ? 'light' : 'dark')
   const [connectedMeetingSources, setConnectedMeetingSources] = useState<string[]>([])
@@ -109,6 +125,8 @@ function App() {
       sources: (values.linkedSourceProviders || '').split(',').filter(Boolean).map((provider) => sampleSourceRecords[provider]).filter((source): source is LinkedSource => Boolean(source)),
     }
     setUseCases((items) => [newCase, ...items])
+    if (requestDraft) setRequests(items => items.map(item => item.id === requestDraft.id ? { ...item, caseId: newCase.id } : item))
+    setRequestDraft(null)
     navigate(`/use-cases/${newCase.id}`)
   }
 
@@ -136,7 +154,7 @@ function App() {
           <NavItem icon="home" label="Home" active={route.page === 'home'} onClick={() => navigate('/')} />
           <NavItem icon="grid" label="Explore use cases" active={route.page === 'explore' || route.page === 'detail'} onClick={() => navigate('/explore')} />
           <NavItem icon="plus" label="Create use case" active={route.page === 'create'} onClick={() => navigate('/create')} />
-          <NavItem icon="users" label="Community dashboard" active={route.page === 'dashboard'} onClick={() => navigate('/dashboard')} />
+          <NavItem icon="bell" badge={unseenSignals} label="Signal" active={route.page === 'dashboard'} onClick={() => navigate('/dashboard')} />
           <NavItem icon="plug" label="Integrations" active={route.page === 'integrations'} onClick={() => navigate('/integrations')} />
           <NavItem icon="file" label="About SE Proper" active={route.page === 'about'} onClick={() => navigate('/about')} />
         </nav>
@@ -168,9 +186,9 @@ function App() {
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
           {route.page === 'about' && <AboutPage navigate={navigate} />}
           {route.page === 'explore' && <ExplorePage cases={useCases} initialQuery={route.query || ''} navigate={navigate} />}
-          {route.page === 'dashboard' && <DashboardPage cases={useCases} navigate={navigate} />}
+          {route.page === 'dashboard' && <Exchange requests={requests} onChange={setRequests} cases={useCases} navigate={navigate} onConvert={(request) => { setRequestDraft(request); navigate('/create') }} />}
           {route.page === 'integrations' && <IntegrationsPage connected={connectedMeetingSources} onToggle={(provider) => setConnectedMeetingSources((current) => current.includes(provider) ? current.filter((name) => name !== provider) : [...current, provider])} />}
-          {route.page === 'create' && <UseCaseForm onCancel={() => navigate('/explore')} onSubmit={publishUseCase} />}
+          {route.page === 'create' && <UseCaseForm initialRequest={requestDraft} onCancel={() => { setRequestDraft(null); navigate('/dashboard') }} onSubmit={publishUseCase} />}
           {route.page === 'detail' && activeCase && <DetailPage item={activeCase} navigate={navigate} />}
           {route.page === 'contribute' && activeCase && <ContributionForm item={activeCase} onCancel={() => navigate(`/use-cases/${activeCase.id}`)} onSubmit={(values, files) => addContribution(activeCase.id, values, files)} />}
           {(route.page === 'detail' || route.page === 'contribute') && !activeCase && <NotFound navigate={navigate} />}
@@ -181,12 +199,12 @@ function App() {
   )
 }
 
-function NavItem({ icon, label, active, onClick }: { icon: string; label: string; active: boolean; onClick: () => void }) {
-  return <button className={`nav-item ${active ? 'nav-active' : ''}`} onClick={onClick}><Icon name={icon} size={18} /><span>{label}</span>{active && <span className="nav-active-mark" />}</button>
+function NavItem({ icon, label, active, onClick, badge = 0 }: { icon: string; label: string; active: boolean; onClick: () => void; badge?: number }) {
+  return <button className={`nav-item ${active ? 'nav-active' : ''}`} onClick={onClick} aria-label={badge > 0 ? `${label}, ${badge} new requests` : label}><span className="nav-icon"><Icon name={icon} size={18} />{badge > 0 && <span className="signal-count" aria-hidden="true">{badge > 99 ? '99+' : badge}</span>}</span><span>{label}</span>{active && <span className="nav-active-mark" />}</button>
 }
 
 function pageTitle(page: Route['page']) {
-  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Community dashboard', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', integrations: 'Integrations' })[page]
+  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Signal', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', integrations: 'Integrations' })[page]
 }
 
 function IntegrationsPage({ connected, onToggle }: { connected: string[]; onToggle: (provider: string) => void }) {
@@ -243,6 +261,7 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
       <article className="about-deliverable"><span className="about-card-icon about-peach"><Icon name="video" size={19} /></span><h3>Demo evidence</h3><p>When available, recordings and meeting transcripts attached to the use case, with useful segments and viewer questions or challenges surfaced.</p></article>
       <article className="about-deliverable"><span className="about-card-icon about-blue"><Icon name="users" size={19} /></span><h3>Community contributions</h3><p>Separate variations, improvements, and troubleshooting notes that keep the original solution intact.</p></article>
     </div></section>
+    <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HELP FROM THE FIELD</div><h2>Signal: a good place to ask for a hand</h2><p>Demo coming up? Stuck on a use case? Send a signal to the SE community. Describe the scenario, the help you need, and your deadline so other SEs can share what they have.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-peach"><Icon name="users" size={19} /></span><h3>Turn a request into something reusable</h3><p>Explore helps you find solutions already in the library. Signal gives you a place to ask for an example, a script, an alternative approach, or a second perspective. Other SEs can respond with advice and link an existing use case.</p><button className="text-button" onClick={() => navigate('/dashboard')}>Browse Signal requests <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Signal workflow"><div><span>01</span><strong>Send a signal</strong><p>Share the demo context, specific ask, and when you need help.</p></div><div><span>02</span><strong>Exchange ideas</strong><p>Respond with experience, suggestions, or a solution from the library.</p></div><div><span>03</span><strong>Share the solution</strong><p>Turn the request and responses into a draft. Publishing the completed use case links it back and resolves the request.</p></div></div></div></section>
     <section className="about-section about-value-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MAKE THE IMPACT CLEAR</div><h2>Connect the technical work to business value</h2><p>Technical detail explains how a solution works. A strong customer story also explains why it matters—to the people, process, and goals behind the ask.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span><h3>Help every SE tell the “why”</h3><p>The Business Value component gives SEs a place to shape a clear, credible story from a use case. Guided questions help surface the customer’s goal, what changed, and what evidence could show the impact—so the outcome is easy to explain to decision-makers.</p><button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Business value story outline"><div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div><div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div><div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div></div></div></section>
     <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">CONNECTED CONTEXT</div><h2>Bring the field story together</h2><p>CRM records, customer conversations, demos, evaluation plans, and product feedback can give a reusable solution the context and evidence another SE needs.</p><button className="text-button" onClick={() => navigate('/integrations')}>Explore integrations <Icon name="arrow" size={15} /></button></div></section>
     <section className="about-section about-features-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HOW THE APP WORKS</div><h2>Find it, understand it, build on it.</h2></div><div className="about-feature-grid">
@@ -251,7 +270,7 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
       <article><span><Icon name="users" size={17} /></span><div><strong>Contribute an improvement</strong><p>Add your own approach without replacing the original author’s work.</p></div></article>
       <article><span><Icon name="video" size={17} /></span><div><strong>Connect demo moments</strong><p>See how a recording, transcript, AI summary, and timestamped audience feedback could sit with a use case.</p></div></article>
     </div></section>
-    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts, uploads, and connection states in the current browser session. Credential fields are illustrative only; there are no live service connections.</p></div>
+    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts, SOS requests, responses, uploads, and connection states in the current browser session. Credential fields are illustrative only; there are no live service connections.</p></div>
     <div className="about-cta"><div><strong>Have something another SE could reuse?</strong><span>Share a use case and give the next person a head start.</span></div><button className="button button-dark" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div>
   </div>
 }
@@ -352,20 +371,6 @@ function CaseCard({ item, onClick }: { item: UseCase; onClick: () => void }) {
   </button>
 }
 
-function DashboardPage({ cases, navigate }: { cases: UseCase[]; navigate: (path: string) => void }) {
-  const contributions = cases.flatMap((item) => item.contributions.map((contribution) => ({ ...contribution, parent: item }))).sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
-  const linkedRecords = cases.flatMap((item) => item.sources || [])
-  const sourceCounts = integrationProviders.map((provider) => ({ name: provider.name, count: linkedRecords.filter((source) => source.provider === provider.name).length })).filter((provider) => provider.count > 0)
-  return <div className="inner-page">
-    <PageIntro eyebrow="COMMUNITY ACTIVITY" title="A better answer, together." text="See what the community has shared lately, then add a useful variation of your own." action={<button className="button button-primary" onClick={() => navigate('/create')}><Icon name="plus" size={17} /> Share a solution</button>} />
-    <div className="community-metrics"><div><span className="metric-icon metric-lilac"><Icon name="grid" size={18} /></span><div><strong>{cases.length}</strong><span>use cases shared</span></div></div><div><span className="metric-icon metric-mint"><Icon name="users" size={18} /></span><div><strong>{contributions.length}</strong><span>ideas contributed</span></div></div><div><span className="metric-icon metric-peach"><Icon name="file" size={18} /></span><div><strong>{cases.reduce((sum, item) => sum + item.resources.length + item.contributions.reduce((n, c) => n + c.resources.length, 0), 0)}</strong><span>resources attached</span></div></div><div><span className="metric-icon metric-blue"><Icon name="grid" size={18} /></span><div><strong>{linkedRecords.length}</strong><span>linked source records</span></div></div></div>
-    <section className="integration-activity"><div><div className="eyebrow eyebrow-quiet">FIELD CONTEXT</div><h2>Connected sources in the library</h2><p>Example CRM records, call context, demos, evaluations, and product feedback linked to shared use cases.</p></div><div className="integration-activity-sources">{sourceCounts.map((source) => <span key={source.name}><strong>{source.count}</strong>{source.name}</span>)}<button className="text-button" onClick={() => navigate('/integrations')}>Manage integrations <Icon name="arrow" size={14} /></button></div></section>
-    <div className="dashboard-columns"><section className="activity-panel"><div className="panel-heading"><div><div className="eyebrow eyebrow-quiet">BUILDING ON GOOD WORK</div><h2>Recent contributions</h2></div><span className="live-pill"><span className="footer-dot" /> Community feed</span></div>
-      {contributions.length ? <div className="activity-list">{contributions.map((entry) => <article className="activity-item" key={entry.id}><span className={`avatar avatar-medium ${avatarColor(entry.author)}`}>{initials(entry.author)}</span><div className="activity-body"><div className="activity-byline"><strong>{entry.author}</strong><span>added a contribution</span><time>{entry.date}</time></div><button className="activity-title" onClick={() => navigate(`/use-cases/${entry.parent.id}`)}>{entry.title}</button><p>{entry.description}</p><div className="activity-parent"><span>On</span><button onClick={() => navigate(`/use-cases/${entry.parent.id}`)}>{entry.parent.title}</button></div></div></article>)}</div> : <EmptyState title="Be the first to contribute" text="Find a use case and add a useful variation or lesson learned." action={<button className="button button-outline" onClick={() => navigate('/explore')}>Explore use cases</button>} />}
-    </section><aside className="dashboard-side"><div className="side-callout"><span className="callout-icon"><Icon name="spark" size={18} /></span><div className="eyebrow eyebrow-quiet">THE IDEA</div><h3>Every contribution gives the next SE a head start.</h3><p>Found a different approach, a gotcha, or a useful file? Add it to the original solution.</p><button className="button button-dark button-full" onClick={() => navigate('/explore')}>Find something to build on <Icon name="arrow" size={15} /></button></div><div className="demo-note"><Icon name="shield" size={17} /><p><strong>Public demo</strong><br />Names are self-reported. Please use fictional examples and never upload sensitive information.</p></div></aside></div>
-  </div>
-}
-
 function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string) => void }) {
   const [storyOpen, setStoryOpen] = useState(false)
   const totalFiles = item.resources.length + item.contributions.reduce((sum, contribution) => sum + contribution.resources.length, 0)
@@ -451,10 +456,20 @@ function ResourceRow({ resource }: { resource: Resource }) {
   return <div className="resource-row"><span className="resource-file-icon"><Icon name="file" size={17} /></span><div className="resource-info"><strong title={resource.name}>{resource.name}</strong><span>{resource.kind} <i>·</i> {resource.size}</span><small>{resource.description}</small></div><button className="download-button" aria-label={`Download ${resource.name}`} title="Download sample file" onClick={() => downloadResource(resource)}><Icon name="download" size={16} /></button></div>
 }
 
-function UseCaseForm({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: (values: Record<string, string>, files: File[]) => void }) {
+function UseCaseForm({ initialRequest, onCancel, onSubmit }: { initialRequest?: HelpRequest | null; onCancel: () => void; onSubmit: (values: Record<string, string>, files: File[]) => void }) {
+  const requestForm = useRef<HTMLFormElement>(null)
+  useEffect(() => {
+    if (!initialRequest || !requestForm.current) return
+    const values: Record<string, string> = { title: initialRequest.title, ask: initialRequest.need, context: initialRequest.context, technologies: initialRequest.tags, tags: initialRequest.tags, implementation: initialRequest.responses.map(reply => `${reply.author}: ${reply.text}`).join('\n\n') }
+    for (const [name, value] of Object.entries(values)) {
+      const field = requestForm.current.elements.namedItem(name)
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) field.value = value
+    }
+  }, [initialRequest])
   const [preview, setPreview] = useState<{ values: Record<string, string>; files: File[] } | null>(null)
   return <FormLayout eyebrow="ADD TO THE LIBRARY" title="Share a use case" text="Capture the useful parts of a solution so another SE can pick it up and build on it." back={onCancel}>
-    <form className="editor-form" onSubmit={(event) => handleFormSubmit(event, (values, files) => setPreview({ values, files }))}>
+    <form ref={requestForm} className="editor-form" onSubmit={(event) => handleFormSubmit(event, (values, files) => setPreview({ values, files }))}>
+      {initialRequest && <div className="exchange-banner"><strong>From Signal: {initialRequest.title}</strong><span>The request and responses are included as a starting point. Review them, credit contributors, and add the solution before publishing. Publishing links this use case back to the request and resolves it.</span></div>}
       <FormSection number="01" title="Identify the use case" help="Give the solution a clear, searchable starting point.">
         <div className="field-grid"><TextField name="title" label="Title" placeholder="What did you help solve?" required /><label className="form-field"><span>Category <i>Required</i></span><select name="category" defaultValue="" required><option value="" disabled>Select a category</option>{categories.slice(1).map((category) => <option key={category}>{category}</option>)}</select></label></div>
         <TextAreaField name="summary" label="Short summary" placeholder="In a sentence or two, describe the problem and the approach." required maxLength={240} />
