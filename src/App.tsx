@@ -193,8 +193,8 @@ function IntegrationsPage({ connected, onToggle }: { connected: string[]; onTogg
       return <article className={`integration-card ${isConnected ? 'integration-card-connected' : ''}`} key={provider.name}>
         <div className="integration-card-top"><span className={`integration-mark integration-mark-${slug(provider.name)}`}><IntegrationLogo provider={provider.name} /></span><span className={`integration-status ${isConnected ? 'integration-status-connected' : ''}`}><i />{isConnected ? 'Connected · demo' : 'Not connected'}</span></div>
         <div className="eyebrow eyebrow-quiet">{provider.category}</div><h2>{provider.name}</h2><p>{provider.description}</p>
-        <div className="integration-fields">{provider.fields.map(([label, placeholder]) => <label className="integration-field" key={label}><span>{label}</span><input type={label.toLowerCase().includes('secret') || label.toLowerCase().includes('token') || label.toLowerCase().includes('key') ? 'password' : 'text'} placeholder={placeholder} autoComplete="off" /></label>)}</div>
-        <div className="integration-card-footer"><span>Illustrative fields only</span><button className={isConnected ? 'button button-outline' : 'button button-primary'} onClick={() => { onToggle(provider.name); setNotice(`${provider.name} demo connection ${isConnected ? 'disconnected' : 'connected'}. No credentials were sent or saved.`) }}>{isConnected ? 'Disconnect' : 'Connect'} <Icon name="arrow" size={14} /></button></div>
+        <form className="integration-fields" onSubmit={(event) => event.preventDefault()}>{provider.fields.map(([label, placeholder]) => <label className="integration-field" key={label}><span>{label}</span><input type={label.toLowerCase().includes('secret') || label.toLowerCase().includes('token') || label.toLowerCase().includes('key') ? 'password' : 'text'} placeholder={placeholder} autoComplete="off" /></label>)}</form>
+        <div className="integration-card-footer"><span>Illustrative fields only</span><button type="button" className={isConnected ? 'button button-outline' : 'button button-primary'} onClick={() => { onToggle(provider.name); setNotice(`${provider.name} demo connection ${isConnected ? 'disconnected' : 'connected'}. No credentials were sent or saved.`) }}>{isConnected ? 'Disconnect' : 'Connect'} <Icon name="arrow" size={14} /></button></div>
       </article>
     })}</div>
     <div className="integration-security-note"><span><Icon name="shield" size={17} /></span><p><strong>Prototype only.</strong> These fields are placeholders for the visual flow. They do not authenticate with Salesforce, Gong, Consensus, Homerun, or Jira, and entered values are never saved or transmitted.</p></div>
@@ -203,11 +203,18 @@ function IntegrationsPage({ connected, onToggle }: { connected: string[]; onTogg
 }
 
 function IntegrationLogo({ provider }: { provider: string }) {
-  if (provider === 'Salesforce') return <img className="tool-logo tool-logo-salesforce" src="/integrations/salesforce.svg" alt="" />
-  if (provider === 'Gong') return <img className="tool-logo tool-logo-gong" src="/integrations/gong.svg" alt="" />
-  if (provider === 'Consensus Live') return <img className="tool-logo tool-logo-consensus" src="/integrations/consensus.svg" alt="" />
-  if (provider === 'Homerun Presales') return <img className="tool-logo tool-logo-homerun" src="/integrations/homerun-presales.png" alt="" />
-  if (provider === 'Jira') return <img className="tool-logo tool-logo-jira" src="/integrations/jira.svg" alt="" />
+  const [failed, setFailed] = useState(false)
+  const asset = (name: string) => `${import.meta.env.BASE_URL}integrations/${name}`
+  const logos: Record<string, { src: string; className: string; fallback: string }> = {
+    Salesforce: { src: asset('salesforce.svg'), className: 'tool-logo-salesforce', fallback: 'SF' },
+    Gong: { src: asset('gong.svg'), className: 'tool-logo-gong', fallback: 'G' },
+    'Consensus Live': { src: asset('consensus.svg'), className: 'tool-logo-consensus', fallback: 'C' },
+    'Homerun Presales': { src: asset('homerun-presales.png'), className: 'tool-logo-homerun', fallback: 'H' },
+    Jira: { src: asset('jira.svg'), className: 'tool-logo-jira', fallback: 'J' },
+  }
+  const logo = logos[provider]
+  if (logo && failed) return <span className={`tool-logo tool-logo-fallback ${logo.className}`} aria-hidden="true">{logo.fallback}</span>
+  if (logo) return <img className={`tool-logo ${logo.className}`} src={logo.src} alt="" onError={() => setFailed(true)} />
   return <svg className="tool-logo tool-logo-generic" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="currentColor" /><path d="M15 20h10M20 15v10" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
 }
 
