@@ -326,17 +326,17 @@ function ZenPage() {
         </section>
         <section className="zen-card zen-spark-card" aria-labelledby="zen-spark-heading">
           <div className="eyebrow eyebrow-quiet">AN EXTRA BOOST</div>
-          <h2 id="zen-spark-heading">Need a spark?</h2>
-          <p className="zen-spark-description">A little perspective before you step into the room.</p>
-          <p className="zen-spark-credit"><strong>What If? · 1:10</strong><span>David Goggins · Shared by <a href="https://www.youtube.com/@micheldavid6289" target="_blank" rel="noopener noreferrer">Michel DAVID</a></span></p>
+          <h2 id="zen-spark-heading">Get in the Zone</h2>
+          <p className="zen-spark-description">Find your energy before you step into the room.</p>
+          <p className="zen-spark-credit"><strong>On Top of the World</strong><span>By Imagine Dragons</span></p>
           <div className="zen-spark-actions">
-            <button className="button button-secondary" type="button" onClick={toggleSpark} aria-expanded={sparkOpen} aria-controls="zen-spark-player"><Icon name={sparkOpen ? 'close' : 'video'} size={16} />{sparkOpen ? 'Close video' : 'Get fired up'}</button>
-            <a href="https://www.youtube.com/watch?v=BF3FwY3j7y8" target="_blank" rel="noopener noreferrer" onClick={() => { pauseGoTime(); setSparkOpen(false) }}>Watch on YouTube <span aria-hidden="true">↗</span></a>
+            <button className="button button-secondary" type="button" onClick={toggleSpark} aria-expanded={sparkOpen} aria-controls="zen-spark-player"><Icon name={sparkOpen ? 'close' : 'video'} size={16} />{sparkOpen ? 'Close video' : 'Play video'}</button>
+            <a href="https://www.youtube.com/watch?v=w5tWYmIOWGk" target="_blank" rel="noopener noreferrer" onClick={() => { pauseGoTime(); setSparkOpen(false) }}>Watch on YouTube <span aria-hidden="true">↗</span></a>
           </div>
           <div id="zen-spark-player" hidden={!sparkOpen}>
             {sparkOpen && <>
               <p className="zen-spark-note" role="status">Go Time is paused while this is open. Start or resume your reset above when you’re ready.</p>
-              <iframe className="zen-spark-player" src="https://www.youtube-nocookie.com/embed/BF3FwY3j7y8" title="What If? — David Goggins motivational video shared by Michel DAVID" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+              <iframe className="zen-spark-player" src="https://www.youtube-nocookie.com/embed/w5tWYmIOWGk" title="Imagine Dragons — On Top of the World (Official Music Video)" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
             </>}
           </div>
         </section>
