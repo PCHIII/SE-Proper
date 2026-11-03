@@ -2,29 +2,15 @@ import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
 
-type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute' | 'integrations'; id?: string; query?: string }
+type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute' | 'zen' | 'apps'; id?: string; query?: string }
 
-const integrationProviders = [
-  { name: 'Salesforce', category: 'CRM', description: 'Bring account and opportunity context into reusable use cases.', fields: [['Client ID', 'demo-client-id'], ['Client secret', '••••••••••••']] },
-  { name: 'Gong', category: 'Conversation intelligence', description: 'Link call transcripts, objections, and customer language to the solution.', fields: [['Access key', 'demo-access-key'], ['Secret', '••••••••••••']] },
-  { name: 'Consensus Live', category: 'Demo platform', description: 'Connect tailored live demos and the moments that support a customer story.', fields: [['API key', 'demo-api-key'], ['Secret', '••••••••••••']] },
-  { name: 'Homerun Presales', category: 'Presales workflow', description: 'Link evaluation plans, technical blockers, and presales activity.', fields: [['API key', 'demo-api-key'], ['Secret', '••••••••••••']] },
-  { name: 'Jira', category: 'Product feedback', description: 'Connect customer-driven feature requests and issues to field solutions.', fields: [['Email', 'se@example.com'], ['API token', '••••••••••••']] },
+const meetingSources = [
+  { name: 'Microsoft Teams', title: 'Northstar discovery and solution review', detail: 'Transcript · 32 min' },
+  { name: 'Google Meet', title: 'Contoso deployment planning', detail: 'Transcript · 27 min' },
+  { name: 'Zoom', title: 'Acme technical validation call', detail: 'Transcript · 41 min' },
 ] as const
 
-const meetingProviders = [
-  { name: 'Microsoft Teams', icon: 'microsoft-teams.svg', description: 'Choose a meeting recording or transcript from your own Teams account.', meeting: 'Northstar discovery and solution review', detail: 'Transcript · 32 min · Oct 28, 2026' },
-  { name: 'Zoom', icon: 'zoom.svg', description: 'Bring a meeting recording or transcript from your own Zoom account.', meeting: 'Acme technical validation call', detail: 'Transcript · 41 min · Oct 24, 2026' },
-  { name: 'Google Meet', icon: 'google-meet.svg', description: 'Choose a meeting transcript from your own Google Meet account.', meeting: 'Contoso deployment planning', detail: 'Transcript · 27 min · Oct 21, 2026' },
-] as const
-
-const sampleSourceRecords: Record<string, LinkedSource> = {
-  Salesforce: { provider: 'Salesforce', title: 'Customer opportunity', detail: 'Opportunity · Solution validation' },
-  Gong: { provider: 'Gong', title: 'Customer discovery conversation', detail: 'Call transcript · 32:14' },
-  'Consensus Live': { provider: 'Consensus Live', title: 'Personalized product walkthrough', detail: 'Live demo · 06:18' },
-  'Homerun Presales': { provider: 'Homerun Presales', title: 'Technical evaluation plan', detail: 'Evaluation · In progress' },
-  Jira: { provider: 'Jira', title: 'Customer product feedback', detail: 'Product request · Open' },
-}
+const sampleSourceRecords: Record<string, LinkedSource> = Object.fromEntries(meetingSources.map((source) => [source.name, { provider: source.name, title: source.title, detail: source.detail }]))
 
 function routeFromHash(): Route {
   const route = window.location.hash.slice(1) || '/'
@@ -35,8 +21,9 @@ function routeFromHash(): Route {
   if (path === '/about') return { page: 'about' }
   if (path === '/explore') return { page: 'explore', query }
   if (path === '/dashboard') return { page: 'dashboard' }
-  if (path === '/integrations') return { page: 'integrations' }
   if (path === '/create') return { page: 'create' }
+  if (path === '/zen') return { page: 'zen' }
+  if (path === '/apps') return { page: 'apps' }
   return { page: 'home' }
 }
 
@@ -58,8 +45,11 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
     file: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h8" /></>,
     video: <><rect x="3" y="5" width="13" height="14" rx="2" /><path d="m16 10 5-3v10l-5-3" /><path d="m8 9 4 3-4 3z" /></>,
+    volume: <><path d="M11 5 6 9H3v6h3l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" /></>,
+    volumeOff: <><path d="M11 5 6 9H3v6h3l5 4V5Z" /><path d="m16 9 5 6m0-6-5 6" /></>,
     transcript: <><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="M7 8h10M7 12h7" /></>,
     spark: <><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" /><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" /></>,
+    rocket: <><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z" /><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z" /><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /></>,
     shield: <><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" /><path d="m9 12 2 2 4-4" /></>,
     close: <><path d="m18 6-12 12M6 6l12 12" /></>,
     filter: <><path d="M4 7h16M7 12h10m-7 5h4" /></>,
@@ -88,7 +78,6 @@ function App() {
   const [requestDraft, setRequestDraft] = useState<HelpRequest | null>(null)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => localStorage.getItem('se-proper-theme') === 'light' ? 'light' : 'dark')
-  const [connectedMeetingSources, setConnectedMeetingSources] = useState<string[]>([])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -155,7 +144,8 @@ function App() {
           <NavItem icon="grid" label="Explore use cases" active={route.page === 'explore' || route.page === 'detail'} onClick={() => navigate('/explore')} />
           <NavItem icon="plus" label="Create use case" active={route.page === 'create'} onClick={() => navigate('/create')} />
           <NavItem icon="bell" badge={unseenSignals} label="Signal" active={route.page === 'dashboard'} onClick={() => navigate('/dashboard')} />
-          <NavItem icon="plug" label="Integrations" active={route.page === 'integrations'} onClick={() => navigate('/integrations')} />
+          <NavItem icon="plug" label="Apps" active={route.page === 'apps'} onClick={() => navigate('/apps')} />
+          <NavItem icon="rocket" label="Go Time" active={route.page === 'zen'} onClick={() => navigate('/zen')} />
           <NavItem icon="file" label="About SE Proper" active={route.page === 'about'} onClick={() => navigate('/about')} />
         </nav>
         <div className="sidebar-bottom">
@@ -180,14 +170,15 @@ function App() {
           </div>
         </header>
 
-        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> seeded examples and sample downloads are visible to every visitor. New posts, uploads, and connection states stay in this browser tab. Credential fields are visual examples; values are never sent or saved. Business-value Q&amp;A is a preview; AI generation isn’t active.</span></div>
+        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> seeded examples and sample downloads are visible to every visitor. New posts and uploads stay in this browser tab. Meeting source selections use fictional examples; no accounts are connected. Business-value Q&amp;A is a preview; AI generation isn’t active.</span></div>
 
         <div className="page-content">
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
           {route.page === 'about' && <AboutPage navigate={navigate} />}
           {route.page === 'explore' && <ExplorePage cases={useCases} initialQuery={route.query || ''} navigate={navigate} />}
           {route.page === 'dashboard' && <Exchange requests={requests} onChange={setRequests} cases={useCases} navigate={navigate} onConvert={(request) => { setRequestDraft(request); navigate('/create') }} />}
-          {route.page === 'integrations' && <IntegrationsPage connected={connectedMeetingSources} onToggle={(provider) => setConnectedMeetingSources((current) => current.includes(provider) ? current.filter((name) => name !== provider) : [...current, provider])} />}
+          {route.page === 'apps' && <AppsPage />}
+          {route.page === 'zen' && <ZenPage />}
           {route.page === 'create' && <UseCaseForm initialRequest={requestDraft} onCancel={() => { setRequestDraft(null); navigate('/dashboard') }} onSubmit={publishUseCase} />}
           {route.page === 'detail' && activeCase && <DetailPage item={activeCase} navigate={navigate} />}
           {route.page === 'contribute' && activeCase && <ContributionForm item={activeCase} onCancel={() => navigate(`/use-cases/${activeCase.id}`)} onSubmit={(values, files) => addContribution(activeCase.id, values, files)} />}
@@ -204,34 +195,144 @@ function NavItem({ icon, label, active, onClick, badge = 0 }: { icon: string; la
 }
 
 function pageTitle(page: Route['page']) {
-  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Signal', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', integrations: 'Integrations' })[page]
+  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Signal', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', zen: 'Go Time', apps: 'Apps' })[page]
 }
 
-function IntegrationsPage({ connected, onToggle }: { connected: string[]; onToggle: (provider: string) => void }) {
-  return <div className="inner-page integrations-page">
-    <PageIntro eyebrow="CONNECTED WORKSPACE" title="Integrations" text="Connect your own meeting account to preview meeting material for a use case. Workspace integrations are managed separately by admins." />
-    <section className="meeting-sources-section">
-      <div className="integration-section-heading"><div><div className="eyebrow">PERSONAL SOURCES</div><h2>My meeting sources</h2><p>Connect your own account. Imported meeting material stays in this browser demo and is not shared automatically.</p></div><span className="integration-demo-pill"><span className="footer-dot" /> Simulated</span></div>
-      <div className="meeting-source-grid">{meetingProviders.map((provider) => {
-        const isConnected = connected.includes(provider.name)
-        return <article className={`meeting-source-card ${isConnected ? 'meeting-source-card-connected' : ''}`} key={provider.name}>
-          <div className="meeting-source-card-top"><span className={`meeting-source-mark meeting-source-mark-${slug(provider.name)}`}><img src={`${import.meta.env.BASE_URL}integrations/${provider.icon}`} alt="" /></span><span className={`integration-status ${isConnected ? 'integration-status-connected' : ''}`}><i />{isConnected ? 'Connected · demo' : 'Not connected'}</span></div>
-          <h3>{provider.name}</h3><p>{provider.description}</p>
-          <button type="button" className={isConnected ? 'button button-outline' : 'button button-primary'} onClick={() => onToggle(provider.name)}>{isConnected ? 'Disconnect' : 'Connect my account'} <Icon name="arrow" size={14} /></button>
-          {isConnected && <details className="meeting-source-preview"><summary>Preview fictional meeting</summary><div><strong>{provider.meeting}</strong><span>{provider.detail}</span><p>Sample only. No meeting content was accessed or imported.</p></div></details>}
-        </article>
-      })}</div>
-    </section>
-    <div className="integration-page-summary"><span className="integration-summary-icon"><Icon name="grid" size={18} /></span><div><strong>Workspace integrations</strong><span>Only workspace admins can configure shared integrations.</span></div><span className="integration-demo-pill"><span className="footer-dot" /> Admin only</span></div>
-    <div className="integration-grid">{integrationProviders.map((provider) => {
-      return <article className="integration-card integration-card-admin-only" key={provider.name} aria-disabled="true">
-        <div className="integration-card-top"><span className={`integration-mark integration-mark-${slug(provider.name)}`}><IntegrationLogo provider={provider.name} /></span><span className="integration-admin-badge">Admin only</span></div>
-        <div className="eyebrow eyebrow-quiet">{provider.category}</div><h2>{provider.name}</h2><p>{provider.description}</p>
-        <form className="integration-fields" onSubmit={(event) => event.preventDefault()}>{provider.fields.map(([label, placeholder]) => <label className="integration-field" key={label}><span>{label}</span><input disabled type={label.toLowerCase().includes('secret') || label.toLowerCase().includes('token') || label.toLowerCase().includes('key') ? 'password' : 'text'} placeholder={placeholder} autoComplete="off" /></label>)}</form>
-        <div className="integration-card-footer"><span>Admin access required</span><button type="button" className="button button-outline" disabled>Connect <Icon name="arrow" size={14} /></button></div>
-      </article>
-    })}</div>
-    <div className="integration-security-note"><span><Icon name="shield" size={17} /></span><p><strong>Prototype only.</strong> The meeting connections and previews are simulated. The demo has no sign-in or role checks, and admin permissions are represented visually. Workspace providers do not authenticate, and their placeholder credential fields are disabled.</p></div>
+function AppsPage() {
+  const apps = [
+    { provider: 'Microsoft Teams', description: 'Bring meeting transcripts and useful customer context into a shared use case.' },
+    { provider: 'Google Meet', description: 'Carry meeting notes and customer context forward with the solution.' },
+    { provider: 'Zoom', description: 'Keep meeting transcripts and demo feedback alongside reusable work.' },
+  ]
+
+  return <div className="inner-page apps-page">
+    <PageIntro eyebrow="MEETING APPS" title="Apps" text="Teams, Meet, and Zoom are connected and ready to use. Sign in with your account to bring meeting context into a shared solution." />
+    <section className="apps-setup-note"><span className="apps-setup-icon"><Icon name="shield" size={19} /></span><div><strong>Ready when you are</strong><p>Choose a meeting app and sign in with your existing account. Your access is handled through the app provider.</p></div></section>
+    <div className="apps-grid">{apps.map((app) => <article className="app-integration-card" key={app.provider}>
+      <div className="app-integration-top"><IntegrationLogo provider={app.provider} /><span className="app-setup-status">Connected</span></div>
+      <h2>{app.provider}</h2><p>{app.description}</p>
+      <div className="app-auth-method"><span><Icon name="users" size={15} /></span><div><strong>Sign in to {app.provider}</strong><small>Use your existing account</small></div></div>
+    </article>)}</div>
+    <p className="apps-prototype-note">Choose the meeting app you already use and continue with its sign-in.</p>
+  </div>
+}
+
+function ZenPage() {
+  const [secondsLeft, setSecondsLeft] = useState(60)
+  const [isRunning, setIsRunning] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [soundError, setSoundError] = useState(false)
+  const [checkedSteps, setCheckedSteps] = useState<string[]>([])
+  const goTimeAudio = useRef<HTMLAudioElement | null>(null)
+  const getGoTimeAudio = () => {
+    if (!goTimeAudio.current) {
+      goTimeAudio.current = new Audio(`${import.meta.env.BASE_URL}sounds/go-time-build.wav`)
+      goTimeAudio.current.preload = 'auto'
+      goTimeAudio.current.volume = 0.9
+    }
+    return goTimeAudio.current
+  }
+  const playGoTimeCue = (restart = false) => {
+    const audio = getGoTimeAudio()
+    if (restart) audio.currentTime = 0
+    return audio.play()
+  }
+  const pauseGoTimeCue = () => goTimeAudio.current?.pause()
+  useEffect(() => () => { goTimeAudio.current?.pause() }, [])
+  useEffect(() => {
+    if (!isRunning) return
+    const timer = window.setInterval(() => setSecondsLeft((current) => Math.max(0, current - 1)), 1000)
+    return () => window.clearInterval(timer)
+  }, [isRunning])
+  useEffect(() => {
+    if (secondsLeft === 0) {
+      setIsRunning(false)
+      pauseGoTimeCue()
+    }
+  }, [secondsLeft])
+  const readinessSteps = [
+    { id: 'goal', label: 'I can state the customer goal and why this demo matters.' },
+    { id: 'path', label: 'I know my first few steps and where I want to stop.' },
+    { id: 'environment', label: 'I have the right tenant, account, tab, and sample data.' },
+    { id: 'fallback', label: 'I have a screenshot, recording, or verbal fallback ready.' },
+  ]
+  const completed = readinessSteps.filter((step) => checkedSteps.includes(step.id)).length
+  const clockDisplay = `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, '0')}`
+  const phase = secondsLeft === 0
+    ? { label: 'READY', title: 'You got this. Go crush it.', line1: 'You have a clear outcome', line2: 'and a path to follow.', closing: 'LETS GO!!!!' }
+    : secondsLeft > 40
+      ? { label: 'SETTLE', title: 'Find your footing.', line1: 'Take one slow exhale', line2: 'and bring your focus to the room.', closing: 'You’re ready for this.' }
+      : secondsLeft > 20
+        ? { label: 'FOCUS', title: 'Pick your point.', line1: 'Choose the one customer outcome', line2: 'you want them to see.', closing: 'You got this.' }
+        : { label: 'LAUNCH', title: 'Start with why.', line1: 'Lead with the customer goal', line2: 'and say your opening line.', closing: 'You’re going to crush it.' }
+  const startGoTime = () => {
+    if (soundEnabled) {
+      void playGoTimeCue(secondsLeft === 60 || secondsLeft === 0).then(() => setSoundError(false)).catch(() => setSoundError(true))
+    }
+    if (secondsLeft === 0) setSecondsLeft(60)
+    setIsRunning(true)
+  }
+  const resetGoTime = () => {
+    pauseGoTimeCue()
+    if (goTimeAudio.current) goTimeAudio.current.currentTime = 0
+    setIsRunning(false)
+    setSecondsLeft(60)
+  }
+  const testChime = () => {
+    void playGoTimeCue(!isRunning).then(() => setSoundError(false)).catch(() => setSoundError(true))
+  }
+  const toggleGoTimeSound = () => {
+    const enableSound = !soundEnabled
+    setSoundEnabled(enableSound)
+    setSoundError(false)
+    if (!enableSound) {
+      pauseGoTimeCue()
+      return
+    }
+    const hadAudio = Boolean(goTimeAudio.current)
+    const audio = getGoTimeAudio()
+    if (!hadAudio) audio.currentTime = 60 - secondsLeft
+    if (isRunning) void audio.play().then(() => setSoundError(false)).catch(() => setSoundError(true))
+  }
+  const pauseGoTime = () => {
+    pauseGoTimeCue()
+    setIsRunning(false)
+  }
+  function toggleStep(stepId: string) {
+    setCheckedSteps((current) => current.includes(stepId) ? current.filter((item) => item !== stepId) : [...current, stepId])
+  }
+
+  return <div className="inner-page zen-page">
+    <PageIntro eyebrow="DEMO READY ROOM" title="Go Time" text="One minute to get steady, get focused, and start strong." />
+    <div className="zen-layout">
+      <div className="zen-primary-column">
+        <section className={`zen-go-time-card ${isRunning ? 'zen-go-time-active' : ''}`}>
+          <div className="zen-go-time-top"><span className="zen-go-time-mark"><Icon name="spark" size={20} /></span><span>60 SECOND RESET</span><span className="zen-go-time-live">{isRunning ? 'IN PROGRESS' : secondsLeft === 0 ? 'COMPLETE' : 'READY WHEN YOU ARE'}</span></div>
+          <div className="zen-go-time-main">
+            <div className="zen-go-time-clock" role="timer" aria-label={`Time remaining: ${secondsLeft} seconds`}>{clockDisplay}</div>
+            <div className="zen-go-time-copy"><div className="zen-go-time-phase">{phase.label}</div><h2>{phase.title}</h2><p><span>{phase.line1}</span><span>{phase.line2}</span><span>{phase.closing}</span></p></div>
+          </div>
+          <div className="zen-go-time-progress" role="progressbar" aria-label="Go Time reset" aria-valuemin={0} aria-valuemax={60} aria-valuenow={60 - secondsLeft}><span style={{ width: `${((60 - secondsLeft) / 60) * 100}%` }} /></div>
+          <div className="zen-go-time-stages" aria-label="Go Time stages"><span className={secondsLeft > 40 ? 'zen-stage-current' : 'zen-stage-done'}>01 Settle</span><span className={secondsLeft <= 40 && secondsLeft > 20 ? 'zen-stage-current' : secondsLeft <= 20 ? 'zen-stage-done' : ''}>02 Focus</span><span className={secondsLeft <= 20 && secondsLeft > 0 ? 'zen-stage-current' : secondsLeft === 0 ? 'zen-stage-done' : ''}>03 Launch</span></div>
+          <div className="zen-go-time-actions">{secondsLeft === 0 ? <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>Run it again <Icon name="arrow" size={15} /></button> : isRunning ? <><button className="button button-primary zen-start-button" type="button" onClick={pauseGoTime}>Pause</button><button className="text-button" type="button" onClick={resetGoTime}>Start over</button></> : <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>{secondsLeft === 60 ? 'Start Go Time' : 'Resume Go Time'} <Icon name="arrow" size={15} /></button>}<button className="zen-sound-test" type="button" onClick={testChime}>Test sound</button><button className="zen-sound-toggle" type="button" aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute Go Time sound' : 'Enable Go Time sound'} onClick={toggleGoTimeSound}><Icon name={soundEnabled ? 'volume' : 'volumeOff'} size={15} /><span>Sound {soundEnabled ? 'on' : 'off'}</span></button></div>
+          {soundError && <p className="zen-sound-error" role="status">Your browser couldn’t play the sound. Go Time still works; check your device volume.</p>}
+        </section>
+        <section className="zen-card zen-checklist-card">
+          <div className="zen-checklist-heading"><div><div className="eyebrow eyebrow-quiet">BEFORE YOU JOIN</div><h2>Final checks</h2></div><span className="zen-progress-count" aria-live="polite">{completed} of {readinessSteps.length}</span></div>
+          <div className="zen-progress-track" role="progressbar" aria-label="Demo readiness checklist" aria-valuemin={0} aria-valuemax={readinessSteps.length} aria-valuenow={completed}><span style={{ width: `${(completed / readinessSteps.length) * 100}%` }} /></div>
+          <div className="zen-checklist">{readinessSteps.map((step) => <label className={checkedSteps.includes(step.id) ? 'zen-checklist-item zen-checklist-item-done' : 'zen-checklist-item'} key={step.id}><input type="checkbox" checked={checkedSteps.includes(step.id)} onChange={() => toggleStep(step.id)} /><span>{step.label}</span></label>)}</div>
+          <button className="text-button zen-reset-button" type="button" onClick={() => setCheckedSteps([])} disabled={completed === 0}>Reset checklist</button>
+        </section>
+      </div>
+      <aside className="zen-side-column">
+        <section className="zen-anchor-card"><span className="zen-anchor-icon"><Icon name="spark" size={19} /></span><div className="eyebrow">KEEP THIS IN MIND</div><h2>You got this. You’re going to crush it.</h2><p>You know your stuff. Lead with one useful customer outcome and take them there.</p></section>
+        <section className="zen-card zen-recovery-card">
+          <div className="eyebrow eyebrow-quiet">IF THE DEMO WOBBLES</div><h2>Pause. Narrate. Pivot.</h2>
+          <div className="zen-recovery-steps"><div><strong>Pause</strong><span>Take a beat. You don’t have to fill every second.</span></div><div><strong>Narrate</strong><span>Say what you’re trying to show and what you’re checking.</span></div><div><strong>Pivot</strong><span>Use a screenshot or explain the outcome, then return to the customer’s goal.</span></div></div>
+          <blockquote>“Let me reset this view. The important thing to see is [outcome]. I’ll show that another way.”</blockquote>
+        </section>
+      </aside>
+    </div>
   </div>
 }
 
@@ -239,11 +340,9 @@ function IntegrationLogo({ provider }: { provider: string }) {
   const [failed, setFailed] = useState(false)
   const asset = (name: string) => `${import.meta.env.BASE_URL}integrations/${name}`
   const logos: Record<string, { src: string; className: string; fallback: string }> = {
-    Salesforce: { src: asset('salesforce.svg'), className: 'tool-logo-salesforce', fallback: 'SF' },
-    Gong: { src: asset('gong.svg'), className: 'tool-logo-gong', fallback: 'G' },
-    'Consensus Live': { src: asset('consensus.svg'), className: 'tool-logo-consensus', fallback: 'C' },
-    'Homerun Presales': { src: asset('homerun-presales.png'), className: 'tool-logo-homerun', fallback: 'H' },
-    Jira: { src: asset('jira.svg'), className: 'tool-logo-jira', fallback: 'J' },
+    'Microsoft Teams': { src: asset('microsoft-teams.svg'), className: 'tool-logo-teams', fallback: 'T' },
+    'Google Meet': { src: asset('google-meet.svg'), className: 'tool-logo-google-meet', fallback: 'M' },
+    Zoom: { src: asset('zoom.svg'), className: 'tool-logo-zoom', fallback: 'Z' },
   }
   const logo = logos[provider]
   if (logo && failed) return <span className={`tool-logo tool-logo-fallback ${logo.className}`} aria-hidden="true">{logo.fallback}</span>
@@ -263,14 +362,14 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
     </div></section>
     <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HELP FROM THE FIELD</div><h2>Signal: a good place to ask for a hand</h2><p>Demo coming up? Stuck on a use case? Send a signal to the SE community. Describe the scenario, the help you need, and your deadline so other SEs can share what they have.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-peach"><Icon name="users" size={19} /></span><h3>Turn a request into something reusable</h3><p>Explore helps you find solutions already in the library. Signal gives you a place to ask for an example, a script, an alternative approach, or a second perspective. Other SEs can respond with advice and link an existing use case.</p><button className="text-button" onClick={() => navigate('/dashboard')}>Browse Signal requests <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Signal workflow"><div><span>01</span><strong>Send a signal</strong><p>Share the demo context, specific ask, and when you need help.</p></div><div><span>02</span><strong>Exchange ideas</strong><p>Respond with experience, suggestions, or a solution from the library.</p></div><div><span>03</span><strong>Share the solution</strong><p>Turn the request and responses into a draft. Publishing the completed use case links it back and resolves the request.</p></div></div></div></section>
     <section className="about-section about-value-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MAKE THE IMPACT CLEAR</div><h2>Connect the technical work to business value</h2><p>Technical detail explains how a solution works. A strong customer story also explains why it matters—to the people, process, and goals behind the ask.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span><h3>Help every SE tell the “why”</h3><p>The Business Value component gives SEs a place to shape a clear, credible story from a use case. Guided questions help surface the customer’s goal, what changed, and what evidence could show the impact—so the outcome is easy to explain to decision-makers.</p><button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Business value story outline"><div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div><div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div><div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div></div></div></section>
-    <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">CONNECTED CONTEXT</div><h2>Bring the field story together</h2><p>CRM records, customer conversations, demos, evaluation plans, and product feedback can give a reusable solution the context and evidence another SE needs.</p><button className="text-button" onClick={() => navigate('/integrations')}>Explore integrations <Icon name="arrow" size={15} /></button></div></section>
+    <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MEETING CONTEXT</div><h2>Keep useful meeting evidence with the solution</h2><p>In this prototype, a use case can include sample meeting context from Teams, Google Meet, or Zoom. Real account connections would be configured in a later backend milestone.</p><button className="text-button" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div></section>
     <section className="about-section about-features-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HOW THE APP WORKS</div><h2>Find it, understand it, build on it.</h2></div><div className="about-feature-grid">
       <article><span><Icon name="search" size={17} /></span><div><strong>Search and browse</strong><p>Find use cases by problem, category, technology, or tag.</p></div></article>
       <article><span><Icon name="plus" size={17} /></span><div><strong>Publish a solution</strong><p>Capture the ask, approach, implementation, and files in a guided flow.</p></div></article>
       <article><span><Icon name="users" size={17} /></span><div><strong>Contribute an improvement</strong><p>Add your own approach without replacing the original author’s work.</p></div></article>
-      <article><span><Icon name="video" size={17} /></span><div><strong>Connect demo moments</strong><p>See how a recording, transcript, AI summary, and timestamped audience feedback could sit with a use case.</p></div></article>
+      <article><span><Icon name="video" size={17} /></span><div><strong>Keep demo evidence with a solution</strong><p>See how a recording, transcript, AI summary, and timestamped audience feedback could sit with a use case.</p></div></article>
     </div></section>
-    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts, SOS requests, responses, uploads, and connection states in the current browser session. Credential fields are illustrative only; there are no live service connections.</p></div>
+    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts, SOS requests, responses, and uploads in the current browser session. Meeting sources are sample selections; there are no live account connections.</p></div>
     <div className="about-cta"><div><strong>Have something another SE could reuse?</strong><span>Share a use case and give the next person a head start.</span></div><button className="button button-dark" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div>
   </div>
 }
@@ -335,7 +434,7 @@ function ExplorePage({ cases, initialQuery, navigate }: { cases: UseCase[]; init
   const [query, setQuery] = useState(initialQuery)
   const [category, setCategory] = useState('All categories')
   const [tag, setTag] = useState('All tags')
-  const [source, setSource] = useState('All sources')
+  const [source, setSource] = useState('All meeting sources')
   const [sort, setSort] = useState('newest')
   const availableTags = Array.from(new Set(cases.flatMap((item) => item.tags))).sort()
   const availableSources = Array.from(new Set(cases.flatMap((item) => item.sources?.map((linked) => linked.provider) || []))).sort()
@@ -343,14 +442,14 @@ function ExplorePage({ cases, initialQuery, navigate }: { cases: UseCase[]; init
     const needle = query.trim().toLowerCase()
     return cases.filter((item) => {
       const text = [item.title, item.summary, item.ask, item.solution, item.implementation, item.technologies, item.lessons, item.category, ...item.tags].join(' ').toLowerCase()
-      return (!needle || text.includes(needle)) && (category === 'All categories' || item.category === category) && (tag === 'All tags' || item.tags.includes(tag)) && (source === 'All sources' || item.sources?.some((linked) => linked.provider === source))
+      return (!needle || text.includes(needle)) && (category === 'All categories' || item.category === category) && (tag === 'All tags' || item.tags.includes(tag)) && (source === 'All meeting sources' || item.sources?.some((linked) => linked.provider === source))
     }).sort((a, b) => sort === 'most' ? b.contributions.length - a.contributions.length : sort === 'updated' ? Date.parse(b.updated) - Date.parse(a.updated) : Date.parse(b.date) - Date.parse(a.date))
   }, [cases, category, query, sort, source, tag])
   return <div className="inner-page">
     <PageIntro eyebrow="THE SHARED LIBRARY" title="Explore use cases" text="Practical starting points from the field. Search what you need, then build on what you find." action={<button className="button button-primary" onClick={() => navigate('/create')}><Icon name="plus" size={17} /> New use case</button>} />
-    <div className="library-toolbar"><label className="library-search"><Icon name="search" size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by problem, tool, or keyword" aria-label="Search use cases" />{query && <button className="clear-search" onClick={() => setQuery('')} aria-label="Clear search"><Icon name="close" size={16} /></button>}</label><label className="filter-select"><Icon name="filter" size={16} /><select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter by category">{categories.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select tag-filter"><select value={tag} onChange={(event) => setTag(event.target.value)} aria-label="Filter by tag"><option>All tags</option>{availableTags.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select source-filter"><select value={source} onChange={(event) => setSource(event.target.value)} aria-label="Filter by connected source"><option>All sources</option>{availableSources.map((item) => <option key={item}>{item}</option>)}</select></label><label className="sort-select"><span>Sort:</span><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort use cases"><option value="newest">Newest</option><option value="updated">Recently updated</option><option value="most">Most contributed</option></select></label></div>
+    <div className="library-toolbar"><label className="library-search"><Icon name="search" size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by problem, tool, or keyword" aria-label="Search use cases" />{query && <button className="clear-search" onClick={() => setQuery('')} aria-label="Clear search"><Icon name="close" size={16} /></button>}</label><label className="filter-select"><Icon name="filter" size={16} /><select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Filter by category">{categories.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select tag-filter"><select value={tag} onChange={(event) => setTag(event.target.value)} aria-label="Filter by tag"><option>All tags</option>{availableTags.map((item) => <option key={item}>{item}</option>)}</select></label><label className="filter-select source-filter"><select value={source} onChange={(event) => setSource(event.target.value)} aria-label="Filter by meeting source"><option>All meeting sources</option>{availableSources.map((item) => <option key={item}>{item}</option>)}</select></label><label className="sort-select"><span>Sort:</span><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort use cases"><option value="newest">Newest</option><option value="updated">Recently updated</option><option value="most">Most contributed</option></select></label></div>
     <div className="results-line"><span><strong>{filtered.length}</strong> use cases</span>{query && <span className="result-query">matching “{query}”</span>}<span className="results-demo"><span className="footer-dot" /> Public demo content</span></div>
-    {filtered.length ? <div className="case-grid">{filtered.map((item) => <CaseCard key={item.id} item={item} onClick={() => navigate(`/use-cases/${item.id}`)} />)}</div> : <EmptyState title="No matches yet" text="Try another keyword or clear the category, tag, and source filters to see more of the library." action={<button className="button button-outline" onClick={() => { setQuery(''); setCategory('All categories'); setTag('All tags'); setSource('All sources') }}>Clear filters</button>} />}
+    {filtered.length ? <div className="case-grid">{filtered.map((item) => <CaseCard key={item.id} item={item} onClick={() => navigate(`/use-cases/${item.id}`)} />)}</div> : <EmptyState title="No matches yet" text="Try another keyword or clear the category, tag, and meeting source filters to see more of the library." action={<button className="button button-outline" onClick={() => { setQuery(''); setCategory('All categories'); setTag('All tags'); setSource('All meeting sources') }}>Clear filters</button>} />}
   </div>
 }
 
@@ -364,7 +463,7 @@ function CaseCard({ item, onClick }: { item: UseCase; onClick: () => void }) {
     <div className="case-card-top"><span className="category-pill">{item.category}</span><span className="card-date"><Icon name="clock" size={13} /> {item.date}</span></div>
     <h3>{item.title}</h3><p className="case-summary">{item.summary}</p>
     <div className="tag-row">{item.tags.slice(0, 3).map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
-    {item.sources && item.sources.length > 0 && <div className="case-source-row" aria-label={`Linked sources: ${item.sources.map((source) => source.provider).join(', ')}`}>{item.sources.slice(0, 2).map((source) => <span className="case-source-chip" key={`${source.provider}-${source.title}`}>{source.provider}</span>)}{item.sources.length > 2 && <span className="case-source-more">+{item.sources.length - 2}</span>}</div>}
+    {item.sources && item.sources.length > 0 && <div className="case-source-row" aria-label={`Linked meeting sources: ${item.sources.map((source) => source.provider).join(', ')}`}>{item.sources.slice(0, 2).map((source) => <span className="case-source-chip" key={`${source.provider}-${source.title}`}>{source.provider}</span>)}{item.sources.length > 2 && <span className="case-source-more">+{item.sources.length - 2}</span>}</div>}
     {artifactLabels.length > 0 && <span className="artifact-icons" aria-label={`Included artifacts: ${artifactLabels.map(([, label]) => label).join(', ')}`}>{artifactLabels.map(([icon, label]) => <span className="artifact-icon" title={label} aria-label={label} key={label}><Icon name={icon} size={13} /></span>)}</span>}
     <div className="case-card-footer"><span className="author-chip"><span className={`avatar avatar-tiny ${avatarColor(item.author)}`}>{initials(item.author)}</span><span>{item.author}</span></span><span className="card-counts"><span><Icon name="users" size={14} /> {item.contributions.length}</span><span><Icon name="file" size={14} /> {item.resources.length}</span></span></div>
     <span className="card-corner-arrow"><Icon name="arrow" size={15} /></span>
@@ -380,7 +479,7 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
     <div className="detail-layout"><div className="detail-main-column">
       <InfoSection icon="search" eyebrow="THE CUSTOMER ASK" title="The challenge"><p>{item.ask}</p>{item.context && item.context !== 'Not specified' && <div className="context-line"><span>CONTEXT</span>{item.context}</div>}</InfoSection>
       <InfoSection icon="spark" eyebrow="THE APPROACH" title="Solution overview"><p>{item.solution}</p>{item.outcome !== 'Not specified' && <div className="outcome-box"><span className="outcome-check">✓</span><div><strong>Outcome</strong><p>{item.outcome}</p></div></div>}</InfoSection>
-      {item.sources && item.sources.length > 0 && <InfoSection icon="grid" eyebrow="LINKED FIELD CONTEXT" title="Linked sample records"><LinkedSourceList sources={item.sources} /></InfoSection>}
+      {item.sources && item.sources.length > 0 && <InfoSection icon="video" eyebrow="MEETING CONTEXT" title="Linked sample meetings"><LinkedSourceList sources={item.sources} /></InfoSection>}
       {item.demo && <DemoEvidence demo={item.demo} />}
       <InfoSection icon="file" eyebrow="HOW IT WORKS" title="Implementation notes"><p>{item.implementation}</p><div className="implementation-grid"><div><span>TECHNOLOGIES</span><p>{item.technologies}</p></div><div><span>CONSTRAINTS</span><p>{item.constraints}</p></div></div></InfoSection>
       {(item.lessons !== 'Not specified' || item.reusable !== 'Not specified') && <InfoSection icon="spark" eyebrow="FOR THE NEXT SE" title="Lessons & reusable notes"><div className="lesson-grid">{item.lessons !== 'Not specified' && <div><strong>Lessons learned</strong><p>{item.lessons}</p></div>}{item.reusable !== 'Not specified' && <div><strong>Reusable notes</strong><p>{item.reusable}</p></div>}</div></InfoSection>}
@@ -426,7 +525,7 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
 }
 
 function LinkedSourceList({ sources }: { sources: LinkedSource[] }) {
-  return <div className="linked-source-list">{sources.map((source) => <article className="linked-source-item" key={`${source.provider}-${source.title}`}><span className={`linked-source-mark integration-mark-${slug(source.provider)}`}><IntegrationLogo provider={source.provider} /></span><div><strong>{source.title}</strong><span>{source.provider} <i>·</i> {source.detail}</span></div><span className="linked-source-demo">Sample</span></article>)}<p>Fictional linked records shown for this prototype.</p></div>
+  return <div className="linked-source-list">{sources.map((source) => <article className="linked-source-item" key={`${source.provider}-${source.title}`}><span className={`linked-source-mark integration-mark-${slug(source.provider)}`}><IntegrationLogo provider={source.provider} /></span><div><strong>{source.title}</strong><span>{source.provider} <i>·</i> {source.detail}</span></div><span className="linked-source-demo">Sample</span></article>)}<p>Fictional meeting records shown for this prototype.</p></div>
 }
 
 function InfoSection({ icon, eyebrow, title, children }: { icon: string; eyebrow: string; title: string; children: ReactNode }) {
@@ -487,9 +586,9 @@ function UseCaseForm({ initialRequest, onCancel, onSubmit }: { initialRequest?: 
         <div className="field-grid"><TextAreaField name="outcome" label="Outcome" placeholder="What did the solution accomplish?" /><TextAreaField name="lessons" label="Lessons learned" placeholder="What would you tell the next SE?" /></div>
         <TextAreaField name="reusable" label="Reusable components or notes" placeholder="What can someone reuse directly?" />
       </FormSection>
-      <FormSection number="04" title="Link field context" help="Add fictional sample records to show where this solution came from. These examples are not imported from live tools.">
-        <div className="source-picker-intro"><Icon name="grid" size={16} /><span>Select the sample source records that help explain this use case.</span></div>
-        <div className="source-picker">{integrationProviders.map((provider) => <label key={provider.name}><input type="checkbox" name="linkedSourceProviders" value={provider.name} /><span><strong>{provider.name}</strong><small>{provider.category}</small></span></label>)}</div>
+      <FormSection number="04" title="Meeting context" help="Optionally attach a fictional meeting record. No account is connected and no meeting content is imported.">
+        <div className="source-picker-intro"><Icon name="video" size={16} /><span>Choose the meeting sources represented in this sample use case.</span></div>
+        <div className="source-picker">{meetingSources.map((source) => <label key={source.name}><input type="checkbox" name="linkedSourceProviders" value={source.name} /><span className="source-picker-mark"><IntegrationLogo provider={source.name} /></span><span className="source-picker-copy"><strong>{source.name}</strong><small>Fictional transcript sample</small></span></label>)}</div>
       </FormSection>
       <AttachmentPicker />
       <div className="publish-notice"><Icon name="shield" size={18} /><div><strong>Public portfolio demo</strong><p>Your display name, use case, and any attached files will be public when a backend is connected. Use fictional examples and never include credentials, personal data, or confidential customer information.</p></div></div>
@@ -501,7 +600,7 @@ function UseCaseForm({ initialRequest, onCancel, onSubmit }: { initialRequest?: 
 
 function PreviewDialog({ values, files, onEdit, onPublish }: { values: Record<string, string>; files: File[]; onEdit: () => void; onPublish: () => void }) {
   const linkedProviders = (values.linkedSourceProviders || '').split(',').filter(Boolean)
-  return <div className="modal-backdrop"><section className="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title"><div className="preview-dialog-top"><div><div className="eyebrow eyebrow-quiet">READY TO SHARE?</div><h2 id="preview-title">Preview your use case</h2></div><button className="icon-button" onClick={onEdit} aria-label="Close preview"><Icon name="close" size={18} /></button></div><div className="preview-public-label"><Icon name="shield" size={15} /> This will be public. Author names are self-reported.</div><span className="category-pill preview-category">{values.category}</span><h3>{values.title}</h3><p className="preview-summary">{values.summary}</p><div className="preview-author">Shared by <strong>{values.author}</strong>{values.tags && <span> · {values.tags}</span>}</div><div className="preview-block"><span>CUSTOMER ASK</span><p>{values.ask}</p></div><div className="preview-block"><span>SOLUTION OVERVIEW</span><p>{values.solution}</p></div>{linkedProviders.length > 0 && <div className="preview-files"><span>LINKED SAMPLE SOURCES</span>{linkedProviders.map((provider) => <span className="preview-file-name" key={provider}><Icon name="grid" size={14} /> {provider}</span>)}</div>}{files.length > 0 && <div className="preview-files"><span>ATTACHED IN THIS SESSION</span>{files.map((file) => <span className="preview-file-name" key={`${file.name}-${file.lastModified}`}><Icon name="file" size={14} /> {file.name} <small>{formatSize(file.size)}</small></span>)}</div>}<div className="preview-actions"><button className="button button-outline" onClick={onEdit}>Back to edit</button><button className="button button-primary" onClick={onPublish}>Publish use case <Icon name="arrow" size={16} /></button></div><div className="preview-disclaimer">Prototype only · your post and files will be cleared when you refresh this page.</div></section></div>
+  return <div className="modal-backdrop"><section className="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title"><div className="preview-dialog-top"><div><div className="eyebrow eyebrow-quiet">READY TO SHARE?</div><h2 id="preview-title">Preview your use case</h2></div><button className="icon-button" onClick={onEdit} aria-label="Close preview"><Icon name="close" size={18} /></button></div><div className="preview-public-label"><Icon name="shield" size={15} /> This will be public. Author names are self-reported.</div><span className="category-pill preview-category">{values.category}</span><h3>{values.title}</h3><p className="preview-summary">{values.summary}</p><div className="preview-author">Shared by <strong>{values.author}</strong>{values.tags && <span> · {values.tags}</span>}</div><div className="preview-block"><span>CUSTOMER ASK</span><p>{values.ask}</p></div><div className="preview-block"><span>SOLUTION OVERVIEW</span><p>{values.solution}</p></div>{linkedProviders.length > 0 && <div className="preview-files"><span>LINKED SAMPLE MEETINGS</span>{linkedProviders.map((provider) => <span className="preview-file-name" key={provider}><Icon name="video" size={14} /> {provider}</span>)}</div>}{files.length > 0 && <div className="preview-files"><span>ATTACHED IN THIS SESSION</span>{files.map((file) => <span className="preview-file-name" key={`${file.name}-${file.lastModified}`}><Icon name="file" size={14} /> {file.name} <small>{formatSize(file.size)}</small></span>)}</div>}<div className="preview-actions"><button className="button button-outline" onClick={onEdit}>Back to edit</button><button className="button button-primary" onClick={onPublish}>Publish use case <Icon name="arrow" size={16} /></button></div><div className="preview-disclaimer">Prototype only · your post and files will be cleared when you refresh this page.</div></section></div>
 }
 
 function ContributionForm({ item, onCancel, onSubmit }: { item: UseCase; onCancel: () => void; onSubmit: (values: Record<string, string>, files: File[]) => void }) {

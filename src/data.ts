@@ -158,8 +158,8 @@ export const initialUseCases: UseCase[] = [
       ],
     },
     sources: [
-      { provider: 'Salesforce', title: 'AI Agent Governance Evaluation', detail: 'Opportunity · Technical validation' },
-      { provider: 'Gong', title: 'Agent access and ownership review', detail: 'Call transcript · 08:42' },
+      { provider: 'Microsoft Teams', title: 'AI agent governance evaluation', detail: 'Transcript · 32 min' },
+      { provider: 'Zoom', title: 'Agent access and ownership review', detail: 'Transcript · 08:42' },
     ],
     contributions: [],
   },
@@ -179,8 +179,7 @@ export const initialUseCases: UseCase[] = [
     reusable: 'Start with the included attribute mapping worksheet and run the lifecycle checklist for each pilot group.',
     resources: [resource('scim-mapping-example.csv', 'CSV', '18 KB', 'Synthetic attribute mapping worksheet.', 'source,target,required\nworker_id,externalId,true\nwork_email,userName,true\ndepartment,department,false\nmanager_email,manager.value,false')],
     sources: [
-      { provider: 'Homerun Presales', title: 'SCIM lifecycle evaluation', detail: 'Evaluation plan · Complete' },
-      { provider: 'Jira', title: 'Add SCIM group mapping visibility', detail: 'Product request · Done' },
+      { provider: 'Google Meet', title: 'SCIM lifecycle evaluation', detail: 'Transcript · 27 min' },
     ],
     contributions: [
       { id: 'c-scim-1', title: 'Add a safe reactivation check', type: 'Workflow improvement', description: 'Before reactivating an account, check that the HR record is still active and that the primary email matches the current worker profile.', implementation: 'Add a preflight lookup by immutable worker ID and stop the reactivation if the HR status is inactive.', context: 'Workday, SCIM 2.0', author: 'Priya Nair', date: 'Oct 20, 2026', validation: 'Tested in demo or development environment', resources: [] },
@@ -234,8 +233,8 @@ export const initialUseCases: UseCase[] = [
     reusable: 'Use the preflight checklist before customer sessions and after each reset.',
     resources: [resource('demo-reset-checklist.md', 'MD', '2 KB', 'Checklist for synthetic demo environments.', '# Demo reset checklist\n\n- Confirm the environment label\n- Verify the demo tenant ID\n- Clear only session-scoped records\n- Re-seed synthetic examples\n- Run the preflight smoke test')],
     sources: [
-      { provider: 'Consensus Live', title: 'Synthetic tenant reset walkthrough', detail: 'Personalized live demo · 06:18' },
-      { provider: 'Salesforce', title: 'Demo environment readiness', detail: 'Opportunity · Solution validation' },
+      { provider: 'Zoom', title: 'Synthetic tenant reset walkthrough', detail: 'Transcript · 06:18' },
+      { provider: 'Microsoft Teams', title: 'Demo environment readiness', detail: 'Transcript · 24 min' },
     ],
     contributions: [],
   },
