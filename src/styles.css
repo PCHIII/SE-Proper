@@ -135,6 +135,16 @@ html[data-theme="dark"] .source-picker label { border-color: #383f3d; background
 .zen-primary-column, .zen-side-column { display: grid; gap: 14px; min-width: 0; }
 .zen-card { padding: 18px; border: 1px solid #e9ebf0; border-radius: 11px; background: #fff; box-shadow: 0 3px 10px #30324b05; }
 .zen-card h2, .zen-anchor-card h2 { margin: 4px 0 0; color: #3e4355; font: 750 22px/1.2 'Manrope', sans-serif; letter-spacing: -.35px; }
+.zen-spark-description, .zen-spark-note { margin: 10px 0 0; color: #747b6c; font-size: 14px; line-height: 1.6; }
+.zen-spark-credit { display: grid; gap: 4px; margin: 15px 0; color: #4b5061; font-size: 14px; line-height: 1.5; }
+.zen-spark-credit > span { color: #747b6c; font-size: 13px; }
+.zen-spark-card a { color: #596e39; text-underline-offset: 3px; }
+.zen-spark-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.zen-spark-actions > a { font-size: 13px; font-weight: 700; }
+.zen-spark-player { display: block; width: 100%; aspect-ratio: 16 / 9; margin-top: 14px; border: 0; border-radius: 8px; background: #141616; }
+html[data-theme="dark"] .zen-spark-description, html[data-theme="dark"] .zen-spark-note, html[data-theme="dark"] .zen-spark-credit > span { color: #a8b19c; }
+html[data-theme="dark"] .zen-spark-credit { color: #e1e5e0; }
+html[data-theme="dark"] .zen-spark-card a { color: #c1f653; }
 .zen-go-time-card { overflow: hidden; padding: 19px; color: #edf0e8; border: 1px solid #282f25; border-radius: 12px; background: radial-gradient(ellipse at 82% 2%, #35442c 0, #20251f 47%, #171a19 100%); box-shadow: 0 12px 30px #1318151c; }
 .zen-go-time-top { display: flex; align-items: center; gap: 9px; color: #c0cbad; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
 .zen-go-time-mark { display: grid; place-items: center; width: 34px; height: 34px; color: #c1f653; border: 1px solid #475638; border-radius: 10px; background: #2c3527; }

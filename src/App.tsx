@@ -222,6 +222,7 @@ function ZenPage() {
   const [isRunning, setIsRunning] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [soundError, setSoundError] = useState(false)
+  const [sparkOpen, setSparkOpen] = useState(false)
   const [checkedSteps, setCheckedSteps] = useState<string[]>([])
   const goTimeAudio = useRef<HTMLAudioElement | null>(null)
   const getGoTimeAudio = () => {
@@ -261,11 +262,12 @@ function ZenPage() {
   const phase = secondsLeft === 0
     ? { label: 'READY', title: 'You got this. Go crush it.', line1: 'You have a clear outcome', line2: 'and a path to follow.', closing: 'LETS GO!!!!' }
     : secondsLeft > 40
-      ? { label: 'SETTLE', title: 'Find your footing.', line1: 'Take one slow exhale', line2: 'and bring your focus to the room.', closing: 'You’re ready for this.' }
+      ? { label: 'SETTLE', title: 'Find your footing.', line1: 'Take one slow breath.', line2: 'Let your shoulders relax.', closing: 'You’re ready for this.' }
       : secondsLeft > 20
-        ? { label: 'FOCUS', title: 'Pick your point.', line1: 'Choose the one customer outcome', line2: 'you want them to see.', closing: 'You got this.' }
-        : { label: 'LAUNCH', title: 'Start with why.', line1: 'Lead with the customer goal', line2: 'and say your opening line.', closing: 'You’re going to crush it.' }
+        ? { label: 'FOCUS', title: 'Pick your point.', line1: 'Pick one customer outcome.', line2: 'Keep it at the center of your demo.', closing: 'You got this.' }
+        : { label: 'LAUNCH', title: 'Make it about them.', line1: 'Picture your opening sentence.', line2: 'Lead with their goal.', closing: 'You’ve got this. Take the lead. Be the Light.' }
   const startGoTime = () => {
+    setSparkOpen(false)
     if (soundEnabled) {
       void playGoTimeCue(secondsLeft === 60 || secondsLeft === 0).then(() => setSoundError(false)).catch(() => setSoundError(true))
     }
@@ -279,6 +281,7 @@ function ZenPage() {
     setSecondsLeft(60)
   }
   const testChime = () => {
+    setSparkOpen(false)
     void playGoTimeCue(!isRunning).then(() => setSoundError(false)).catch(() => setSoundError(true))
   }
   const toggleGoTimeSound = () => {
@@ -298,6 +301,10 @@ function ZenPage() {
     pauseGoTimeCue()
     setIsRunning(false)
   }
+  const toggleSpark = () => {
+    if (!sparkOpen) pauseGoTime()
+    setSparkOpen(!sparkOpen)
+  }
   function toggleStep(stepId: string) {
     setCheckedSteps((current) => current.includes(stepId) ? current.filter((item) => item !== stepId) : [...current, stepId])
   }
@@ -316,6 +323,22 @@ function ZenPage() {
           <div className="zen-go-time-stages" aria-label="Go Time stages"><span className={secondsLeft > 40 ? 'zen-stage-current' : 'zen-stage-done'}>01 Settle</span><span className={secondsLeft <= 40 && secondsLeft > 20 ? 'zen-stage-current' : secondsLeft <= 20 ? 'zen-stage-done' : ''}>02 Focus</span><span className={secondsLeft <= 20 && secondsLeft > 0 ? 'zen-stage-current' : secondsLeft === 0 ? 'zen-stage-done' : ''}>03 Launch</span></div>
           <div className="zen-go-time-actions">{secondsLeft === 0 ? <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>Run it again <Icon name="arrow" size={15} /></button> : isRunning ? <><button className="button button-primary zen-start-button" type="button" onClick={pauseGoTime}>Pause</button><button className="text-button" type="button" onClick={resetGoTime}>Start over</button></> : <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>{secondsLeft === 60 ? 'Start Go Time' : 'Resume Go Time'} <Icon name="arrow" size={15} /></button>}<button className="zen-sound-test" type="button" onClick={testChime}>Test sound</button><button className="zen-sound-toggle" type="button" aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute Go Time sound' : 'Enable Go Time sound'} onClick={toggleGoTimeSound}><Icon name={soundEnabled ? 'volume' : 'volumeOff'} size={15} /><span>Sound {soundEnabled ? 'on' : 'off'}</span></button></div>
           {soundError && <p className="zen-sound-error" role="status">Your browser couldn’t play the sound. Go Time still works; check your device volume.</p>}
+        </section>
+        <section className="zen-card zen-spark-card" aria-labelledby="zen-spark-heading">
+          <div className="eyebrow eyebrow-quiet">AN EXTRA BOOST</div>
+          <h2 id="zen-spark-heading">Need a spark?</h2>
+          <p className="zen-spark-description">A little perspective before you step into the room.</p>
+          <p className="zen-spark-credit"><strong>What If? · 1:10</strong><span>David Goggins · Shared by <a href="https://www.youtube.com/@micheldavid6289" target="_blank" rel="noopener noreferrer">Michel DAVID</a></span></p>
+          <div className="zen-spark-actions">
+            <button className="button button-secondary" type="button" onClick={toggleSpark} aria-expanded={sparkOpen} aria-controls="zen-spark-player"><Icon name={sparkOpen ? 'close' : 'video'} size={16} />{sparkOpen ? 'Close video' : 'Get fired up'}</button>
+            <a href="https://www.youtube.com/watch?v=BF3FwY3j7y8" target="_blank" rel="noopener noreferrer" onClick={() => { pauseGoTime(); setSparkOpen(false) }}>Watch on YouTube <span aria-hidden="true">↗</span></a>
+          </div>
+          <div id="zen-spark-player" hidden={!sparkOpen}>
+            {sparkOpen && <>
+              <p className="zen-spark-note" role="status">Go Time is paused while this is open. Start or resume your reset above when you’re ready.</p>
+              <iframe className="zen-spark-player" src="https://www.youtube-nocookie.com/embed/BF3FwY3j7y8" title="What If? — David Goggins motivational video shared by Michel DAVID" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+            </>}
+          </div>
         </section>
         <section className="zen-card zen-checklist-card">
           <div className="zen-checklist-heading"><div><div className="eyebrow eyebrow-quiet">BEFORE YOU JOIN</div><h2>Final checks</h2></div><span className="zen-progress-count" aria-live="polite">{completed} of {readinessSteps.length}</span></div>
