@@ -328,15 +328,15 @@ function ZenPage() {
           <div className="eyebrow eyebrow-quiet">AN EXTRA BOOST</div>
           <h2 id="zen-spark-heading">Get in the Zone</h2>
           <p className="zen-spark-description">Find your energy before you step into the room.</p>
-          <p className="zen-spark-credit"><strong>When You Want to Quit · 9:48</strong><span>By Ben Lionel Scott</span></p>
+          <p className="zen-spark-credit"><strong>I Will Win</strong><span>By Motiversity · Starts at 1:49</span></p>
           <div className="zen-spark-actions">
             <button className="button button-secondary" type="button" onClick={toggleSpark} aria-expanded={sparkOpen} aria-controls="zen-spark-player"><Icon name={sparkOpen ? 'close' : 'video'} size={16} />{sparkOpen ? 'Close video' : 'Play video'}</button>
-            <a href="https://www.youtube.com/watch?v=--MHK-b8M5A" target="_blank" rel="noopener noreferrer" onClick={() => { pauseGoTime(); setSparkOpen(false) }}>Watch on YouTube <span aria-hidden="true">↗</span></a>
+            <a href="https://www.youtube.com/watch?v=ODF7qHx9QcU&amp;t=109s" target="_blank" rel="noopener noreferrer" onClick={() => { pauseGoTime(); setSparkOpen(false) }}>Watch on YouTube <span aria-hidden="true">↗</span></a>
           </div>
           <div id="zen-spark-player" hidden={!sparkOpen}>
             {sparkOpen && <>
               <p className="zen-spark-note" role="status">Go Time is paused while this is open. Start or resume your reset above when you’re ready.</p>
-              <iframe className="zen-spark-player" src="https://www.youtube-nocookie.com/embed/--MHK-b8M5A" title="When You Want to Quit — Motivational Speech by Ben Lionel Scott" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+              <iframe className="zen-spark-player" src="https://www.youtube-nocookie.com/embed/ODF7qHx9QcU?start=109" title="I Will Win — Motivational Speeches by Motiversity, starting at 1:49" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
             </>}
           </div>
         </section>
