@@ -217,12 +217,38 @@ function AppsPage() {
   </div>
 }
 
+function ZenVideoPlayer({ id, videoId, title, start, open, onToggle, onWatch }: {
+  id: string
+  videoId: string
+  title: string
+  start?: number
+  open: boolean
+  onToggle: () => void
+  onWatch: () => void
+}) {
+  const watchUrl = `https://www.youtube.com/watch?v=${videoId}${start ? `&t=${start}s` : ''}`
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${start ? `?start=${start}` : ''}`
+
+  return <>
+    <div className="zen-spark-actions">
+      <button className="button button-secondary" type="button" onClick={onToggle} aria-expanded={open} aria-controls={id}><Icon name={open ? 'close' : 'video'} size={16} />{open ? 'Close video' : 'Play video'}</button>
+      <a href={watchUrl} target="_blank" rel="noopener noreferrer" onClick={onWatch}>Watch on YouTube <span aria-hidden="true">↗</span></a>
+    </div>
+    <div id={id} hidden={!open}>
+      {open && <>
+        <p className="zen-spark-note" role="status">Go Time is paused while this is open. Start or resume your reset above when you’re ready.</p>
+        <iframe className="zen-spark-player" src={embedUrl} title={title} allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+      </>}
+    </div>
+  </>
+}
+
 function ZenPage() {
   const [secondsLeft, setSecondsLeft] = useState(60)
   const [isRunning, setIsRunning] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [soundError, setSoundError] = useState(false)
-  const [sparkOpen, setSparkOpen] = useState(false)
+  const [openVideo, setOpenVideo] = useState<'spark' | 'relax' | null>(null)
   const [checkedSteps, setCheckedSteps] = useState<string[]>([])
   const goTimeAudio = useRef<HTMLAudioElement | null>(null)
   const getGoTimeAudio = () => {
@@ -267,7 +293,7 @@ function ZenPage() {
         ? { label: 'FOCUS', title: 'Pick your point.', line1: 'Pick one customer outcome.', line2: 'Keep it at the center of your demo.', closing: 'You got this.' }
         : { label: 'LAUNCH', title: 'Make it about them.', line1: 'Picture your opening sentence.', line2: 'Lead with their goal.', closing: 'You’ve got this. Take the lead. Be the Light.' }
   const startGoTime = () => {
-    setSparkOpen(false)
+    setOpenVideo(null)
     if (soundEnabled) {
       void playGoTimeCue(secondsLeft === 60 || secondsLeft === 0).then(() => setSoundError(false)).catch(() => setSoundError(true))
     }
@@ -281,7 +307,7 @@ function ZenPage() {
     setSecondsLeft(60)
   }
   const testChime = () => {
-    setSparkOpen(false)
+    setOpenVideo(null)
     void playGoTimeCue(!isRunning).then(() => setSoundError(false)).catch(() => setSoundError(true))
   }
   const toggleGoTimeSound = () => {
@@ -301,9 +327,13 @@ function ZenPage() {
     pauseGoTimeCue()
     setIsRunning(false)
   }
-  const toggleSpark = () => {
-    if (!sparkOpen) pauseGoTime()
-    setSparkOpen(!sparkOpen)
+  const toggleVideo = (video: 'spark' | 'relax') => {
+    if (openVideo !== video) pauseGoTime()
+    setOpenVideo(openVideo === video ? null : video)
+  }
+  const watchOnYouTube = () => {
+    pauseGoTime()
+    setOpenVideo(null)
   }
   function toggleStep(stepId: string) {
     setCheckedSteps((current) => current.includes(stepId) ? current.filter((item) => item !== stepId) : [...current, stepId])
@@ -329,16 +359,26 @@ function ZenPage() {
           <h2 id="zen-spark-heading">Get in the Zone</h2>
           <p className="zen-spark-description">Find your energy before you step into the room.</p>
           <p className="zen-spark-credit"><strong>I Will Win</strong><span>By Motiversity · Starts at 1:49</span></p>
-          <div className="zen-spark-actions">
-            <button className="button button-secondary" type="button" onClick={toggleSpark} aria-expanded={sparkOpen} aria-controls="zen-spark-player"><Icon name={sparkOpen ? 'close' : 'video'} size={16} />{sparkOpen ? 'Close video' : 'Play video'}</button>
-            <a href="https://www.youtube.com/watch?v=ODF7qHx9QcU&amp;t=109s" target="_blank" rel="noopener noreferrer" onClick={() => { pauseGoTime(); setSparkOpen(false) }}>Watch on YouTube <span aria-hidden="true">↗</span></a>
-          </div>
-          <div id="zen-spark-player" hidden={!sparkOpen}>
-            {sparkOpen && <>
-              <p className="zen-spark-note" role="status">Go Time is paused while this is open. Start or resume your reset above when you’re ready.</p>
-              <iframe className="zen-spark-player" src="https://www.youtube-nocookie.com/embed/ODF7qHx9QcU?start=109" title="I Will Win — Motivational Speeches by Motiversity, starting at 1:49" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
-            </>}
-          </div>
+          <ZenVideoPlayer
+            id="zen-spark-player"
+            videoId="ODF7qHx9QcU"
+            title="I Will Win — Motivational Speeches by Motiversity, starting at 1:49"
+            start={109}
+            open={openVideo === 'spark'}
+            onToggle={() => toggleVideo('spark')}
+            onWatch={watchOnYouTube}
+          />
+        </section>
+        <section className="zen-card zen-spark-card" aria-labelledby="zen-relax-heading">
+          <h2 id="zen-relax-heading">And don’t forget to… RELAX</h2>
+          <ZenVideoPlayer
+            id="zen-relax-player"
+            videoId="GHMbL9JxQpY"
+            title="RELAX video"
+            open={openVideo === 'relax'}
+            onToggle={() => toggleVideo('relax')}
+            onWatch={watchOnYouTube}
+          />
         </section>
         <section className="zen-card zen-checklist-card">
           <div className="zen-checklist-heading"><div><div className="eyebrow eyebrow-quiet">BEFORE YOU JOIN</div><h2>Final checks</h2></div><span className="zen-progress-count" aria-live="polite">{completed} of {readinessSteps.length}</span></div>
