@@ -170,7 +170,7 @@ function App() {
           </div>
         </header>
 
-        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> seeded examples and sample downloads are visible to every visitor. New posts and uploads stay in this browser tab. Meeting source selections use fictional examples; no accounts are connected. Business-value Q&amp;A is a preview; AI generation isn’t active.</span></div>
+        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> Examples and sample downloads are public. New posts and uploads stay in this tab. Meeting sources are samples. No accounts are connected. Business-value Q&amp;A is a preview without AI generation.</span></div>
 
         <div className="page-content">
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
@@ -184,7 +184,7 @@ function App() {
           {route.page === 'contribute' && activeCase && <ContributionForm item={activeCase} onCancel={() => navigate(`/use-cases/${activeCase.id}`)} onSubmit={(values, files) => addContribution(activeCase.id, values, files)} />}
           {(route.page === 'detail' || route.page === 'contribute') && !activeCase && <NotFound navigate={navigate} />}
         </div>
-        <footer className="page-footer"><span>SE Proper</span><span>Solve it once. Share it. Build on it.</span><span>Portfolio demo · Fictional examples</span></footer>
+        <footer className="page-footer"><span>SE Proper</span><span>Solve it once. Share it. Build on it.</span><span>Portfolio demo</span></footer>
       </main>
     </div>
   )
@@ -432,7 +432,7 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
       <article><span><Icon name="users" size={17} /></span><div><strong>Contribute an improvement</strong><p>Add your own approach without replacing the original author’s work.</p></div></article>
       <article><span><Icon name="video" size={17} /></span><div><strong>Keep demo evidence with a solution</strong><p>See how a recording, transcript, AI summary, and timestamped audience feedback could sit with a use case.</p></div></article>
     </div></section>
-    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — This portfolio demo uses fictional examples and keeps new posts, SOS requests, responses, and uploads in the current browser session. Meeting sources are sample selections; there are no live account connections.</p></div>
+    <div className="about-status"><span className="about-status-icon"><Icon name="shield" size={17} /></span><p><strong>Prototype status</strong> — New posts, Signal requests, replies, and uploads stay in this browser tab.</p></div>
     <div className="about-cta"><div><strong>Have something another SE could reuse?</strong><span>Share a use case and give the next person a head start.</span></div><button className="button button-dark" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div>
   </div>
 }
@@ -588,7 +588,7 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
 }
 
 function LinkedSourceList({ sources }: { sources: LinkedSource[] }) {
-  return <div className="linked-source-list">{sources.map((source) => <article className="linked-source-item" key={`${source.provider}-${source.title}`}><span className={`linked-source-mark integration-mark-${slug(source.provider)}`}><IntegrationLogo provider={source.provider} /></span><div><strong>{source.title}</strong><span>{source.provider} <i>·</i> {source.detail}</span></div><span className="linked-source-demo">Sample</span></article>)}<p>Fictional meeting records shown for this prototype.</p></div>
+  return <div className="linked-source-list">{sources.map((source) => <article className="linked-source-item" key={`${source.provider}-${source.title}`}><span className={`linked-source-mark integration-mark-${slug(source.provider)}`}><IntegrationLogo provider={source.provider} /></span><div><strong>{source.title}</strong><span>{source.provider} <i>·</i> {source.detail}</span></div><span className="linked-source-demo">Sample</span></article>)}</div>
 }
 
 function InfoSection({ icon, eyebrow, title, children }: { icon: string; eyebrow: string; title: string; children: ReactNode }) {
@@ -605,7 +605,7 @@ function DemoEvidence({ demo }: { demo: DemoArtifact }) {
     <div className="demo-ai-summary"><div className="demo-summary-title"><span className="demo-ai-icon"><Icon name="spark" size={14} /></span><div><strong>AI meeting summary</strong><span>Generated from the demo transcript · review against the source</span></div></div><p>{demo.summary}</p></div>
     <div className="demo-moments"><div className="demo-moments-heading"><div><div className="eyebrow eyebrow-quiet">USEFUL MOMENTS</div><strong>Demo segments &amp; viewer feedback</strong></div><span>{demo.moments.length} timestamps</span></div><div className="demo-moment-list">{demo.moments.map((moment) => <article className="demo-moment" key={`${moment.time}-${moment.label}`}><time>{moment.time}</time><div><span className={`moment-kind moment-${moment.kind}`}>{moment.label}</span><p>{moment.text}</p></div></article>)}</div></div>
     <details className="demo-transcript"><summary><span><Icon name="transcript" size={15} /> View AI transcript sample</span><Icon name="chevron" size={15} /></summary><pre>{demo.transcript}</pre></details>
-    <p className="demo-sample-notice"><Icon name="shield" size={13} /> Fictional sample content. Real meeting recordings and transcripts may include sensitive information.</p>
+    <p className="demo-sample-notice"><Icon name="shield" size={13} /> Meeting recordings and transcripts may include sensitive information.</p>
   </section>
 }
 
@@ -638,7 +638,7 @@ function UseCaseForm({ initialRequest, onCancel, onSubmit }: { initialRequest?: 
         <TextField name="tags" label="Tags" placeholder="SCIM, Okta, lifecycle (separate with commas)" hint="Add products, technologies, or keywords that help someone find this." />
         <TextField name="author" label="Your display name" placeholder="How should your contribution be credited?" required />
       </FormSection>
-      <FormSection number="02" title="Customer request & context" help="Keep customer details fictional or anonymized.">
+      <FormSection number="02" title="Customer request & context" help="Use sample or anonymized customer details.">
         <TextAreaField name="ask" label="What did the customer need?" placeholder="Describe the need and the problem they were trying to solve." required />
         <div className="field-grid"><TextField name="context" label="Industry or segment" placeholder="e.g. Mid-market software" /><TextField name="technologies" label="Technologies or products" placeholder="e.g. Okta, Workday, SCIM" /></div>
         <TextAreaField name="constraints" label="Technical constraints" placeholder="Anything about the environment or requirements the next SE should know?" />
@@ -649,12 +649,12 @@ function UseCaseForm({ initialRequest, onCancel, onSubmit }: { initialRequest?: 
         <div className="field-grid"><TextAreaField name="outcome" label="Outcome" placeholder="What did the solution accomplish?" /><TextAreaField name="lessons" label="Lessons learned" placeholder="What would you tell the next SE?" /></div>
         <TextAreaField name="reusable" label="Reusable components or notes" placeholder="What can someone reuse directly?" />
       </FormSection>
-      <FormSection number="04" title="Meeting context" help="Optionally attach a fictional meeting record. No account is connected and no meeting content is imported.">
+      <FormSection number="04" title="Meeting context" help="Optionally attach a sample meeting record. No account is connected and no meeting content is imported.">
         <div className="source-picker-intro"><Icon name="video" size={16} /><span>Choose the meeting sources represented in this sample use case.</span></div>
-        <div className="source-picker">{meetingSources.map((source) => <label key={source.name}><input type="checkbox" name="linkedSourceProviders" value={source.name} /><span className="source-picker-mark"><IntegrationLogo provider={source.name} /></span><span className="source-picker-copy"><strong>{source.name}</strong><small>Fictional transcript sample</small></span></label>)}</div>
+        <div className="source-picker">{meetingSources.map((source) => <label key={source.name}><input type="checkbox" name="linkedSourceProviders" value={source.name} /><span className="source-picker-mark"><IntegrationLogo provider={source.name} /></span><span className="source-picker-copy"><strong>{source.name}</strong><small>Transcript sample</small></span></label>)}</div>
       </FormSection>
       <AttachmentPicker />
-      <div className="publish-notice"><Icon name="shield" size={18} /><div><strong>Public portfolio demo</strong><p>Your display name, use case, and any attached files will be public when a backend is connected. Use fictional examples and never include credentials, personal data, or confidential customer information.</p></div></div>
+      <div className="publish-notice"><Icon name="shield" size={18} /><div><strong>Public portfolio demo</strong><p>Your display name, use case, and any attached files will be public when a backend is connected. Never include credentials, personal data, or confidential customer information.</p></div></div>
       <div className="form-actions"><button className="button button-quiet" type="button" onClick={onCancel}>Cancel</button><div><span className="form-disclaimer">Prototype only · not saved to a server</span><button className="button button-primary" type="submit">Preview use case <Icon name="arrow" size={16} /></button></div></div>
     </form>
     {preview && <PreviewDialog values={preview.values} files={preview.files} onEdit={() => setPreview(null)} onPublish={() => onSubmit(preview.values, preview.files)} />}

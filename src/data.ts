@@ -74,7 +74,7 @@ const resource = (name: string, kind: string, size: string, description: string,
 
 const aiAgentAccessBlueprint = `# AI Agent Access Policy & Approval Workflow
 
-> Portfolio demo sample. All names, systems, and decisions below are fictional.
+> Portfolio demo sample.
 
 ## Agent profile
 
@@ -133,7 +133,7 @@ export const initialUseCases: UseCase[] = [
     summary: 'Link every AI agent identity to a responsible person, then gate its tools and data access through least-privilege policies and owner approvals.',
     category: 'Identity & Access Management',
     tags: ['AI Agents', 'IGA', 'Access Policies', 'Approvals'], author: 'Jordan Lee', date: 'Oct 21, 2026', updated: 'Oct 21, 2026',
-    ask: 'A fictional enterprise started piloting AI agents that could call internal APIs and use business data. Security and application owners needed each agent to have a clearly accountable human, access limited to its approved purpose, and an auditable approval process for new permissions.',
+    ask: 'An enterprise started piloting AI agents that could call internal APIs and use business data. Security and application owners needed each agent to have a clearly accountable human, access limited to its approved purpose, and an auditable approval process for new permissions.',
     context: 'Enterprise identity governance · Synthetic AI agent scenario', technologies: 'Identity Governance, non-human identities, access policies, approval workflows',
     constraints: 'Each agent needs its own identity rather than shared human credentials. Business sponsorship must remain tied to an employee, while access approvals are routed to the owners of the requested applications or data. Permissions should be limited, time-bound, reviewable, and revocable.',
     solution: 'Register a distinct non-human identity for each agent and link it to an accountable employee sponsor. Define access policies around the agent’s purpose, approved tools and data, allowed actions, risk level, and expiry. Route requests to the owners of the target applications or data, require a business justification, and provision access only after approval. Add periodic owner reviews and revoke access when the agent or its business need ends.',
@@ -141,10 +141,10 @@ export const initialUseCases: UseCase[] = [
     outcome: 'The governance pattern makes each agent’s human accountability visible, gives resource owners control over approvals, and creates a reviewable path to limit or remove access.',
     lessons: 'Keep the business sponsor who owns the agent’s purpose distinct from the application or data owner who approves access to that resource. Linking an agent to a person establishes accountability; it should not make the agent inherit that person’s credentials or permissions.',
     reusable: 'For each agent, capture its unique identity, accountable human sponsor, business purpose, approved tools and data, allowed actions, resource owners, approval record, access expiry, review date, and retirement owner.',
-    resources: [resource('ai-agent-access-policy-and-approval-workflow.md', 'Markdown', '4 KB', 'Fictional access policy, owner approval route, sample decision, and audit checklist.', aiAgentAccessBlueprint)],
+    resources: [resource('ai-agent-access-policy-and-approval-workflow.md', 'Markdown', '4 KB', 'Example access policy, owner approval route, sample decision, and audit checklist.', aiAgentAccessBlueprint)],
     demo: {
       title: 'Assigning an owner to a discovered AI agent',
-      provider: 'Zoom meeting · fictional sample',
+      provider: 'Zoom meeting',
       duration: '08:42',
       recordedAt: 'Oct 21, 2026',
       summary: 'The SE demonstrates how an unowned AI agent appears in the inventory, how a business sponsor is assigned, and how access requests route to resource owners. Viewers asked how ownership is maintained when a sponsor leaves and whether the agent inherits that person’s permissions. The demo clarifies that the sponsor is accountable for the agent’s purpose; the agent keeps its own identity and access scope.',
@@ -169,8 +169,8 @@ export const initialUseCases: UseCase[] = [
     summary: 'A repeatable pattern for connecting an HR source to a SaaS identity provider and keeping access in sync.',
     category: 'Identity & Access Management',
     tags: ['SCIM', 'Okta', 'Lifecycle'], author: 'Jordan Lee', date: 'Oct 18, 2026', updated: 'Oct 20, 2026',
-    ask: 'A fictional 800-person software company needed new hires provisioned automatically and leavers deprovisioned on the same day.',
-    context: 'Mid-market technology · Fictional customer scenario', technologies: 'Workday, Okta, SCIM 2.0, Slack',
+    ask: 'An 800-person software company needed new hires provisioned automatically and leavers deprovisioned on the same day.',
+    context: 'Mid-market technology', technologies: 'Workday, Okta, SCIM 2.0, Slack',
     constraints: 'The HR system remained the source of truth. Existing group assignments needed to stay intact during migration.',
     solution: 'Mapped the HR worker lifecycle to SCIM user and group events, then added a staged rollout with a small pilot group before enabling the full directory.',
     implementation: 'Normalize department and location attributes before mapping. Use an immutable employee ID as the external identifier. Send deactivation as an active=false update and retain the original HR record for audit context.',
@@ -191,7 +191,7 @@ export const initialUseCases: UseCase[] = [
     title: 'Make webhook retries safe to replay',
     summary: 'An idempotency-key pattern that prevents duplicate downstream work when an event delivery needs a retry.',
     category: 'API & Integrations', tags: ['Webhooks', 'REST API', 'Reliability'], author: 'Morgan Ellis', date: 'Oct 16, 2026', updated: 'Oct 18, 2026',
-    ask: 'A fictional payments platform needed a clear way to retry delayed webhook events without creating duplicate records.',
+    ask: 'A payments platform needed a clear way to retry delayed webhook events without creating duplicate records.',
     context: 'Fintech · Synthetic integration exercise', technologies: 'REST, HMAC signatures, PostgreSQL',
     constraints: 'Events may arrive more than once and out of order. The receiver must acknowledge quickly and process asynchronously.',
     solution: 'Use the provider event ID as an idempotency key, persist it before processing, and return the original result when the same event is replayed.',
@@ -207,7 +207,7 @@ export const initialUseCases: UseCase[] = [
     title: 'Normalize partner CSV files before import',
     summary: 'A low-friction validation pipeline for inconsistent partner exports, with clear row-level feedback.',
     category: 'Data Transformation', tags: ['CSV', 'ETL', 'Validation'], author: 'Sam Rivera', date: 'Oct 14, 2026', updated: 'Oct 15, 2026',
-    ask: 'A fictional operations team received weekly partner exports with different headers, date formats, and blank values.',
+    ask: 'An operations team received weekly partner exports with different headers, date formats, and blank values.',
     context: 'Business operations · Synthetic sample data', technologies: 'Python, CSV, JSON Schema',
     constraints: 'Operators needed to understand rejected rows without reading application logs.',
     solution: 'Add a normalization step that maps known header aliases, validates each row, and exports a clean file alongside a concise error report.',
@@ -223,8 +223,8 @@ export const initialUseCases: UseCase[] = [
     title: 'Reset demo data between customer sessions',
     summary: 'A lightweight environment reset checklist for keeping a shared proof-of-concept clean and predictable.',
     category: 'Demo & Proof of Concept', tags: ['Demo', 'Environment', 'Checklist'], author: 'Casey Bennett', date: 'Oct 12, 2026', updated: 'Oct 15, 2026',
-    ask: 'A fictional SE team wanted the same proof-of-concept environment to be ready for back-to-back demo sessions.',
-    context: 'Enterprise software · Fictional demo account', technologies: 'REST API, seed data, environment variables',
+    ask: 'An SE team wanted the same proof-of-concept environment to be ready for back-to-back demo sessions.',
+    context: 'Enterprise software · Demo account', technologies: 'REST API, seed data, environment variables',
     constraints: 'Reset actions must not affect shared configuration or customer-facing environments.',
     solution: 'Separate the demo tenant from shared configuration, then run a checklist-driven reset that clears only session records and re-seeds synthetic examples.',
     implementation: 'Tag demo-only records with a session namespace. Confirm the tenant ID before each reset, clear only records with that namespace, then run a smoke test against the starting state.',
@@ -243,7 +243,7 @@ export const initialUseCases: UseCase[] = [
     title: 'Troubleshoot an OAuth redirect mismatch',
     summary: 'A short checklist to isolate redirect URI, environment, and encoding issues during an OAuth setup.',
     category: 'Troubleshooting', tags: ['OAuth 2.0', 'Redirect URI', 'Debugging'], author: 'Jamie Chen', date: 'Oct 10, 2026', updated: 'Oct 12, 2026',
-    ask: 'A fictional integration returned an authorization error even though the client ID and scopes appeared correct.',
+    ask: 'An integration returned an authorization error even though the client ID and scopes appeared correct.',
     context: 'SaaS integration · Synthetic troubleshooting example', technologies: 'OAuth 2.0, browser network tools',
     constraints: 'The same integration had separate local, preview, and production callback URLs.',
     solution: 'Compare the exact redirect URI sent in the authorization request to the provider allowlist, including scheme, host, path, and encoded characters.',
@@ -259,7 +259,7 @@ export const initialUseCases: UseCase[] = [
     title: 'Build a weekly usage report from an API',
     summary: 'A paginated API-to-CSV workflow that creates a compact weekly adoption snapshot for a demo team.',
     category: 'Reporting & Analytics', tags: ['REST API', 'Pagination', 'CSV'], author: 'Riley Foster', date: 'Oct 8, 2026', updated: 'Oct 11, 2026',
-    ask: 'A fictional platform team wanted a weekly summary of active workspaces and feature usage without manual spreadsheet cleanup.',
+    ask: 'A platform team wanted a weekly summary of active workspaces and feature usage without manual spreadsheet cleanup.',
     context: 'Developer tools · Synthetic reporting scenario', technologies: 'REST API, Python, CSV',
     constraints: 'The report should stay within API rate limits and avoid exposing personal-level activity.',
     solution: 'Fetch workspace-level usage records with cursor pagination, aggregate them by week, and export a synthetic-friendly CSV summary.',
