@@ -40,19 +40,24 @@ function upcomingWorkday(now: Date, workdays: number, hour: number, minute: numb
 export function createShadowState(now = new Date()): ShadowEvent[] {
   const samples: (Omit<ShadowEvent, 'start' | 'end' | 'guests'> & { workdays: number; hour: number; minute: number; duration: number })[] = [
     {
-      id: 'identity', host: 'maya', topic: 'SSO and SCIM provisioning', customerContext: 'Enterprise healthcare',
-      takeaway: 'See how Maya handles identity-provider questions and scopes a phased rollout.',
+      id: 'identity', host: 'maya', topic: 'Automate employee onboarding and offboarding', customerContext: 'Healthcare IT team',
+      takeaway: 'Watch Maya connect the buyer’s onboarding delays to single sign-on and automated provisioning, then handle questions about rolling it out department by department.',
       workdays: 1, hour: 14, minute: 0, duration: 45, spots: 2, requests: ['riley'],
     },
     {
-      id: 'webhooks', host: 'jordan', topic: 'Webhook retries and replay', customerContext: 'Fintech platform',
-      takeaway: 'Watch Jordan reproduce a failed delivery, then explain how replay and deduplication work together.',
+      id: 'webhooks', host: 'jordan', topic: 'Keep payment processing reliable during outages', customerContext: 'Payments engineering team',
+      takeaway: 'See how Jordan turns the buyer’s outage scenario into a live demo of retrying a failed payment event and answers questions about duplicate processing.',
       workdays: 2, hour: 11, minute: 30, duration: 30, spots: 1, requests: [],
     },
     {
-      id: 'discovery', host: 'riley', topic: 'Discovery into a live workflow demo', customerContext: 'Logistics operations',
-      takeaway: 'See how Riley uses a buyer’s discovery answers to decide what to show live and what to skip.',
+      id: 'discovery', host: 'riley', topic: 'Route shipment exceptions to the right team', customerContext: 'Logistics operations team',
+      takeaway: 'Watch Riley use the buyer’s dispatch process to tailor a demo of shipment exception routing and agree on what the team should validate in a pilot.',
       workdays: 4, hour: 13, minute: 0, duration: 60, spots: 2, requests: [],
+    },
+    {
+      id: 'poc-handoff', host: 'jordan', topic: 'POC hand-off and use case outline', customerContext: 'IT operations team evaluating workflow automation',
+      takeaway: 'Watch Jordan turn discovery notes into a use case outline, confirm the buyer’s success criteria, and hand off scope, owners, and next steps for the proof of concept.',
+      workdays: 5, hour: 13, minute: 0, duration: 45, spots: 2, requests: [],
     },
   ]
 

@@ -68,7 +68,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
       <header className="shadow-heading">
         <div>
           <h1>Shadow</h1>
-          <p>Watch how other SEs run customer demos, or open your own demo for someone to shadow. Request permission to shadow, and you’ll be added to the meeting invite once the host approves.</p>
+          <p>Watch an SE lead a customer demo and learn how they tailor it to the buyer’s needs. Open your own demo for others to observe, or request to shadow. Once the host approves, you’ll be added to the meeting invite.</p>
         </div>
         <button className="button button-primary" type="button" aria-expanded={composing} aria-controls="shadow-compose" onClick={() => setComposing(!composing)}>
           {composing ? 'Close form' : 'Open for shadowing'}
@@ -99,9 +99,9 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
       </nav>
       <div className="shadow-announcement" role="status">{message}</div>
 
-      {view === 'Upcoming' && <section aria-label="Upcoming demos">
+      {view === 'Upcoming' && <section aria-labelledby="shadow-upcoming-title">
         <div className="shadow-section-heading">
-          <h2>Upcoming demos</h2>
+          <h2 id="shadow-upcoming-title">Upcoming customer demos</h2>
           <div className="shadow-toggle" role="group" aria-label="Schedule view">
             {(['Calendar', 'List'] as const).map((item) => <button key={item} type="button" aria-pressed={layout === item} onClick={() => setLayout(item)}>{item}</button>)}
           </div>
@@ -236,7 +236,7 @@ function ShadowForm({ profile, onPublish, onCancel }: { profile: ShadowProfile; 
     const topic = String(fields.get('topic')).trim()
     const takeaway = String(fields.get('takeaway')).trim()
     const start = new Date(String(fields.get('start'))).getTime()
-    if (!topic || !takeaway) return setError('Enter a demo topic and a learning takeaway.')
+    if (!topic || !takeaway) return setError('Enter a demo title and what an SE can learn.')
     if (!Number.isFinite(start) || start <= Date.now()) return setError('Choose a date and start time in the future.')
 
     onPublish({
@@ -251,15 +251,15 @@ function ShadowForm({ profile, onPublish, onCancel }: { profile: ShadowProfile; 
   }
 
   return <form className="shadow-form" onSubmit={submit}>
-    <div><h2>Open a demo for shadowing</h2><p>Hosting as {shadowProfiles[profile]}</p></div>
-    <label>Demo topic<input name="topic" required maxLength={100} placeholder="e.g. SSO and SCIM provisioning" /></label>
+    <div><h2>Open a customer demo for shadowing</h2><p>Hosting as {shadowProfiles[profile]}</p></div>
+    <label>Customer-facing demo title<input name="topic" required maxLength={100} placeholder="e.g. Automate employee onboarding and offboarding" /></label>
     <div className="shadow-form-fields">
       <label>Start time ({Intl.DateTimeFormat().resolvedOptions().timeZone})<input name="start" type="datetime-local" required /></label>
       <label>Duration<select name="duration" defaultValue="45">{[15, 30, 45, 60, 90, 120].map((minutes) => <option key={minutes} value={minutes}>{minutes} minutes</option>)}</select></label>
       <label>Shadow spots<input name="spots" type="number" min="1" max="5" defaultValue="2" required /></label>
     </div>
-    <label>Customer context (optional)<input name="customerContext" maxLength={80} placeholder="e.g. Enterprise healthcare" /></label>
-    <label>What can someone learn?<textarea name="takeaway" required maxLength={300} rows={3} placeholder="What would another SE learn by watching this demo?" /></label>
+    <label>Customer context (optional)<input name="customerContext" maxLength={80} placeholder="e.g. Healthcare IT team evaluating automated provisioning" /></label>
+    <label>What can a shadowing SE learn?<textarea name="takeaway" required maxLength={300} rows={3} placeholder="e.g. Watch how I connect automated provisioning to the buyer’s onboarding delays." /></label>
     {error && <p className="shadow-error" role="alert">{error}</p>}
     <div className="shadow-form-actions">
       <button className="button button-primary" type="submit">Post to Shadow calendar</button>
