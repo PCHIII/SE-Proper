@@ -379,10 +379,12 @@ function ZenPage() {
       </section>
       <section className="zen-card zen-spark-card" aria-labelledby="zen-relax-heading">
         <h2 id="zen-relax-heading">And don’t forget to… RELAX&nbsp;<span aria-hidden="true">🙂</span></h2>
+        <p className="zen-spark-description">Take your pre-demo chill to the next level with Baba the Cosmic Barber’s ASMR head massage.</p>
+        <p className="zen-spark-credit"><strong>World’s Greatest Head Massage · Episode 1</strong><span>Uploaded by Massage N More</span></p>
         <ZenVideoPlayer
           id="zen-relax-player"
           videoId="GHMbL9JxQpY"
-          title="RELAX video"
+          title="World’s Greatest Head Massage — Baba the Cosmic Barber, Episode 1"
           open={openVideo === 'relax'}
           onToggle={() => toggleVideo('relax')}
           onWatch={watchOnYouTube}

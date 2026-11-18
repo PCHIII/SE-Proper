@@ -142,7 +142,6 @@ html[data-theme="dark"] .source-picker label { border-color: #383f3d; background
 .zen-spark-card a { color: #596e39; text-underline-offset: 3px; }
 .zen-spark-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 .zen-supporting:not(:has(.zen-spark-player)) .zen-spark-actions { margin-top: auto; }
-.zen-spark-card h2 + .zen-spark-actions { padding-top: 15px; }
 .zen-spark-actions > a { font-size: 13px; font-weight: 700; }
 .zen-spark-player { display: block; width: 100%; aspect-ratio: 16 / 9; margin-top: 14px; border: 0; border-radius: 8px; background: #141616; }
 html[data-theme="dark"] .zen-spark-description, html[data-theme="dark"] .zen-spark-note, html[data-theme="dark"] .zen-spark-credit > span { color: #a8b19c; }
