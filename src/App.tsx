@@ -341,28 +341,25 @@ function ZenPage() {
   }
 
   return <div className="inner-page zen-page">
-    <PageIntro eyebrow="DEMO READY ROOM" title="Go Time" text="Take a minute to get steady and rehearse what you’ll say if the demo goes sideways." />
+    <PageIntro eyebrow="DEMO READY ROOM" title="Go Time" text="One minute to get steady, get focused, and start strong." />
     <div className="zen-layout">
-      <DemoPlaybook />
-      <div className="zen-side-column">
-        <section className={`zen-go-time-card ${isRunning ? 'zen-go-time-active' : ''}`}>
-          <div className="zen-go-time-top"><span className="zen-go-time-mark"><Icon name="spark" size={20} /></span><span>60 SECOND RESET</span><span className="zen-go-time-live">{isRunning ? 'IN PROGRESS' : secondsLeft === 0 ? 'COMPLETE' : 'READY WHEN YOU ARE'}</span></div>
-          <div className="zen-go-time-main">
-            <div className="zen-go-time-clock" role="timer" aria-label={`Time remaining: ${secondsLeft} seconds`}>{clockDisplay}</div>
-            <div className="zen-go-time-copy"><div className="zen-go-time-phase">{phase.label}</div><h2>{phase.title}</h2><p><span>{phase.line1}</span><span>{phase.line2}</span><span>{phase.closing}</span></p></div>
-          </div>
-          <div className="zen-go-time-progress" role="progressbar" aria-label="Go Time reset" aria-valuemin={0} aria-valuemax={60} aria-valuenow={60 - secondsLeft}><span style={{ width: `${((60 - secondsLeft) / 60) * 100}%` }} /></div>
-          <div className="zen-go-time-stages" aria-label="Go Time stages"><span className={secondsLeft > 40 ? 'zen-stage-current' : 'zen-stage-done'}>01 Settle</span><span className={secondsLeft <= 40 && secondsLeft > 20 ? 'zen-stage-current' : secondsLeft <= 20 ? 'zen-stage-done' : ''}>02 Focus</span><span className={secondsLeft <= 20 && secondsLeft > 0 ? 'zen-stage-current' : secondsLeft === 0 ? 'zen-stage-done' : ''}>03 Launch</span></div>
-          <div className="zen-go-time-actions">{secondsLeft === 0 ? <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>Run it again <Icon name="arrow" size={15} /></button> : isRunning ? <><button className="button button-primary zen-start-button" type="button" onClick={pauseGoTime}>Pause</button><button className="text-button" type="button" onClick={resetGoTime}>Start over</button></> : <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>{secondsLeft === 60 ? 'Start Go Time' : 'Resume Go Time'} <Icon name="arrow" size={15} /></button>}<button className="zen-sound-test" type="button" onClick={testChime}>Test sound</button><button className="zen-sound-toggle" type="button" aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute Go Time sound' : 'Enable Go Time sound'} onClick={toggleGoTimeSound}><Icon name={soundEnabled ? 'volume' : 'volumeOff'} size={15} /><span>Sound {soundEnabled ? 'on' : 'off'}</span></button></div>
-          {soundError && <p className="zen-sound-error" role="status">Your browser couldn’t play the sound. Go Time still works; check your device volume.</p>}
-        </section>
-        <section className="zen-card zen-checklist-card">
-          <div className="zen-checklist-heading"><div><div className="eyebrow eyebrow-quiet">BEFORE YOU JOIN</div><h2>Final checks</h2></div><span className="zen-progress-count" aria-live="polite">{completed} of {readinessSteps.length}</span></div>
-          <div className="zen-progress-track" role="progressbar" aria-label="Demo readiness checklist" aria-valuemin={0} aria-valuemax={readinessSteps.length} aria-valuenow={completed}><span style={{ width: `${(completed / readinessSteps.length) * 100}%` }} /></div>
-          <div className="zen-checklist">{readinessSteps.map((step) => <label className={checkedSteps.includes(step.id) ? 'zen-checklist-item zen-checklist-item-done' : 'zen-checklist-item'} key={step.id}><input type="checkbox" checked={checkedSteps.includes(step.id)} onChange={() => toggleStep(step.id)} /><span>{step.label}</span></label>)}</div>
-          <button className="text-button zen-reset-button" type="button" onClick={() => setCheckedSteps([])} disabled={completed === 0}>Reset checklist</button>
-        </section>
-      </div>
+      <section className={`zen-go-time-card ${isRunning ? 'zen-go-time-active' : ''}`}>
+        <div className="zen-go-time-top"><span className="zen-go-time-mark"><Icon name="spark" size={20} /></span><span>60 SECOND RESET</span><span className="zen-go-time-live">{isRunning ? 'IN PROGRESS' : secondsLeft === 0 ? 'COMPLETE' : 'READY WHEN YOU ARE'}</span></div>
+        <div className="zen-go-time-main">
+          <div className="zen-go-time-clock" role="timer" aria-label={`Time remaining: ${secondsLeft} seconds`}>{clockDisplay}</div>
+          <div className="zen-go-time-copy"><div className="zen-go-time-phase">{phase.label}</div><h2>{phase.title}</h2><p><span>{phase.line1}</span><span>{phase.line2}</span><span>{phase.closing}</span></p></div>
+        </div>
+        <div className="zen-go-time-progress" role="progressbar" aria-label="Go Time reset" aria-valuemin={0} aria-valuemax={60} aria-valuenow={60 - secondsLeft}><span style={{ width: `${((60 - secondsLeft) / 60) * 100}%` }} /></div>
+        <div className="zen-go-time-stages" aria-label="Go Time stages"><span className={secondsLeft > 40 ? 'zen-stage-current' : 'zen-stage-done'}>01 Settle</span><span className={secondsLeft <= 40 && secondsLeft > 20 ? 'zen-stage-current' : secondsLeft <= 20 ? 'zen-stage-done' : ''}>02 Focus</span><span className={secondsLeft <= 20 && secondsLeft > 0 ? 'zen-stage-current' : secondsLeft === 0 ? 'zen-stage-done' : ''}>03 Launch</span></div>
+        <div className="zen-go-time-actions">{secondsLeft === 0 ? <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>Run it again <Icon name="arrow" size={15} /></button> : isRunning ? <><button className="button button-primary zen-start-button" type="button" onClick={pauseGoTime}>Pause</button><button className="text-button" type="button" onClick={resetGoTime}>Start over</button></> : <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>{secondsLeft === 60 ? 'Start Go Time' : 'Resume Go Time'} <Icon name="arrow" size={15} /></button>}<button className="zen-sound-test" type="button" onClick={testChime}>Test sound</button><button className="zen-sound-toggle" type="button" aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute Go Time sound' : 'Enable Go Time sound'} onClick={toggleGoTimeSound}><Icon name={soundEnabled ? 'volume' : 'volumeOff'} size={15} /><span>Sound {soundEnabled ? 'on' : 'off'}</span></button></div>
+        {soundError && <p className="zen-sound-error" role="status">Your browser couldn’t play the sound. Go Time still works; check your device volume.</p>}
+      </section>
+      <section className="zen-card zen-checklist-card">
+        <div className="zen-checklist-heading"><div><div className="eyebrow eyebrow-quiet">BEFORE YOU JOIN</div><h2>Final checks</h2></div><span className="zen-progress-count" aria-live="polite">{completed} of {readinessSteps.length}</span></div>
+        <div className="zen-progress-track" role="progressbar" aria-label="Demo readiness checklist" aria-valuemin={0} aria-valuemax={readinessSteps.length} aria-valuenow={completed}><span style={{ width: `${(completed / readinessSteps.length) * 100}%` }} /></div>
+        <div className="zen-checklist">{readinessSteps.map((step) => <label className={checkedSteps.includes(step.id) ? 'zen-checklist-item zen-checklist-item-done' : 'zen-checklist-item'} key={step.id}><input type="checkbox" checked={checkedSteps.includes(step.id)} onChange={() => toggleStep(step.id)} /><span>{step.label}</span></label>)}</div>
+        <button className="text-button zen-reset-button" type="button" onClick={() => setCheckedSteps([])} disabled={completed === 0}>Reset checklist</button>
+      </section>
     </div>
     <div className="zen-supporting">
       <section className="zen-card zen-spark-card" aria-labelledby="zen-spark-heading">
@@ -393,6 +390,7 @@ function ZenPage() {
       </section>
       <section className="zen-anchor-card"><span className="zen-anchor-icon"><Icon name="spark" size={19} /></span><div className="eyebrow">KEEP THIS IN MIND</div><h2>You got this. You’re going to crush it.</h2><p>You know your stuff. Lead with one useful customer outcome and take them there.</p></section>
     </div>
+    <DemoPlaybook />
   </div>
 }
 
