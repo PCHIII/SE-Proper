@@ -1,4 +1,5 @@
 import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
+import DemoPlaybook from './DemoPlaybook'
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
 
@@ -340,9 +341,10 @@ function ZenPage() {
   }
 
   return <div className="inner-page zen-page">
-    <PageIntro eyebrow="DEMO READY ROOM" title="Go Time" text="One minute to get steady, get focused, and start strong." />
+    <PageIntro eyebrow="DEMO READY ROOM" title="Go Time" text="Take a minute to get steady and rehearse what you’ll say if the demo goes sideways." />
     <div className="zen-layout">
-      <div className="zen-primary-column">
+      <DemoPlaybook />
+      <div className="zen-side-column">
         <section className={`zen-go-time-card ${isRunning ? 'zen-go-time-active' : ''}`}>
           <div className="zen-go-time-top"><span className="zen-go-time-mark"><Icon name="spark" size={20} /></span><span>60 SECOND RESET</span><span className="zen-go-time-live">{isRunning ? 'IN PROGRESS' : secondsLeft === 0 ? 'COMPLETE' : 'READY WHEN YOU ARE'}</span></div>
           <div className="zen-go-time-main">
@@ -354,32 +356,6 @@ function ZenPage() {
           <div className="zen-go-time-actions">{secondsLeft === 0 ? <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>Run it again <Icon name="arrow" size={15} /></button> : isRunning ? <><button className="button button-primary zen-start-button" type="button" onClick={pauseGoTime}>Pause</button><button className="text-button" type="button" onClick={resetGoTime}>Start over</button></> : <button className="button button-primary zen-start-button" type="button" onClick={startGoTime}>{secondsLeft === 60 ? 'Start Go Time' : 'Resume Go Time'} <Icon name="arrow" size={15} /></button>}<button className="zen-sound-test" type="button" onClick={testChime}>Test sound</button><button className="zen-sound-toggle" type="button" aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute Go Time sound' : 'Enable Go Time sound'} onClick={toggleGoTimeSound}><Icon name={soundEnabled ? 'volume' : 'volumeOff'} size={15} /><span>Sound {soundEnabled ? 'on' : 'off'}</span></button></div>
           {soundError && <p className="zen-sound-error" role="status">Your browser couldn’t play the sound. Go Time still works; check your device volume.</p>}
         </section>
-        <section className="zen-card zen-spark-card" aria-labelledby="zen-spark-heading">
-          <div className="eyebrow eyebrow-quiet">AN EXTRA BOOST</div>
-          <h2 id="zen-spark-heading">Get in the Zone</h2>
-          <p className="zen-spark-description">Find your energy before you step into the room.</p>
-          <p className="zen-spark-credit"><strong>I Will Win</strong><span>By Motiversity · Starts at 1:49</span></p>
-          <ZenVideoPlayer
-            id="zen-spark-player"
-            videoId="ODF7qHx9QcU"
-            title="I Will Win — Motivational Speeches by Motiversity, starting at 1:49"
-            start={109}
-            open={openVideo === 'spark'}
-            onToggle={() => toggleVideo('spark')}
-            onWatch={watchOnYouTube}
-          />
-        </section>
-        <section className="zen-card zen-spark-card" aria-labelledby="zen-relax-heading">
-          <h2 id="zen-relax-heading">And don’t forget to… RELAX</h2>
-          <ZenVideoPlayer
-            id="zen-relax-player"
-            videoId="GHMbL9JxQpY"
-            title="RELAX video"
-            open={openVideo === 'relax'}
-            onToggle={() => toggleVideo('relax')}
-            onWatch={watchOnYouTube}
-          />
-        </section>
         <section className="zen-card zen-checklist-card">
           <div className="zen-checklist-heading"><div><div className="eyebrow eyebrow-quiet">BEFORE YOU JOIN</div><h2>Final checks</h2></div><span className="zen-progress-count" aria-live="polite">{completed} of {readinessSteps.length}</span></div>
           <div className="zen-progress-track" role="progressbar" aria-label="Demo readiness checklist" aria-valuemin={0} aria-valuemax={readinessSteps.length} aria-valuenow={completed}><span style={{ width: `${(completed / readinessSteps.length) * 100}%` }} /></div>
@@ -387,14 +363,35 @@ function ZenPage() {
           <button className="text-button zen-reset-button" type="button" onClick={() => setCheckedSteps([])} disabled={completed === 0}>Reset checklist</button>
         </section>
       </div>
-      <aside className="zen-side-column">
-        <section className="zen-anchor-card"><span className="zen-anchor-icon"><Icon name="spark" size={19} /></span><div className="eyebrow">KEEP THIS IN MIND</div><h2>You got this. You’re going to crush it.</h2><p>You know your stuff. Lead with one useful customer outcome and take them there.</p></section>
-        <section className="zen-card zen-recovery-card">
-          <div className="eyebrow eyebrow-quiet">IF THE DEMO WOBBLES</div><h2>Pause. Narrate. Pivot.</h2>
-          <div className="zen-recovery-steps"><div><strong>Pause</strong><span>Take a beat. You don’t have to fill every second.</span></div><div><strong>Narrate</strong><span>Say what you’re trying to show and what you’re checking.</span></div><div><strong>Pivot</strong><span>Use a screenshot or explain the outcome, then return to the customer’s goal.</span></div></div>
-          <blockquote>“Let me reset this view. The important thing to see is [outcome]. I’ll show that another way.”</blockquote>
-        </section>
-      </aside>
+    </div>
+    <div className="zen-supporting">
+      <section className="zen-card zen-spark-card" aria-labelledby="zen-spark-heading">
+        <div className="eyebrow eyebrow-quiet">AN EXTRA BOOST</div>
+        <h2 id="zen-spark-heading">Get in the Zone</h2>
+        <p className="zen-spark-description">Find your energy before you step into the room.</p>
+        <p className="zen-spark-credit"><strong>I Will Win</strong><span>By Motiversity · Starts at 1:49</span></p>
+        <ZenVideoPlayer
+          id="zen-spark-player"
+          videoId="ODF7qHx9QcU"
+          title="I Will Win — Motivational Speeches by Motiversity, starting at 1:49"
+          start={109}
+          open={openVideo === 'spark'}
+          onToggle={() => toggleVideo('spark')}
+          onWatch={watchOnYouTube}
+        />
+      </section>
+      <section className="zen-card zen-spark-card" aria-labelledby="zen-relax-heading">
+        <h2 id="zen-relax-heading">And don’t forget to… RELAX</h2>
+        <ZenVideoPlayer
+          id="zen-relax-player"
+          videoId="GHMbL9JxQpY"
+          title="RELAX video"
+          open={openVideo === 'relax'}
+          onToggle={() => toggleVideo('relax')}
+          onWatch={watchOnYouTube}
+        />
+      </section>
+      <section className="zen-anchor-card"><span className="zen-anchor-icon"><Icon name="spark" size={19} /></span><div className="eyebrow">KEEP THIS IN MIND</div><h2>You got this. You’re going to crush it.</h2><p>You know your stuff. Lead with one useful customer outcome and take them there.</p></section>
     </div>
   </div>
 }
