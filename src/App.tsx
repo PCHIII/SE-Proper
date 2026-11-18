@@ -378,7 +378,7 @@ function ZenPage() {
         />
       </section>
       <section className="zen-card zen-spark-card" aria-labelledby="zen-relax-heading">
-        <h2 id="zen-relax-heading">And don’t forget to… RELAX</h2>
+        <h2 id="zen-relax-heading">And don’t forget to… RELAX&nbsp;<span aria-hidden="true">🙂</span></h2>
         <ZenVideoPlayer
           id="zen-relax-player"
           videoId="GHMbL9JxQpY"

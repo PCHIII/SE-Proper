@@ -135,12 +135,14 @@ html[data-theme="dark"] .source-picker label { border-color: #383f3d; background
 .zen-supporting { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; margin-block: 14px; }
 .zen-card { padding: 18px; border: 1px solid #e9ebf0; border-radius: 11px; background: #fff; box-shadow: 0 3px 10px #30324b05; }
 .zen-card h2, .zen-anchor-card h2 { margin: 4px 0 0; color: #3e4355; font: 750 22px/1.2 'Manrope', sans-serif; letter-spacing: -.35px; }
+.zen-spark-card { display: flex; flex-direction: column; align-self: stretch; }
 .zen-spark-description, .zen-spark-note { margin: 10px 0 0; color: #747b6c; font-size: 14px; line-height: 1.6; }
 .zen-spark-credit { display: grid; gap: 4px; margin: 15px 0; color: #4b5061; font-size: 14px; line-height: 1.5; }
 .zen-spark-credit > span { color: #747b6c; font-size: 13px; }
 .zen-spark-card a { color: #596e39; text-underline-offset: 3px; }
 .zen-spark-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
-.zen-spark-card h2 + .zen-spark-actions { margin-top: 15px; }
+.zen-supporting:not(:has(.zen-spark-player)) .zen-spark-actions { margin-top: auto; }
+.zen-spark-card h2 + .zen-spark-actions { padding-top: 15px; }
 .zen-spark-actions > a { font-size: 13px; font-weight: 700; }
 .zen-spark-player { display: block; width: 100%; aspect-ratio: 16 / 9; margin-top: 14px; border: 0; border-radius: 8px; background: #141616; }
 html[data-theme="dark"] .zen-spark-description, html[data-theme="dark"] .zen-spark-note, html[data-theme="dark"] .zen-spark-credit > span { color: #a8b19c; }
@@ -257,6 +259,7 @@ html[data-theme="dark"] .zen-playbook {
 }
 @media (max-width: 850px) { .zen-layout { grid-template-columns: 1fr; }.zen-supporting { grid-template-columns: repeat(2, minmax(0, 1fr)); }.zen-supporting > .zen-anchor-card { grid-column: 1 / -1; } }
 @media (max-width: 680px) { .zen-supporting { grid-template-columns: 1fr; }.zen-card, .zen-anchor-card, .zen-go-time-card { padding: 14px; }.zen-checklist-item { font-size: 14px; }.zen-anchor-card h2 { font-size: 24px; }.zen-anchor-card p { font-size: 14px; } }
+@media (max-width: 680px) { .zen-supporting:not(:has(.zen-spark-player)) { grid-template-rows: repeat(2, 1fr) auto; } }
 @container (max-width: 320px) {
   .zen-go-time-main { grid-template-columns: 1fr; gap: 12px; }
   .zen-go-time-clock { font-size: 38px; }
