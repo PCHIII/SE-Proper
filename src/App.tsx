@@ -1,9 +1,11 @@
 import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
 import DemoPlaybook from './DemoPlaybook'
-import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import Shadow from './Shadow'
+import { createShadowState, shadowReducer } from './shadowEvents'
+import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
 
-type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'create' | 'detail' | 'contribute' | 'zen' | 'apps'; id?: string; query?: string }
+type Route = { page: 'home' | 'about' | 'explore' | 'dashboard' | 'shadow' | 'create' | 'detail' | 'contribute' | 'zen' | 'apps'; id?: string; query?: string }
 
 const meetingSources = [
   { name: 'Microsoft Teams', title: 'Northstar discovery and solution review', detail: 'Transcript · 32 min' },
@@ -22,6 +24,7 @@ function routeFromHash(): Route {
   if (path === '/about') return { page: 'about' }
   if (path === '/explore') return { page: 'explore', query }
   if (path === '/dashboard') return { page: 'dashboard' }
+  if (path === '/shadow' || path === '/dashboard/shadow') return { page: 'shadow' }
   if (path === '/create') return { page: 'create' }
   if (path === '/zen') return { page: 'zen' }
   if (path === '/apps') return { page: 'apps' }
@@ -36,6 +39,7 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
     grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" /></>,
     plus: <><path d="M12 5v14M5 12h14" /></>,
     bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></>,
+    ghost: <><path d="M4 20v-8a8 8 0 0 1 16 0v8l-4-2-4 2-4-2-4 2Z" /><circle cx="9" cy="11" r="1.2" fill="currentColor" stroke="none" /><circle cx="15" cy="11" r="1.2" fill="currentColor" stroke="none" /></>,
     users: <><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="10" cy="7" r="4" /><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
     plug: <><path d="M12 22v-5M9 8V2M15 8V2M18 8v4a6 6 0 0 1-12 0V8z" /></>,
     arrow: <><path d="M5 12h14M13 6l6 6-6 6" /></>,
@@ -64,6 +68,7 @@ function App() {
   const [route, setRoute] = useState<Route>(routeFromHash)
   const [useCases, setUseCases] = useState<UseCase[]>(initialUseCases)
   const [requests, setRequests] = useState<HelpRequest[]>(sampleRequests)
+  const [shadowEvents, dispatchShadow] = useReducer(shadowReducer, undefined, () => createShadowState())
   const [seenRequests, setSeenRequests] = useState<string[]>(() => {
     try { const stored: unknown = JSON.parse(localStorage.getItem('se-proper-seen-signals') || '[]'); return Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : [] } catch { return [] }
   })
@@ -145,6 +150,7 @@ function App() {
           <NavItem icon="grid" label="Explore use cases" active={route.page === 'explore' || route.page === 'detail'} onClick={() => navigate('/explore')} />
           <NavItem icon="plus" label="Create use case" active={route.page === 'create'} onClick={() => navigate('/create')} />
           <NavItem icon="bell" badge={unseenSignals} label="Signal" active={route.page === 'dashboard'} onClick={() => navigate('/dashboard')} />
+          <NavItem icon="ghost" label="Shadow" active={route.page === 'shadow'} onClick={() => navigate('/shadow')} />
           <NavItem icon="plug" label="Apps" active={route.page === 'apps'} onClick={() => navigate('/apps')} />
           <NavItem icon="rocket" label="Go Time" active={route.page === 'zen'} onClick={() => navigate('/zen')} />
           <NavItem icon="file" label="About SE Proper" active={route.page === 'about'} onClick={() => navigate('/about')} />
@@ -178,6 +184,7 @@ function App() {
           {route.page === 'about' && <AboutPage navigate={navigate} />}
           {route.page === 'explore' && <ExplorePage cases={useCases} initialQuery={route.query || ''} navigate={navigate} />}
           {route.page === 'dashboard' && <Exchange requests={requests} onChange={setRequests} cases={useCases} navigate={navigate} onConvert={(request) => { setRequestDraft(request); navigate('/create') }} />}
+          {route.page === 'shadow' && <Shadow events={shadowEvents} dispatch={dispatchShadow} />}
           {route.page === 'apps' && <AppsPage />}
           {route.page === 'zen' && <ZenPage />}
           {route.page === 'create' && <UseCaseForm initialRequest={requestDraft} onCancel={() => { setRequestDraft(null); navigate('/dashboard') }} onSubmit={publishUseCase} />}
@@ -192,11 +199,11 @@ function App() {
 }
 
 function NavItem({ icon, label, active, onClick, badge = 0 }: { icon: string; label: string; active: boolean; onClick: () => void; badge?: number }) {
-  return <button className={`nav-item ${active ? 'nav-active' : ''}`} onClick={onClick} aria-label={badge > 0 ? `${label}, ${badge} new requests` : label}><span className="nav-icon"><Icon name={icon} size={18} />{badge > 0 && <span className="signal-count" aria-hidden="true">{badge > 99 ? '99+' : badge}</span>}</span><span>{label}</span>{active && <span className="nav-active-mark" />}</button>
+  return <button className={`nav-item ${active ? 'nav-active' : ''}`} onClick={onClick} aria-current={active ? 'page' : undefined} aria-label={badge > 0 ? `${label}, ${badge} new requests` : label}><span className="nav-icon"><Icon name={icon} size={18} />{badge > 0 && <span className="signal-count" aria-hidden="true">{badge > 99 ? '99+' : badge}</span>}</span><span>{label}</span>{active && <span className="nav-active-mark" />}</button>
 }
 
 function pageTitle(page: Route['page']) {
-  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Signal', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', zen: 'Go Time', apps: 'Apps' })[page]
+  return ({ home: 'Home', about: 'About SE Proper', explore: 'Explore use cases', dashboard: 'Signal', shadow: 'Shadow', create: 'Create a use case', detail: 'Use case details', contribute: 'Add a contribution', zen: 'Go Time', apps: 'Apps' })[page]
 }
 
 function AppsPage() {
