@@ -57,7 +57,7 @@ html[data-theme='dark'] .shadow-page :is(select, input, textarea) { color-scheme
 .shadow-toggle button { min-height: 36px; padding: 4px 12px; border: 0; border-radius: 5px; color: var(--shadow-text); background: none; font-size: .875rem; font-weight: 700; }
 .shadow-toggle button:hover, .shadow-toggle button[aria-pressed='true'] { color: var(--shadow-accent); background: var(--shadow-accent-bg); }
 
-.shadow-calendar-layout { display: grid; grid-template-columns: minmax(265px, 34%) minmax(0, 1fr); align-items: start; gap: 16px; }
+.shadow-calendar-layout { display: grid; grid-template-columns: minmax(490px, 55%) minmax(0, 1fr); align-items: start; gap: 16px; }
 .shadow-calendar, .shadow-card, .shadow-form { border: 1px solid var(--shadow-border); border-radius: 12px; background: var(--shadow-panel); }
 .shadow-calendar { padding: 16px; }
 .shadow-calendar-heading { flex-wrap: nowrap; margin-bottom: 13px; }
@@ -65,12 +65,14 @@ html[data-theme='dark'] .shadow-page :is(select, input, textarea) { color-scheme
 .shadow-month-controls { display: flex; gap: 5px; }
 .shadow-month-controls button { display: grid; place-items: center; width: 38px; height: 38px; padding: 0 0 3px; border: 1px solid var(--shadow-border); border-radius: 7px; color: var(--ink); background: var(--shadow-field); font-size: 1.5rem; line-height: 1; }
 .shadow-month-controls button:hover { color: var(--shadow-accent); border-color: currentColor; }
-.shadow-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; }
+.shadow-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; text-align: center; }
 .shadow-weekday { padding: 3px 0 8px; color: var(--shadow-text); font-size: .75rem; }
-.shadow-day { position: relative; display: grid; place-items: center; min-height: 37px; padding: 0; border: 1px solid transparent; border-radius: 6px; color: var(--shadow-text); background: none; font-size: .875rem; }
+.shadow-day { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; min-height: 70px; padding: 6px 1px 9px; border: 1px solid transparent; border-radius: 8px; color: var(--shadow-text); background: none; font-size: 1rem; line-height: 20px; }
 .shadow-day[aria-current='date'] { border-color: var(--shadow-border); color: var(--ink); font-weight: 800; }
-.shadow-day-event { padding-bottom: 5px; color: var(--shadow-accent); background: var(--shadow-accent-bg); font-weight: 800; }
-.shadow-day-event span { position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.shadow-day-event { color: var(--shadow-accent); background: var(--shadow-accent-bg); font-weight: 800; }
+.shadow-day-hosts { display: flex; align-items: center; justify-content: center; gap: 2px; width: 100%; }
+.shadow-day-initials { display: grid; place-items: center; flex: 0 1 22px; min-width: 0; aspect-ratio: 1; container-type: inline-size; border-radius: 50%; color: var(--shadow-panel); background: var(--shadow-accent); }
+.shadow-day-initials > span { font-size: min(.6875rem, 52cqi); line-height: 1; }
 .shadow-day-event:hover, .shadow-day-event[aria-pressed='true'] { border-color: currentColor; }
 .shadow-calendar p { margin: 13px 0 0; color: var(--shadow-text); font-size: .8125rem; }
 .shadow-date-filter { padding: 0 2px; color: var(--shadow-text); font-size: .875rem; }
@@ -82,10 +84,17 @@ html[data-theme='dark'] .shadow-page :is(select, input, textarea) { color-scheme
 .shadow-date-tile { display: grid; justify-items: center; align-content: center; gap: 1px; width: 56px; height: 57px; border-radius: 9px; color: var(--shadow-accent); background: var(--shadow-accent-bg); }
 .shadow-date-tile span { font-size: .75rem; font-weight: 800; text-transform: uppercase; }
 .shadow-date-tile strong { font: 800 1.375rem/1.05 'Manrope', sans-serif; }
-.shadow-card-info time, .shadow-byline { color: var(--shadow-text); font-size: .875rem; line-height: 1.4; }
+.shadow-card-info time, .shadow-context { color: var(--shadow-text); font-size: .875rem; line-height: 1.4; }
 .shadow-card-info h3 { margin: 4px 0; font: 800 1.125rem/1.35 'Manrope', sans-serif; }
-.shadow-byline { margin: 0 0 8px; }
+.shadow-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr)); gap: 8px 16px; margin: 10px 0 12px; font-size: .875rem; }
+.shadow-details dt { color: var(--shadow-text); font-size: .8125rem; }
+.shadow-details dd { margin: 2px 0 0; font-weight: 700; }
+.shadow-stage { display: inline-block; padding: 2px 7px; border-radius: 5px; color: var(--shadow-accent); background: var(--shadow-accent-bg); }
+.shadow-context { margin: 0 0 6px; }
 .shadow-takeaway { margin: 0; line-height: 1.55; }
+.shadow-notes { margin-top: 12px; padding: 10px 12px; border-radius: 7px; background: var(--shadow-field); }
+.shadow-notes h4 { margin: 0 0 4px; font-size: .875rem; }
+.shadow-notes p { margin: 0; color: var(--shadow-text); font-size: .875rem; line-height: 1.5; white-space: pre-wrap; }
 .shadow-card-actions, .shadow-hosting { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--shadow-border); }
 .shadow-card-actions { color: var(--shadow-text); font-size: .875rem; }
 .shadow-page .button { font-size: .875rem; }
@@ -105,19 +114,22 @@ html[data-theme='dark'] .shadow-page :is(select, input, textarea) { color-scheme
 .shadow-form p { margin: 0; color: var(--shadow-text); font-size: .875rem; }
 .shadow-form label { display: grid; gap: 6px; min-width: 0; font-size: .875rem; font-weight: 700; }
 .shadow-form :is(input, textarea, select) { width: 100%; min-width: 0; background: var(--shadow-field); font-size: 1rem; font-weight: 400; }
+.shadow-form input[readonly] { color: var(--shadow-text); }
 .shadow-form textarea { resize: vertical; }
+.shadow-form-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 12px; }
 .shadow-form-fields { display: grid; grid-template-columns: minmax(210px, 2fr) 1fr 1fr; gap: 12px; }
 .shadow-form-actions { justify-content: start; }
 .shadow-form .shadow-error { color: var(--shadow-error); }
 
-@media (max-width: 700px) {
+@media (max-width: 1080px) {
   .shadow-calendar-layout { grid-template-columns: minmax(0, 1fr); }
-  .shadow-calendar-grid { gap: 5px; }
-  .shadow-day { min-height: 42px; }
 }
 
 @media (max-width: 640px) {
   .shadow-heading { margin-bottom: 16px; }
+  .shadow-calendar { padding: 12px; }
+  .shadow-calendar-grid { gap: 4px; }
+  .shadow-day { min-height: 62px; }
   .shadow-form-fields { grid-template-columns: 1fr 1fr; }
   .shadow-form-fields > :first-child { grid-column: 1 / -1; }
   .shadow-views { column-gap: 12px; }

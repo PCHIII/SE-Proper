@@ -6,11 +6,17 @@ export const shadowProfiles = {
 
 export type ShadowProfile = keyof typeof shadowProfiles
 
+export const shadowStages = ['Discovery', 'Demo', 'POC'] as const
+
 export type ShadowEvent = {
   id: string
   topic: string
+  aeName: string
+  customerName: string
+  stage: (typeof shadowStages)[number]
   customerContext: string
   takeaway: string
+  notes: string
   host: ShadowProfile
   start: number
   end: number
@@ -19,7 +25,7 @@ export type ShadowEvent = {
   guests: ShadowProfile[]
 }
 
-export type ShadowDraft = Pick<ShadowEvent, 'id' | 'topic' | 'customerContext' | 'takeaway' | 'start' | 'end' | 'spots'>
+export type ShadowDraft = Omit<ShadowEvent, 'host' | 'requests' | 'guests'>
 
 export type ShadowAction = { actor: ShadowProfile; now: number } & (
   | { type: 'publish'; draft: ShadowDraft }
@@ -27,42 +33,47 @@ export type ShadowAction = { actor: ShadowProfile; now: number } & (
   | { type: 'approve'; eventId: string; requester: ShadowProfile }
 )
 
-function upcomingWorkday(now: Date, workdays: number, hour: number, minute: number) {
-  const date = new Date(now)
-  while (workdays > 0) {
-    date.setDate(date.getDate() + 1)
-    if (date.getDay() !== 0 && date.getDay() !== 6) workdays--
-  }
-  date.setHours(hour, minute, 0, 0)
-  return date.getTime()
-}
-
-export function createShadowState(now = new Date()): ShadowEvent[] {
-  const samples: (Omit<ShadowEvent, 'start' | 'end' | 'guests'> & { workdays: number; hour: number; minute: number; duration: number })[] = [
+export function createShadowState(): ShadowEvent[] {
+  const samples: (Omit<ShadowEvent, 'start' | 'end' | 'guests'> & { localStart: string; duration: number })[] = [
     {
       id: 'identity', host: 'maya', topic: 'Automate employee onboarding and offboarding', customerContext: 'Healthcare IT team',
+      aeName: 'Alex Rivera', customerName: 'Cedar Grove Health', stage: 'Demo',
       takeaway: 'Watch Maya connect the buyer’s onboarding delays to single sign-on and automated provisioning, then handle questions about rolling it out department by department.',
-      workdays: 1, hour: 14, minute: 0, duration: 45, spots: 2, requests: ['riley'],
+      notes: 'The demo covers single sign-on and automated provisioning for new hires and departing employees.',
+      localStart: '2026-11-23T14:00', duration: 45, spots: 2, requests: ['riley'],
+    },
+    {
+      id: 'ai-agent-ownership', host: 'riley', topic: 'Detect AI agents and assign ownership', customerContext: 'AI platform and governance team',
+      aeName: 'Sam Chen', customerName: 'Fieldstone Financial', stage: 'Demo',
+      takeaway: 'Watch Riley identify AI agents in a customer’s LLM environment and decide who should be accountable for each one.',
+      notes: 'The demo uses sample LLM gateway logs to group model calls by application, then checks workflow logs to confirm agent activity. Riley records each confirmed agent and its owner in an agent inventory.',
+      localStart: '2026-11-23T10:00', duration: 30, spots: 2, requests: [],
     },
     {
       id: 'webhooks', host: 'jordan', topic: 'Keep payment processing reliable during outages', customerContext: 'Payments engineering team',
+      aeName: 'Casey Brooks', customerName: 'Harborline Payments', stage: 'Demo',
       takeaway: 'See how Jordan turns the buyer’s outage scenario into a live demo of retrying a failed payment event and answers questions about duplicate processing.',
-      workdays: 2, hour: 11, minute: 30, duration: 30, spots: 1, requests: [],
+      notes: '',
+      localStart: '2026-11-24T11:30', duration: 30, spots: 1, requests: [],
     },
     {
       id: 'discovery', host: 'riley', topic: 'Route shipment exceptions to the right team', customerContext: 'Logistics operations team',
-      takeaway: 'Watch Riley use the buyer’s dispatch process to tailor a demo of shipment exception routing and agree on what the team should validate in a pilot.',
-      workdays: 4, hour: 13, minute: 0, duration: 60, spots: 2, requests: [],
+      aeName: 'Sam Chen', customerName: 'Wayline Logistics', stage: 'Discovery',
+      takeaway: 'Watch Riley map the buyer’s dispatch process, identify where shipment exceptions get stuck, and agree on what the team should validate in a pilot.',
+      notes: '',
+      localStart: '2026-12-02T13:00', duration: 60, spots: 2, requests: [],
     },
     {
       id: 'poc-handoff', host: 'jordan', topic: 'POC hand-off and use case outline', customerContext: 'IT operations team evaluating workflow automation',
+      aeName: 'Casey Brooks', customerName: 'Elm Ridge Systems', stage: 'POC',
       takeaway: 'Watch Jordan turn discovery notes into a use case outline, confirm the buyer’s success criteria, and hand off scope, owners, and next steps for the proof of concept.',
-      workdays: 5, hour: 13, minute: 0, duration: 45, spots: 2, requests: [],
+      notes: '',
+      localStart: '2026-12-04T13:00', duration: 45, spots: 2, requests: [],
     },
   ]
 
-  return samples.map(({ workdays, hour, minute, duration, ...event }) => {
-    const start = upcomingWorkday(now, workdays, hour, minute)
+  return samples.map(({ localStart, duration, ...event }) => {
+    const start = new Date(localStart).getTime()
     return { ...event, start, end: start + duration * 60_000, guests: [] }
   })
 }

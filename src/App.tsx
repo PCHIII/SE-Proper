@@ -1,6 +1,7 @@
 import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
 import DemoPlaybook from './DemoPlaybook'
 import Shadow from './Shadow'
+import { initials } from './initials'
 import { createShadowState, shadowReducer } from './shadowEvents'
 import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
@@ -776,7 +777,6 @@ function slug(value: string) { return value.toLowerCase().replace(/[^a-z0-9]+/g,
 function formatDate(date: Date) { return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date) }
 function formatSize(bytes: number) { return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB` }
 function fileToResource(file: File, description: string): Resource { return { id: `${file.name}-${file.lastModified}`, name: file.name, kind: file.name.split('.').pop()?.toUpperCase() || 'FILE', size: formatSize(file.size), description: description.trim() || 'Supporting file added in this demo.', file } }
-function initials(name: string) { return name.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'SE' }
 function avatarColor(name: string) { const colors = ['avatar-purple', 'avatar-peach', 'avatar-blue', 'avatar-mint', 'avatar-pink']; const number = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); return colors[number % colors.length] }
 function downloadResource(resource: Resource) {
   let url: string

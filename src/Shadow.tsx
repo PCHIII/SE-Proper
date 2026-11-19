@@ -1,5 +1,6 @@
 import { useState, type Dispatch, type FormEvent, type ReactNode } from 'react'
-import { remainingSpots, shadowProfiles, type ShadowAction, type ShadowDraft, type ShadowEvent, type ShadowProfile } from './shadowEvents'
+import { initials } from './initials'
+import { remainingSpots, shadowProfiles, shadowStages, type ShadowAction, type ShadowDraft, type ShadowEvent, type ShadowProfile } from './shadowEvents'
 import './shadow.css'
 
 const monthYear = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' })
@@ -22,7 +23,7 @@ function spotLabel(spots: number) {
 
 function requestLabel(event: ShadowEvent, profile: ShadowProfile, now: number) {
   if (event.guests.includes(profile)) return 'Invited'
-  if (event.start <= now) return 'Demo started'
+  if (event.start <= now) return 'Session started'
   return remainingSpots(event) ? 'Pending approval' : 'No spots left'
 }
 
@@ -68,7 +69,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
       <header className="shadow-heading">
         <div>
           <h1>Shadow</h1>
-          <p>Watch an SE lead a customer demo and learn how they tailor it to the buyer’s needs. Open your own demo for others to observe, or request to shadow. Once the host approves, you’ll be added to the meeting invite.</p>
+          <p>Observe how an SE leads a customer session. Open your own session for others to observe, or request to shadow. Once the host approves, you’ll be added to the meeting invite.</p>
         </div>
         <button className="button button-primary" type="button" aria-expanded={composing} aria-controls="shadow-compose" onClick={() => setComposing(!composing)}>
           {composing ? 'Close form' : 'Open for shadowing'}
@@ -101,7 +102,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
 
       {view === 'Upcoming' && <section aria-labelledby="shadow-upcoming-title">
         <div className="shadow-section-heading">
-          <h2 id="shadow-upcoming-title">Upcoming customer demos</h2>
+          <h2 id="shadow-upcoming-title">Upcoming customer sessions</h2>
           <div className="shadow-toggle" role="group" aria-label="Schedule view">
             {(['Calendar', 'List'] as const).map((item) => <button key={item} type="button" aria-pressed={layout === item} onClick={() => setLayout(item)}>{item}</button>)}
           </div>
@@ -121,7 +122,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
               const alreadyRequested = event.requests.includes(profile)
               return <ShadowCard key={event.id} event={event}>
                 <div className="shadow-card-actions">
-                  <span>{available ? `${spotLabel(available)} open` : 'Demo full'}</span>
+                  <span>{available ? `${spotLabel(available)} open` : 'Session full'}</span>
                   {event.host === profile ? <button className="button button-outline" type="button" onClick={() => changeView('Hosting')}>Manage requests</button>
                     : alreadyRequested ? <span className="shadow-status" data-invited={event.guests.includes(profile)}>{requestLabel(event, profile, now)}</span>
                     : available > 0 && <button className="button button-outline" type="button" aria-label={`Request to shadow ${event.topic}`} onClick={() => {
@@ -130,7 +131,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
                 </div>
               </ShadowCard>
             })}
-            {!visibleEvents.length && <p className="shadow-empty">No upcoming demos {layout === 'Calendar' ? 'this month.' : 'yet.'}</p>}
+            {!visibleEvents.length && <p className="shadow-empty">No upcoming sessions {layout === 'Calendar' ? 'this month.' : 'yet.'}</p>}
           </div>
         </div>
       </section>}
@@ -143,10 +144,10 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
             {invited && <p className="shadow-invite">You’re on the guest list for this Shadow calendar event.</p>}
           </ShadowCard>
         })}
-        {!requested.length && <p className="shadow-empty">Your requests will appear here after you ask to shadow a demo.</p>}
+        {!requested.length && <p className="shadow-empty">Your requests will appear here after you ask to shadow a session.</p>}
       </section>}
 
-      {view === 'Hosting' && <section className="shadow-events" aria-label="Demos I’m hosting">
+      {view === 'Hosting' && <section className="shadow-events" aria-label="Sessions I’m hosting">
         {hosting.map((event) => <ShadowCard key={event.id} event={event}>
           <div className="shadow-hosting">
             <div className="shadow-roster"><strong>Guest list</strong><span>{event.guests.map((guest) => shadowProfiles[guest]).join(', ') || 'No shadow guests yet'}</span></div>
@@ -164,7 +165,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
             })}
           </div>
         </ShadowCard>)}
-        {!hosting.length && <p className="shadow-empty">Open a demo for shadowing to see requests and manage its guest list here.</p>}
+        {!hosting.length && <p className="shadow-empty">Open a session for shadowing to see requests and manage its guest list here.</p>}
       </section>}
     </div>
   )
@@ -182,10 +183,13 @@ function ShadowCalendar({ month, events, selectedDay, onMonthChange, onDayChange
   const offset = new Date(year, monthIndex, 1).getDay()
   const lastDay = new Date(year, monthIndex + 1, 0).getDate()
   const today = dateKey(Date.now())
-  const counts = new Map<number, number>()
+  const scheduleByDay = new Map<number, { count: number; openHosts: Set<ShadowProfile> }>()
   for (const event of events) {
     const day = new Date(event.start).getDate()
-    counts.set(day, (counts.get(day) ?? 0) + 1)
+    const schedule = scheduleByDay.get(day) ?? { count: 0, openHosts: new Set<ShadowProfile>() }
+    schedule.count++
+    if (remainingSpots(event) > 0) schedule.openHosts.add(event.host)
+    scheduleByDay.set(day, schedule)
   }
 
   return <section className="shadow-calendar" aria-label="Shadow calendar">
@@ -202,13 +206,30 @@ function ShadowCalendar({ month, events, selectedDay, onMonthChange, onDayChange
       {Array.from({ length: lastDay }, (_, index) => {
         const day = index + 1
         const date = new Date(year, monthIndex, day)
-        const count = counts.get(day)
+        const schedule = scheduleByDay.get(day)
         const isToday = dateKey(date) === today
-        return count ? <button key={day} className="shadow-day shadow-day-event" type="button" aria-current={isToday ? 'date' : undefined} aria-pressed={selectedDay === day} aria-label={`${fullDate.format(date)}, ${count} ${count === 1 ? 'demo' : 'demos'}`} onClick={() => onDayChange(day)}>{day}<span aria-hidden="true" /></button>
-          : <span className="shadow-day" key={day} aria-current={isToday ? 'date' : undefined}>{day}</span>
+        if (!schedule) return <span className="shadow-day" key={day} aria-current={isToday ? 'date' : undefined}>{day}</span>
+
+        const { count, openHosts } = schedule
+        const names = Array.from(openHosts, (host) => shadowProfiles[host])
+        const availability = names.length ? `open spots with ${names.join(', ')}` : 'no open spots'
+        return <button
+          key={day}
+          className="shadow-day shadow-day-event"
+          type="button"
+          aria-current={isToday ? 'date' : undefined}
+          aria-pressed={selectedDay === day}
+          aria-label={`${fullDate.format(date)}, ${count} ${count === 1 ? 'session' : 'sessions'}, ${availability}`}
+          onClick={() => onDayChange(day)}
+        >
+          {names.length > 0 && <span className="shadow-day-hosts" aria-hidden="true">
+            {names.map((name) => <span key={name} className="shadow-day-initials" title={name}><span>{initials(name)}</span></span>)}
+          </span>}
+          {day}
+        </button>
       })}
     </div>
-    <p>Select a marked date to see its demos.</p>
+    <p>Initials show SEs with open spots. Select a marked date to see its sessions.</p>
   </section>
 }
 
@@ -219,8 +240,18 @@ function ShadowCard({ event, children }: { event: ShadowEvent; children: ReactNo
       <div className="shadow-card-info">
         <time dateTime={new Date(event.start).toISOString()}>{shortDate.format(event.start)} · {time.formatRange(event.start, event.end)}</time>
         <h3>{event.topic}</h3>
-        <p className="shadow-byline">Hosted by {shadowProfiles[event.host]}{event.customerContext && ` · ${event.customerContext}`}</p>
+        <dl className="shadow-details">
+          <div><dt>AE name</dt><dd>{event.aeName || 'Unspecified'}</dd></div>
+          <div><dt>SE name</dt><dd>{shadowProfiles[event.host]}</dd></div>
+          <div><dt>Customer name</dt><dd>{event.customerName || 'Unspecified'}</dd></div>
+          <div><dt>Stage</dt><dd><span className="shadow-stage">{event.stage}</span></dd></div>
+        </dl>
+        {event.customerContext && <p className="shadow-context">{event.customerContext}</p>}
         <p className="shadow-takeaway">{event.takeaway}</p>
+        {event.notes && <div className="shadow-notes">
+          <h4>Hosting SE notes</h4>
+          <p>{event.notes}</p>
+        </div>}
       </div>
     </div>
     {children}
@@ -235,14 +266,20 @@ function ShadowForm({ profile, onPublish, onCancel }: { profile: ShadowProfile; 
     const fields = new FormData(event.currentTarget)
     const topic = String(fields.get('topic')).trim()
     const takeaway = String(fields.get('takeaway')).trim()
+    const stage = shadowStages.find((option) => option === fields.get('stage'))
     const start = new Date(String(fields.get('start'))).getTime()
-    if (!topic || !takeaway) return setError('Enter a demo title and what an SE can learn.')
+    if (!topic || !takeaway) return setError('Enter a session title and what an SE can learn.')
+    if (!stage) return setError('Choose an engagement stage.')
     if (!Number.isFinite(start) || start <= Date.now()) return setError('Choose a date and start time in the future.')
 
     onPublish({
       id: crypto.randomUUID(),
       topic,
+      aeName: String(fields.get('aeName')).trim(),
+      customerName: String(fields.get('customerName')).trim(),
+      stage,
       takeaway,
+      notes: String(fields.get('notes')).trim(),
       start,
       end: start + Number(fields.get('duration')) * 60_000,
       spots: Number(fields.get('spots')),
@@ -251,8 +288,17 @@ function ShadowForm({ profile, onPublish, onCancel }: { profile: ShadowProfile; 
   }
 
   return <form className="shadow-form" onSubmit={submit}>
-    <div><h2>Open a customer demo for shadowing</h2><p>Hosting as {shadowProfiles[profile]}</p></div>
-    <label>Customer-facing demo title<input name="topic" required maxLength={100} placeholder="e.g. Automate employee onboarding and offboarding" /></label>
+    <h2>Open a customer session for shadowing</h2>
+    <label>Customer-facing session title<input name="topic" required maxLength={100} placeholder="e.g. Automate employee onboarding and offboarding" /></label>
+    <div className="shadow-form-details">
+      <label>AE name<input name="aeName" maxLength={100} /></label>
+      <label>SE name<input value={shadowProfiles[profile]} readOnly /></label>
+      <label>Customer name<input name="customerName" maxLength={100} /></label>
+      <label>Engagement stage<select name="stage" defaultValue="" required>
+        <option value="" disabled>Choose a stage</option>
+        {shadowStages.map((stage) => <option key={stage} value={stage}>{stage}</option>)}
+      </select></label>
+    </div>
     <div className="shadow-form-fields">
       <label>Start time ({Intl.DateTimeFormat().resolvedOptions().timeZone})<input name="start" type="datetime-local" required /></label>
       <label>Duration<select name="duration" defaultValue="45">{[15, 30, 45, 60, 90, 120].map((minutes) => <option key={minutes} value={minutes}>{minutes} minutes</option>)}</select></label>
@@ -260,6 +306,7 @@ function ShadowForm({ profile, onPublish, onCancel }: { profile: ShadowProfile; 
     </div>
     <label>Customer context (optional)<input name="customerContext" maxLength={80} placeholder="e.g. Healthcare IT team evaluating automated provisioning" /></label>
     <label>What can a shadowing SE learn?<textarea name="takeaway" required maxLength={300} rows={3} placeholder="e.g. Watch how I connect automated provisioning to the buyer’s onboarding delays." /></label>
+    <label>Hosting SE notes (optional)<textarea name="notes" maxLength={1000} rows={3} placeholder="Add context about the engagement or what the session will cover." /></label>
     {error && <p className="shadow-error" role="alert">{error}</p>}
     <div className="shadow-form-actions">
       <button className="button button-primary" type="submit">Post to Shadow calendar</button>
