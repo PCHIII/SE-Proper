@@ -90,6 +90,7 @@ html[data-theme='dark'] .shadow-page :is(select, input, textarea) { color-scheme
 .shadow-details dt { color: var(--shadow-text); font-size: .8125rem; }
 .shadow-details dd { margin: 2px 0 0; font-weight: 700; }
 .shadow-stage { display: inline-block; padding: 2px 7px; border-radius: 5px; color: var(--shadow-accent); background: var(--shadow-accent-bg); }
+.shadow-stage-description { display: block; margin-top: 4px; color: var(--shadow-text); font-size: .8125rem; font-weight: 400; line-height: 1.4; }
 .shadow-context { margin: 0 0 6px; }
 .shadow-takeaway { margin: 0; line-height: 1.55; }
 .shadow-notes { margin-top: 12px; padding: 10px 12px; border-radius: 7px; background: var(--shadow-field); }

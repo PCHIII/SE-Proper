@@ -11,6 +11,11 @@ const shortDate = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 's
 const time = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const views = ['Upcoming', 'My requests', 'Hosting'] as const
+const stageDescriptions: Record<ShadowEvent['stage'], string> = {
+  Discovery: 'Often the first customer call. Listen for how the team learns what the customer needs.',
+  Demo: 'Watch how the SE shows a solution in the context of the customer’s needs.',
+  POC: 'Listen for what the team will test in the proof of concept and how they’ll judge success.',
+}
 
 function dateKey(value: Date | number) {
   const date = new Date(value)
@@ -69,7 +74,7 @@ export default function Shadow({ events, dispatch }: { events: ShadowEvent[]; di
       <header className="shadow-heading">
         <div>
           <h1>Shadow</h1>
-          <p>Observe how an SE leads a customer session. Open your own session for others to observe, or request to shadow. Once the host approves, you’ll be added to the meeting invite.</p>
+          <p>Join a customer call to listen and learn how another SE leads it. Use the engagement stage to choose what to observe. Once the host approves your request, you’ll be added to the meeting invite.</p>
         </div>
         <button className="button button-primary" type="button" aria-expanded={composing} aria-controls="shadow-compose" onClick={() => setComposing(!composing)}>
           {composing ? 'Close form' : 'Open for shadowing'}
@@ -244,12 +249,12 @@ function ShadowCard({ event, children }: { event: ShadowEvent; children: ReactNo
           <div><dt>AE name</dt><dd>{event.aeName || 'Unspecified'}</dd></div>
           <div><dt>SE name</dt><dd>{shadowProfiles[event.host]}</dd></div>
           <div><dt>Customer name</dt><dd>{event.customerName || 'Unspecified'}</dd></div>
-          <div><dt>Stage</dt><dd><span className="shadow-stage">{event.stage}</span></dd></div>
+          <div><dt>Stage</dt><dd><span className="shadow-stage">{event.stage}</span><span className="shadow-stage-description">{stageDescriptions[event.stage]}</span></dd></div>
         </dl>
         {event.customerContext && <p className="shadow-context">{event.customerContext}</p>}
         <p className="shadow-takeaway">{event.takeaway}</p>
         {event.notes && <div className="shadow-notes">
-          <h4>Hosting SE notes</h4>
+          <h4>Planned agenda</h4>
           <p>{event.notes}</p>
         </div>}
       </div>
@@ -305,8 +310,8 @@ function ShadowForm({ profile, onPublish, onCancel }: { profile: ShadowProfile; 
       <label>Shadow spots<input name="spots" type="number" min="1" max="5" defaultValue="2" required /></label>
     </div>
     <label>Customer context (optional)<input name="customerContext" maxLength={80} placeholder="e.g. Healthcare IT team evaluating automated provisioning" /></label>
-    <label>What can a shadowing SE learn?<textarea name="takeaway" required maxLength={300} rows={3} placeholder="e.g. Watch how I connect automated provisioning to the buyer’s onboarding delays." /></label>
-    <label>Hosting SE notes (optional)<textarea name="notes" maxLength={1000} rows={3} placeholder="Add context about the engagement or what the session will cover." /></label>
+    <label>What should observers listen for?<textarea name="takeaway" required maxLength={300} rows={3} placeholder="e.g. How I ask about a recent delay and find out what needs to change." /></label>
+    <label>Planned agenda (optional)<textarea name="notes" maxLength={1000} rows={3} placeholder="What topics or questions will this session cover?" /></label>
     {error && <p className="shadow-error" role="alert">{error}</p>}
     <div className="shadow-form-actions">
       <button className="button button-primary" type="submit">Post to Shadow calendar</button>

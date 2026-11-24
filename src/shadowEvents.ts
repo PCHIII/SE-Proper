@@ -39,14 +39,14 @@ export function createShadowState(): ShadowEvent[] {
       id: 'identity', host: 'maya', topic: 'Automate employee onboarding and offboarding', customerContext: 'Healthcare IT team',
       aeName: 'Alex Rivera', customerName: 'Cedar Grove Health', stage: 'Demo',
       takeaway: 'Watch Maya connect the buyer’s onboarding delays to single sign-on and automated provisioning, then handle questions about rolling it out department by department.',
-      notes: 'The demo covers single sign-on and automated provisioning for new hires and departing employees.',
+      notes: 'The demo will cover single sign-on and automatic access changes when employees join or leave.',
       localStart: '2026-11-23T14:00', duration: 45, spots: 2, requests: ['riley'],
     },
     {
       id: 'ai-agent-ownership', host: 'riley', topic: 'Detect AI agents and assign ownership', customerContext: 'AI platform and governance team',
       aeName: 'Sam Chen', customerName: 'Fieldstone Financial', stage: 'Demo',
       takeaway: 'Watch Riley identify AI agents in a customer’s LLM environment and decide who should be accountable for each one.',
-      notes: 'The demo uses sample LLM gateway logs to group model calls by application, then checks workflow logs to confirm agent activity. Riley records each confirmed agent and its owner in an agent inventory.',
+      notes: 'Riley will use sample gateway and workflow logs to identify which AI agents are active, then show how to record each agent and its owner.',
       localStart: '2026-11-23T10:00', duration: 30, spots: 2, requests: [],
     },
     {
@@ -57,10 +57,10 @@ export function createShadowState(): ShadowEvent[] {
       localStart: '2026-11-24T11:30', duration: 30, spots: 1, requests: [],
     },
     {
-      id: 'discovery', host: 'riley', topic: 'Route shipment exceptions to the right team', customerContext: 'Logistics operations team',
+      id: 'discovery', host: 'riley', topic: 'Discovery call on shipment exception handling', customerContext: 'First discovery call with the logistics operations team',
       aeName: 'Sam Chen', customerName: 'Wayline Logistics', stage: 'Discovery',
-      takeaway: 'Watch Riley map the buyer’s dispatch process, identify where shipment exceptions get stuck, and agree on what the team should validate in a pilot.',
-      notes: '',
+      takeaway: 'Listen for how Riley and Sam ask about shipment delays and decide what to explore in a follow-up demo.',
+      notes: 'Sam plans to ask who makes the buying decision and how soon the team needs a fix. Riley will ask the customer for a recent example of a shipment problem and explore where the handoff slowed down, who should respond, and how quickly.',
       localStart: '2026-12-02T13:00', duration: 60, spots: 2, requests: [],
     },
     {
