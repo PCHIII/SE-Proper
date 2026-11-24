@@ -48,7 +48,7 @@ export default function BusinessValueOutline({ item }: { item: UseCase }) {
 
     <div className="feynman-option">
       <div className="feynman-option-heading">
-        <div><h4>Presenting to business leadership?</h4><p>Adapt this story for people who need to understand the value without knowing the implementation.</p></div>
+        <div><h4>Presenting to business leadership?</h4><p>{item.leadershipStory ? 'Preview how AI could explain this demo in everyday language.' : 'Use this outline to explain the demo in everyday language.'}</p></div>
         <button type="button" className="button button-outline" aria-expanded={applying} aria-controls="feynman-story-editor" onClick={() => { setApplying(!applying); setCopyStatus('') }}>
           {applying ? 'Hide leadership version' : 'Apply Feynman'}
         </button>
@@ -61,8 +61,8 @@ export default function BusinessValueOutline({ item }: { item: UseCase }) {
     </div>
 
     <section id="feynman-story-editor" className="feynman-editor" aria-labelledby="feynman-story-heading" hidden={!applying}>
-      <h4 id="feynman-story-heading">Leadership version</h4>
-      <p>{item.leadershipStory ? 'Adapt this sample to the customer and the decision they need to make.' : 'Use the original story above to write a short explanation in your own words.'}</p>
+      <h4 id="feynman-story-heading">{item.leadershipStory ? 'Sample AI draft' : 'Leadership version'}</h4>
+      <p>{item.leadershipStory ? 'Edit this draft to fit your audience before you share it.' : 'The demo use cases have sample AI drafts. Use the original story above to write a short explanation in your own words.'}</p>
       <div className="feynman-fields">
         {storyParts.map(({ key, label, hint }) => <div key={key} className="form-field">
           <label htmlFor={`feynman-${key}`}>{label}</label>

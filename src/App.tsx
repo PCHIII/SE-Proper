@@ -178,7 +178,7 @@ function App() {
           </div>
         </header>
 
-        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> Examples and sample downloads are public. New posts and uploads stay in this tab. Meeting sources are samples. No accounts are connected. Business-value Q&amp;A is a preview without AI generation.</span></div>
+        <div className="prototype-notice"><Icon name="shield" size={16} /><span><strong>Prototype mode:</strong> Examples and sample downloads are public. New posts and uploads stay in this tab. Meeting sources are samples. No accounts are connected. The business-value preview uses prepared examples.</span></div>
 
         <div className="page-content">
           {route.page === 'home' && <HomePage cases={useCases} navigate={navigate} />}
@@ -435,15 +435,15 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
         <div className="about-value-copy">
           <span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span>
           <h3>Help every SE tell the “why”</h3>
-          <p>The Business Value component gives SEs a place to shape a clear, credible story from a use case. Guided questions help surface the customer’s goal, what changed, and what evidence could show the impact.</p>
-          <p>When business leaders are on the call, the Feynman Technique helps you explain that story in everyday language. Test it with a teammate unfamiliar with the implementation. Can they tell you what changes and why it matters in their own words?</p>
+          <p>The Business Value preview helps SEs explain what the customer needed, what changed, and what evidence could show the impact.</p>
+          <p>Apply Feynman uses prepared examples to show how AI could turn a technical demo into a short talk track for a non-technical audience. Edit and copy the sample draft, then ask a teammate to explain the change back to you in their own words.</p>
           <button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button>
         </div>
         <div className="about-value-steps" aria-label="Business value storytelling workflow">
           <div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div>
           <div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div>
           <div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div>
-          <div><span>04</span><strong>Apply Feynman (optional)</strong><p>Open <b>Explore the AI Q&amp;A</b> on a use case, then choose <b>Apply Feynman</b> to draft and copy a leadership version.</p></div>
+          <div><span>04</span><strong>Apply Feynman (optional)</strong><p>Open <b>Explore the AI Q&amp;A</b> on a demo use case, then choose <b>Apply Feynman</b>.</p></div>
         </div>
       </div>
     </section>
@@ -587,7 +587,7 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
         <button className="icon-button" onClick={onClose} aria-label="Close business value story preview"><Icon name="close" size={18} /></button>
       </div>
       <div className="value-story-context"><span className="value-story-context-icon"><Icon name="file" size={16} /></span><div><span>BASED ON THIS USE CASE</span><strong>{item.title}</strong></div></div>
-      <div className="value-story-preview-note"><p>The questions and outline below illustrate how this workflow could shape a customer story from the details in this use case.</p></div>
+      <div className="value-story-preview-note"><p>Preview the discovery questions and see how Apply Feynman could turn a technical demo into a story for a non-technical audience.</p></div>
       <section className="story-preview-section">
         <div className="story-preview-heading"><span className="story-ai-mark"><Icon name="spark" size={15} /></span><div><strong>Value discovery</strong><span>A future guided conversation</span></div></div>
         <p className="story-assistant-message">Let’s connect the technical work to the outcome the customer needs. A few questions can help shape a clear, credible story.</p>
