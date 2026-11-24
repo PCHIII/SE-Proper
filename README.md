@@ -12,6 +12,8 @@ The demo has no sign-in. Names are self-reported, and the eventual hosted demo w
 
 Use-case detail pages include a nonfunctional preview of an AI-guided business-value story workflow. The concept asks about the customer's business goal, the change delivered, and evidence of impact, then shows how those answers could shape a customer story. AI Q&A and story generation are not active in this demo.
 
+The story outline includes an optional **Apply Feynman** step. SEs can use the outline as a reference, rewrite it in plain language for a leadership audience, and copy the resulting talk track. The AI agent governance use case includes an editable example.
+
 ## Run locally
 
 1. Install Node.js and npm.

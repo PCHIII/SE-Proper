@@ -1,6 +1,7 @@
 import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
 import DemoPlaybook from './DemoPlaybook'
 import Shadow from './Shadow'
+import BusinessValueOutline from './BusinessValueOutline'
 import { initials } from './initials'
 import { createShadowState, shadowReducer } from './shadowEvents'
 import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent, type ReactNode } from 'react'
@@ -429,7 +430,24 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
       <article className="about-deliverable"><span className="about-card-icon about-blue"><Icon name="users" size={19} /></span><h3>Community contributions</h3><p>Separate variations, improvements, and troubleshooting notes that keep the original solution intact.</p></article>
     </div></section>
     <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HELP FROM THE FIELD</div><h2>Signal: a good place to ask for a hand</h2><p>Demo coming up? Stuck on a use case? Send a signal to the SE community. Describe the scenario, the help you need, and your deadline so other SEs can share what they have.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-peach"><Icon name="users" size={19} /></span><h3>Turn a request into something reusable</h3><p>Explore helps you find solutions already in the library. Signal gives you a place to ask for an example, a script, an alternative approach, or a second perspective. Other SEs can respond with advice and link an existing use case.</p><button className="text-button" onClick={() => navigate('/dashboard')}>Browse Signal requests <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Signal workflow"><div><span>01</span><strong>Send a signal</strong><p>Share the demo context, specific ask, and when you need help.</p></div><div><span>02</span><strong>Exchange ideas</strong><p>Respond with experience, suggestions, or a solution from the library.</p></div><div><span>03</span><strong>Share the solution</strong><p>Turn the request and responses into a draft. Publishing the completed use case links it back and resolves the request.</p></div></div></div></section>
-    <section className="about-section about-value-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MAKE THE IMPACT CLEAR</div><h2>Connect the technical work to business value</h2><p>Technical detail explains how a solution works. A strong customer story also explains why it matters—to the people, process, and goals behind the ask.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span><h3>Help every SE tell the “why”</h3><p>The Business Value component gives SEs a place to shape a clear, credible story from a use case. Guided questions help surface the customer’s goal, what changed, and what evidence could show the impact—so the outcome is easy to explain to decision-makers.</p><button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Business value story outline"><div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div><div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div><div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div></div></div></section>
+    <section className="about-section about-value-section">
+      <div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MAKE THE IMPACT CLEAR</div><h2>Connect the technical work to business value</h2><p>Technical detail explains how a solution works. A strong customer story also explains why it matters—to the people, process, and goals behind the ask.</p></div>
+      <div className="about-value-panel">
+        <div className="about-value-copy">
+          <span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span>
+          <h3>Help every SE tell the “why”</h3>
+          <p>The Business Value component gives SEs a place to shape a clear, credible story from a use case. Guided questions help surface the customer’s goal, what changed, and what evidence could show the impact.</p>
+          <p>When business leaders are on the call, the Feynman Technique helps you explain that story in everyday language. Test it with a teammate unfamiliar with the implementation. Can they tell you what changes and why it matters in their own words?</p>
+          <button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button>
+        </div>
+        <div className="about-value-steps" aria-label="Business value storytelling workflow">
+          <div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div>
+          <div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div>
+          <div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div>
+          <div><span>04</span><strong>Apply Feynman (optional)</strong><p>Open <b>Explore the AI Q&amp;A</b> on a use case, then choose <b>Apply Feynman</b> to draft and copy a leadership version.</p></div>
+        </div>
+      </div>
+    </section>
     <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MEETING CONTEXT</div><h2>Keep useful meeting evidence with the solution</h2><p>In this prototype, a use case can include sample meeting context from Teams, Google Meet, or Zoom. Real account connections would be configured in a later backend milestone.</p><button className="text-button" onClick={() => navigate('/create')}>Create a use case <Icon name="arrow" size={15} /></button></div></section>
     <section className="about-section about-features-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HOW THE APP WORKS</div><h2>Find it, understand it, build on it.</h2></div><div className="about-feature-grid">
       <article><span><Icon name="search" size={17} /></span><div><strong>Search and browse</strong><p>Find use cases by problem, category, technology, or tag.</p></div></article>
@@ -581,11 +599,7 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
           <div><span>03</span> What metric or evidence could demonstrate the impact?</div>
         </div>
       </section>
-      <section className="story-outline-section"><div className="eyebrow eyebrow-quiet">STORY OUTLINE</div><h3>A value story the customer can share</h3><div className="story-outline-grid">
-        <div><span>THE CHALLENGE</span><p>{item.ask}</p></div>
-        <div><span>THE SOLUTION</span><p>{item.solution}</p></div>
-        <div><span>THE BUSINESS OUTCOME</span><p>{item.outcome === 'Not specified' ? 'Add the customer’s desired outcome and how success could be measured.' : item.outcome}</p></div>
-      </div></section>
+      <BusinessValueOutline key={item.id} item={item} />
       {item.sources && item.sources.length > 0 && <div className="value-story-sources"><strong>Evidence linked to this use case</strong><div>{item.sources.map((source) => <span key={`${source.provider}-${source.title}`}>{source.provider}</span>)}</div></div>}
       <div className="value-story-dialog-footer"><span><Icon name="shield" size={14} /> Customer context stays in control of the story.</span><button className="button button-dark" onClick={onClose}>Got it</button></div>
     </section>

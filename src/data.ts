@@ -31,6 +31,12 @@ export type LinkedSource = {
   detail: string
 }
 
+export type LeadershipStory = {
+  challenge: string
+  solution: string
+  outcome: string
+}
+
 export type Contribution = {
   id: string
   title: string
@@ -65,6 +71,7 @@ export type UseCase = {
   resources: Resource[]
   demo?: DemoArtifact
   sources?: LinkedSource[]
+  leadershipStory?: LeadershipStory
   contributions: Contribution[]
 }
 
@@ -139,6 +146,11 @@ export const initialUseCases: UseCase[] = [
     solution: 'Register a distinct non-human identity for each agent and link it to an accountable employee sponsor. Define access policies around the agent’s purpose, approved tools and data, allowed actions, risk level, and expiry. Route requests to the owners of the target applications or data, require a business justification, and provision access only after approval. Add periodic owner reviews and revoke access when the agent or its business need ends.',
     implementation: '1. Inventory the agent and record its purpose, technical identity, business sponsor, and backup contact. 2. Create a policy template that scopes approved applications, data, tools, actions, environment, and assignment duration. 3. Route each request to the relevant application or data owner; require an additional security approver for elevated access. 4. Record the decision and justification, grant only the approved scope, and set an expiry or review date. 5. Reassign sponsorship if the owner leaves, and disable the identity and remove its access when the agent is retired.',
     outcome: 'The governance pattern makes each agent’s human accountability visible, gives resource owners control over approvals, and creates a reviewable path to limit or remove access.',
+    leadershipStory: {
+      challenge: 'When an AI agent asks to use company data, who is responsible for it and who decides what it can see?',
+      solution: 'Each agent has a named person responsible for it. When the agent needs access, the team that owns the data decides what it can use and for how long.',
+      outcome: 'Security leaders can see who approved access, what they granted, and when it ends. They can review or remove that access as needs change.',
+    },
     lessons: 'Keep the business sponsor who owns the agent’s purpose distinct from the application or data owner who approves access to that resource. Linking an agent to a person establishes accountability; it should not make the agent inherit that person’s credentials or permissions.',
     reusable: 'For each agent, capture its unique identity, accountable human sponsor, business purpose, approved tools and data, allowed actions, resource owners, approval record, access expiry, review date, and retirement owner.',
     resources: [resource('ai-agent-access-policy-and-approval-workflow.md', 'Markdown', '4 KB', 'Example access policy, owner approval route, sample decision, and audit checklist.', aiAgentAccessBlueprint)],
