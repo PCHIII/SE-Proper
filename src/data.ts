@@ -1,3 +1,5 @@
+import { demoPortraits } from './demoPortraits'
+
 export type Resource = {
   id: string
   name: string
@@ -45,6 +47,7 @@ export type Contribution = {
   implementation?: string
   context?: string
   author: string
+  authorPortrait?: string
   date: string
   validation: string
   resources: Resource[]
@@ -57,6 +60,7 @@ export type UseCase = {
   category: string
   tags: string[]
   author: string
+  authorPortrait?: string
   date: string
   updated: string
   ask: string
@@ -133,7 +137,7 @@ The agent has its own non-human identity. The sponsor is accountable for its pur
 Record the agent identity, sponsor, purpose, requested and approved scopes, each owner's decision and reason, security review where required, provisioned permissions, expiry, review outcome, and revocation date. Never store tokens, passwords, customer records, or other secrets in this sample.
 `
 
-export const initialUseCases: UseCase[] = [
+const sampleUseCases: UseCase[] = [
   {
     id: 'govern-ai-agent-access',
     title: 'Govern AI agent access with accountable ownership',
@@ -313,6 +317,15 @@ export const initialUseCases: UseCase[] = [
     contributions: [],
   },
 ]
+
+export const initialUseCases = sampleUseCases.map((item) => ({
+  ...item,
+  authorPortrait: demoPortraits[item.author],
+  contributions: item.contributions.map((contribution) => ({
+    ...contribution,
+    authorPortrait: demoPortraits[contribution.author],
+  })),
+}))
 
 export const categories = [
   'All categories', 'Identity & Access Management', 'API & Integrations', 'Workflow Automation',

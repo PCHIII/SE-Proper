@@ -1,5 +1,6 @@
 import { useState, type Dispatch, type FormEvent, type ReactNode } from 'react'
-import { initials } from './initials'
+import Avatar from './Avatar'
+import { demoPortraits } from './demoPortraits'
 import { remainingSpots, shadowProfiles, shadowStages, type ShadowAction, type ShadowDraft, type ShadowEvent, type ShadowProfile } from './shadowEvents'
 import './shadow.css'
 
@@ -228,13 +229,13 @@ function ShadowCalendar({ month, events, selectedDay, onMonthChange, onDayChange
           onClick={() => onDayChange(day)}
         >
           {names.length > 0 && <span className="shadow-day-hosts" aria-hidden="true">
-            {names.map((name) => <span key={name} className="shadow-day-initials" title={name}><span>{initials(name)}</span></span>)}
+            {names.map((name) => <Avatar key={name} portrait={demoPortraits[name]} label={name} />)}
           </span>}
           {day}
         </button>
       })}
     </div>
-    <p>Initials show SEs with open spots. Select a marked date to see its sessions.</p>
+    <p>Profile photos show SEs with open spots. Select a marked date to see its sessions.</p>
   </section>
 }
 

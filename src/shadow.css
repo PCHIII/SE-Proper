@@ -71,8 +71,7 @@ html[data-theme='dark'] .shadow-page :is(select, input, textarea) { color-scheme
 .shadow-day[aria-current='date'] { border-color: var(--shadow-border); color: var(--ink); font-weight: 800; }
 .shadow-day-event { color: var(--shadow-accent); background: var(--shadow-accent-bg); font-weight: 800; }
 .shadow-day-hosts { display: flex; align-items: center; justify-content: center; gap: 2px; width: 100%; }
-.shadow-day-initials { display: grid; place-items: center; flex: 0 1 22px; min-width: 0; aspect-ratio: 1; container-type: inline-size; border-radius: 50%; color: var(--shadow-panel); background: var(--shadow-accent); }
-.shadow-day-initials > span { font-size: min(.6875rem, 52cqi); line-height: 1; }
+.shadow-day-hosts .avatar { flex: 0 1 var(--avatar-size); min-width: 0; height: auto; aspect-ratio: 1; }
 .shadow-day-event:hover, .shadow-day-event[aria-pressed='true'] { border-color: currentColor; }
 .shadow-calendar p { margin: 13px 0 0; color: var(--shadow-text); font-size: .8125rem; }
 .shadow-date-filter { padding: 0 2px; color: var(--shadow-text); font-size: .875rem; }

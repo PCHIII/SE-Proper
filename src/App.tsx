@@ -2,7 +2,8 @@ import Exchange, { sampleRequests, type HelpRequest } from './Exchange'
 import DemoPlaybook from './DemoPlaybook'
 import Shadow from './Shadow'
 import BusinessValueOutline from './BusinessValueOutline'
-import { initials } from './initials'
+import Avatar from './Avatar'
+import { demoPortraits } from './demoPortraits'
 import { createShadowState, shadowReducer } from './shadowEvents'
 import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { categories, contributionTypes, initialUseCases, validationStatuses, type Contribution, type DemoArtifact, type LinkedSource, type Resource, type UseCase } from './data'
@@ -174,7 +175,7 @@ function App() {
           <div className="topbar-actions">
             <button className="theme-toggle" onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}><Icon name={theme === 'dark' ? 'sun' : 'moon'} size={16} /><span>{theme === 'dark' ? 'Light theme' : 'Dark theme'}</span></button>
             <div className="public-mode"><span className="footer-dot" /> Open community</div>
-            <div className="avatar avatar-me" title="Public demo visitor">Y</div>
+            <Avatar size="me" label="Public demo visitor" />
           </div>
         </header>
 
@@ -483,7 +484,14 @@ function HomePage({ cases, navigate }: { cases: UseCase[]; navigate: (path: stri
       <div className="hero-art" aria-hidden="true">
         <div className="orbit orbit-one" /><div className="orbit orbit-two" />
         <div className="art-card art-card-back"><div className="art-lines"><i /><i /><i /></div><span className="art-dot" /></div>
-        <div className="art-card art-card-front"><div className="art-card-head"><span className="art-mini-mark">✳</span><span>Shared solution</span><span className="art-check">✓</span></div><div className="art-card-title">One less thing<br />to solve twice.</div><div className="art-avatar-row"><span className="avatar avatar-small avatar-purple">JL</span><span className="avatar avatar-small avatar-peach">PN</span><span className="avatar avatar-small avatar-blue">AK</span><div className="art-people">Built on by<br /><strong>your team</strong></div></div></div>
+        <div className="art-card art-card-front">
+          <div className="art-card-head"><span className="art-mini-mark">✳</span><span>Shared solution</span><span className="art-check">✓</span></div>
+          <div className="art-card-title">One less thing<br />to solve twice.</div>
+          <div className="art-avatar-row">
+            {['Jordan Lee', 'Priya Nair', 'Alex Kim'].map((name) => <Avatar key={name} size="small" portrait={demoPortraits[name]} />)}
+            <div className="art-people">Built on by<br /><strong>your team</strong></div>
+          </div>
+        </div>
         <div className="floating-note"><span className="note-check">✓</span><div><b>Knowledge shared</b><small>Everyone starts further ahead</small></div></div>
         <span className="art-sparkle sparkle-a">✳</span><span className="art-sparkle sparkle-b">✦</span>
       </div>
@@ -549,7 +557,7 @@ function CaseCard({ item, onClick }: { item: UseCase; onClick: () => void }) {
     <div className="tag-row">{item.tags.slice(0, 3).map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div>
     {item.sources && item.sources.length > 0 && <div className="case-source-row" aria-label={`Linked meeting sources: ${item.sources.map((source) => source.provider).join(', ')}`}>{item.sources.slice(0, 2).map((source) => <span className="case-source-chip" key={`${source.provider}-${source.title}`}>{source.provider}</span>)}{item.sources.length > 2 && <span className="case-source-more">+{item.sources.length - 2}</span>}</div>}
     {item.demo && <span className="artifact-icon" role="img" aria-label="Demo recording, transcript, and AI summary" title="Demo recording, transcript, and AI summary"><Icon name="video" size={13} /></span>}
-    <div className="case-card-footer"><span className="author-chip"><span className={`avatar avatar-tiny ${avatarColor(item.author)}`}>{initials(item.author)}</span><span>{item.author}</span></span><span className="card-counts"><span><Icon name="users" size={14} /> {item.contributions.length}</span><span><Icon name="file" size={14} /> {item.resources.length}</span></span></div>
+    <div className="case-card-footer"><span className="author-chip"><Avatar portrait={item.authorPortrait} /><span>{item.author}</span></span><span className="card-counts"><span><Icon name="users" size={14} /> {item.contributions.length}</span><span><Icon name="file" size={14} /> {item.resources.length}</span></span></div>
     <span className="card-corner-arrow"><Icon name="arrow" size={15} /></span>
   </button>
 }
@@ -559,7 +567,7 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
   const totalFiles = item.resources.length + item.contributions.reduce((sum, contribution) => sum + contribution.resources.length, 0)
   return <div className="inner-page detail-page">
     <button className="back-link" onClick={() => navigate('/explore')}><Icon name="arrowLeft" size={16} /> Back to use cases</button>
-    <div className="detail-heading"><div className="detail-heading-main"><span className="category-pill">{item.category}</span><h1>{item.title}</h1><p>{item.summary}</p><div className="detail-tags">{item.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div><div className="detail-meta"><span className={`avatar avatar-small ${avatarColor(item.author)}`}>{initials(item.author)}</span><span>Shared by <strong>{item.author}</strong></span><span className="meta-divider" /><span>{item.date}</span><span className="meta-divider" /><span>{item.contributions.length} contributions</span></div></div><div className="detail-heading-action"><button className="button button-primary" onClick={() => navigate(`/contribute/${item.id}`)}><Icon name="plus" size={17} /> Contribute</button><span className="button-caption">Add your approach to this solution</span></div></div>
+    <div className="detail-heading"><div className="detail-heading-main"><span className="category-pill">{item.category}</span><h1>{item.title}</h1><p>{item.summary}</p><div className="detail-tags">{item.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div><div className="detail-meta"><Avatar size="small" portrait={item.authorPortrait} /><span>Shared by <strong>{item.author}</strong></span><span className="meta-divider" /><span>{item.date}</span><span className="meta-divider" /><span>{item.contributions.length} contributions</span></div></div><div className="detail-heading-action"><button className="button button-primary" onClick={() => navigate(`/contribute/${item.id}`)}><Icon name="plus" size={17} /> Contribute</button><span className="button-caption">Add your approach to this solution</span></div></div>
     <div className="detail-layout"><div className="detail-main-column">
       <InfoSection eyebrow="THE CUSTOMER ASK" title="The challenge"><p>{item.ask}</p>{item.context && item.context !== 'Not specified' && <div className="context-line"><span>CONTEXT</span>{item.context}</div>}</InfoSection>
       <InfoSection eyebrow="THE APPROACH" title="Solution overview"><p>{item.solution}</p>{item.outcome !== 'Not specified' && <div className="outcome-box"><span className="outcome-check">✓</span><div><strong>Outcome</strong><p>{item.outcome}</p></div></div>}</InfoSection>
@@ -628,7 +636,7 @@ function DemoEvidence({ demo }: { demo: DemoArtifact }) {
 
 function ContributionCard({ contribution }: { contribution: Contribution }) {
   const [expanded, setExpanded] = useState(false)
-  return <article className={`contribution-card ${expanded ? 'contribution-expanded' : ''}`}><button className="contribution-card-head" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}><span className={`avatar avatar-medium ${avatarColor(contribution.author)}`}>{initials(contribution.author)}</span><span className="contribution-head-text"><span className="contribution-kind">{contribution.type}</span><strong>{contribution.title}</strong><span className="contribution-by">{contribution.author} <i>·</i> {contribution.date}</span></span><span className="contribution-status">{contribution.validation}</span><Icon name="chevron" size={17} /></button>{expanded && <div className="contribution-expanded-body"><p>{contribution.description}</p>{contribution.implementation && <p className="contribution-implementation"><strong>Implementation:</strong> {contribution.implementation}</p>}{contribution.context && <p className="contribution-implementation"><strong>Relevant context:</strong> {contribution.context}</p>}{contribution.resources.length > 0 && <div className="resource-list contribution-resources">{contribution.resources.map((resource) => <ResourceRow resource={resource} key={resource.id} />)}</div>}</div>}</article>
+  return <article className={`contribution-card ${expanded ? 'contribution-expanded' : ''}`}><button className="contribution-card-head" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}><Avatar size="medium" portrait={contribution.authorPortrait} /><span className="contribution-head-text"><span className="contribution-kind">{contribution.type}</span><strong>{contribution.title}</strong><span className="contribution-by">{contribution.author} <i>·</i> {contribution.date}</span></span><span className="contribution-status">{contribution.validation}</span><Icon name="chevron" size={17} /></button>{expanded && <div className="contribution-expanded-body"><p>{contribution.description}</p>{contribution.implementation && <p className="contribution-implementation"><strong>Implementation:</strong> {contribution.implementation}</p>}{contribution.context && <p className="contribution-implementation"><strong>Relevant context:</strong> {contribution.context}</p>}{contribution.resources.length > 0 && <div className="resource-list contribution-resources">{contribution.resources.map((resource) => <ResourceRow resource={resource} key={resource.id} />)}</div>}</div>}</article>
 }
 
 function ResourceRow({ resource }: { resource: Resource }) {
@@ -789,7 +797,6 @@ function slug(value: string) { return value.toLowerCase().replace(/[^a-z0-9]+/g,
 function formatDate(date: Date) { return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date) }
 function formatSize(bytes: number) { return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB` }
 function fileToResource(file: File, description: string): Resource { return { id: `${file.name}-${file.lastModified}`, name: file.name, kind: file.name.split('.').pop()?.toUpperCase() || 'FILE', size: formatSize(file.size), description: description.trim() || 'Supporting file added in this demo.', file } }
-function avatarColor(name: string) { const colors = ['avatar-purple', 'avatar-peach', 'avatar-blue', 'avatar-mint', 'avatar-pink']; const number = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0); return colors[number % colors.length] }
 function downloadResource(resource: Resource) {
   let url: string
   if (resource.file) url = URL.createObjectURL(resource.file)

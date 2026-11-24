@@ -47,10 +47,10 @@ button { cursor: pointer; }
 .topbar { height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 42px; background: #fff; border-bottom: 1px solid #eceef3; }
 .breadcrumb { display: flex; align-items: center; gap: 9px; color: #a0a4af; font-size: 13px; }.breadcrumb svg { color: #c2c5ce; }.breadcrumb strong { color: #454a5a; font-size: 13px; font-weight: 600; }
 .topbar-actions { display: flex; align-items: center; gap: 15px; }.public-mode { display: flex; align-items: center; gap: 8px; color: #767d8d; font-size: 12px; font-weight: 600; }.public-mode .footer-dot { width: 6px; height: 6px; }
-.avatar { display: inline-grid; place-items: center; flex: 0 0 auto; border-radius: 50%; font-weight: 700; }
-.avatar-me { width: 31px; height: 31px; color: #5f52b0; background: #ece9fb; font-size: 13px; }
-.avatar-small { width: 26px; height: 26px; font-size: 12px; }.avatar-medium { width: 36px; height: 36px; font-size: 12px; }.avatar-tiny { width: 22px; height: 22px; font-size: 12px; }
-.avatar-purple { color: #6858ba; background: #ece9fb; }.avatar-peach { color: #a46754; background: #fbeee8; }.avatar-blue { color: #527da9; background: #e8f1fa; }.avatar-mint { color: #4e8972; background: #e7f4ef; }.avatar-pink { color: #a45978; background: #f8eaf1; }
+.avatar { position: relative; display: inline-grid; place-items: center; flex: 0 0 auto; width: var(--avatar-size); height: var(--avatar-size); overflow: hidden; border-radius: 50%; color: #5f52b0; background: #ece9fb; }
+.avatar-me { --avatar-size: 31px; }.avatar-small { --avatar-size: 26px; }.avatar-medium { --avatar-size: 36px; }.avatar-tiny { --avatar-size: 22px; }
+.avatar > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+.avatar > svg { width: 62%; height: 62%; }
 .prototype-notice { min-height: 35px; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 8px 20px; background: #f2f0fc; color: #766e9e; border-bottom: 1px solid #e9e6f8; font-size: 12px; line-height: 1.5; text-align: center; }.prototype-notice svg { flex: 0 0 auto; color: #8175cc; }.prototype-notice strong { color: #5f55a5; }
 .page-content { width: 100%; max-width: 1500px; margin: 0 auto; padding: 34px 42px 50px; }
 .page-footer { display: flex; justify-content: space-between; gap: 14px; margin: 0 42px; padding: 17px 0 23px; color: #a1a5b0; border-top: 1px solid #e9ebf0; font-size: 12px; }.page-footer span:first-child { color: #73798a; font-weight: 700; }
@@ -376,8 +376,7 @@ html[data-theme="dark"] .case-card h3 { color: #e5e8e4; }
 html[data-theme="dark"] .tag { color: #b2b9b3; background: #272b2c; }
 html[data-theme="dark"] .case-card-footer, html[data-theme="dark"] .panel-heading, html[data-theme="dark"] .resource-panel-head, html[data-theme="dark"] .contribution-section > .detail-section-heading, html[data-theme="dark"] .contribution-card, html[data-theme="dark"] .contribution-card-head, html[data-theme="dark"] .preview-actions { border-color: #303535; }
 html[data-theme="dark"] .case-card-footer, html[data-theme="dark"] .panel-heading, html[data-theme="dark"] .resource-panel-head { border-color: #303535; }
-html[data-theme="dark"] .avatar-me { color: #c5fa61; background: #252a22; }
-html[data-theme="dark"] .avatar-purple, html[data-theme="dark"] .avatar-peach, html[data-theme="dark"] .avatar-blue, html[data-theme="dark"] .avatar-mint, html[data-theme="dark"] .avatar-pink { color: #c3f65c; background: #292e28; }
+html[data-theme="dark"] .avatar { color: #c5fa61; background: #252a22; }
 html[data-theme="dark"] .page-intro h1, html[data-theme="dark"] .form-page-header h1, html[data-theme="dark"] .detail-heading h1 { color: #e9ece8; }
 html[data-theme="dark"] .page-intro p, html[data-theme="dark"] .form-page-header > p { color: #a0a6a2; }
 html[data-theme="dark"] .library-search, html[data-theme="dark"] .filter-select, html[data-theme="dark"] .sort-select { border-color: #343a39; background: #171a1a; }
@@ -671,7 +670,6 @@ html[data-theme="light"] .theme-toggle:hover { border-color: #a9bf8a; background
 .implementation-grid p, .lesson-grid p, .aside-card > p, .aside-card li,
 .publish-notice p, .preview-summary, .preview-block p { font-size: 17px; }
 
-.avatar-me, .avatar-small, .avatar-medium, .avatar-tiny { font-size: 14px; }
 
 @media (max-width: 640px) {
   .topbar { gap: 8px; }
