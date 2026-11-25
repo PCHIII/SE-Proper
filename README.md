@@ -12,7 +12,7 @@ The demo has no sign-in. Names are self-reported, and the eventual hosted demo w
 
 Use-case detail pages preview an AI-guided business-value workflow through example discovery questions and a story outline.
 
-Choose **Apply Feynman** on a demo use case to see a prepared sample of a plain-language AI draft for a non-technical audience. You can edit the challenge, solution, and outcome, then copy the resulting talk track. New use cases have a manual editor. The mockup runs entirely in the browser using sample drafts.
+Choose **Apply the Feynman Technique** on a demo use case to see a prepared sample of a plain-language AI draft for a non-technical audience. You can edit the challenge, solution, and outcome, then copy the resulting talk track. New use cases have a manual editor. The mockup runs entirely in the browser using sample drafts.
 
 ## Run locally
 

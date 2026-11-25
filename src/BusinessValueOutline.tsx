@@ -48,9 +48,9 @@ export default function BusinessValueOutline({ item }: { item: UseCase }) {
 
     <div className="feynman-option">
       <div className="feynman-option-heading">
-        <div><h4>Presenting to business leadership?</h4><p>{item.leadershipStory ? 'Preview how AI could explain this demo in everyday language.' : 'Use this outline to explain the demo in everyday language.'}</p></div>
+        <div><h4>Presenting to business leadership?</h4><p>{item.leadershipStory ? 'Edit a prepared talk track that explains this use case in everyday language.' : 'Use this outline to write a short talk track about this use case in everyday language.'}</p></div>
         <button type="button" className="button button-outline" aria-expanded={applying} aria-controls="feynman-story-editor" onClick={() => { setApplying(!applying); setCopyStatus('') }}>
-          {applying ? 'Hide leadership version' : 'Apply Feynman'}
+          {applying ? 'Hide leadership version' : 'Apply the Feynman Technique'}
         </button>
       </div>
       <details className="feynman-disclosure">

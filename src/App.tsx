@@ -431,20 +431,24 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
     </div></section>
     <section className="about-section"><div className="about-section-heading"><div className="eyebrow eyebrow-quiet">HELP FROM THE FIELD</div><h2>Signal: a good place to ask for a hand</h2><p>Demo coming up? Stuck on a use case? Send a signal to the SE community. Describe the scenario, the help you need, and your deadline so other SEs can share what they have.</p></div><div className="about-value-panel"><div className="about-value-copy"><span className="about-card-icon about-peach"><Icon name="users" size={19} /></span><h3>Turn a request into something reusable</h3><p>Explore helps you find solutions already in the library. Signal gives you a place to ask for an example, a script, an alternative approach, or a second perspective. Other SEs can respond with advice and link an existing use case.</p><button className="text-button" onClick={() => navigate('/dashboard')}>Browse Signal requests <Icon name="arrow" size={15} /></button></div><div className="about-value-steps" aria-label="Signal workflow"><div><span>01</span><strong>Send a signal</strong><p>Share the demo context, specific ask, and when you need help.</p></div><div><span>02</span><strong>Exchange ideas</strong><p>Respond with experience, suggestions, or a solution from the library.</p></div><div><span>03</span><strong>Share the solution</strong><p>Turn the request and responses into a draft. Publishing the completed use case links it back and resolves the request.</p></div></div></div></section>
     <section className="about-section about-value-section">
-      <div className="about-section-heading"><div className="eyebrow eyebrow-quiet">MAKE THE IMPACT CLEAR</div><h2>Connect the technical work to business value</h2><p>Technical detail explains how a solution works. A strong customer story also explains why it matters—to the people, process, and goals behind the ask.</p></div>
+      <div className="about-section-heading">
+        <div className="eyebrow eyebrow-quiet">BUSINESS VALUE</div>
+        <h2>Turn a use case into a business story</h2>
+        <p>Start with a use case you built or found in SE Proper. The Business Value preview helps you turn its technical details into a story about what the customer needed, what the solution changed, and why that change matters to decision-makers.</p>
+      </div>
       <div className="about-value-panel">
         <div className="about-value-copy">
           <span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span>
-          <h3>Help every SE tell the “why”</h3>
-          <p>The Business Value preview helps SEs explain what the customer needed, what changed, and what evidence could show the impact.</p>
-          <p>Apply Feynman uses prepared examples to show how AI could turn a technical demo into a short talk track for a non-technical audience. Edit and copy the sample draft, then ask a teammate to explain the change back to you in their own words.</p>
+          <h3>Use the Feynman Technique to simplify the story</h3>
+          <p>Explain the change in everyday language so someone unfamiliar with the technology can follow it. For example, a demo about routing AI access requests to app owners becomes a story about accountability. Security leaders can see who approved access, what they granted, and when it expires.</p>
+          <p>Ask a teammate to tell the story back in their own words. If they get stuck, simplify that part.</p>
           <button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button>
         </div>
         <div className="about-value-steps" aria-label="Business value storytelling workflow">
-          <div><span>01</span><strong>Customer challenge</strong><p>What goal or constraint matters?</p></div>
-          <div><span>02</span><strong>Technical solution</strong><p>What changed in the workflow?</p></div>
-          <div><span>03</span><strong>Business outcome</strong><p>How could the impact be measured?</p></div>
-          <div><span>04</span><strong>Apply Feynman (optional)</strong><p>Open <b>Explore the AI Q&amp;A</b> on a demo use case, then choose <b>Apply Feynman</b>.</p></div>
+          <div><span>01</span><strong>Customer challenge</strong><p>What was the customer trying to accomplish?</p></div>
+          <div><span>02</span><strong>Technical solution</strong><p>What changed for the people doing the work?</p></div>
+          <div><span>03</span><strong>Business outcome</strong><p>Why did the change matter, and what evidence could show its impact?</p></div>
+          <div><span>04</span><strong>Apply the Feynman Technique (optional)</strong><p>On a demo use case, open <b>Explore the AI Q&amp;A</b> and choose <b>Apply the Feynman Technique</b> to edit and copy a prepared talk track.</p></div>
         </div>
       </div>
     </section>
@@ -581,7 +585,7 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
     </div><aside className="detail-side-column"><div className="resource-panel"><div className="resource-panel-head"><div><div className="eyebrow eyebrow-quiet">ATTACHED FILES</div><h3>Resources <span>{totalFiles}</span></h3></div></div>{item.resources.length ? <div className="resource-list">{item.resources.map((resource) => <ResourceRow resource={resource} key={resource.id} />)}</div> : <p className="no-resource">No files attached to the original use case.</p>}<p className="resource-notice"><Icon name="shield" size={14} /> Sample files can be downloaded by any visitor; new uploads stay in this tab.</p></div>
       <div className="quick-facts"><div className="eyebrow eyebrow-quiet">AT A GLANCE</div><div><span>Category</span><strong>{item.category}</strong></div><div><span>Shared by</span><strong>{item.author}</strong></div><div><span>Last activity</span><strong>{item.updated}</strong></div><div><span>Community additions</span><strong>{item.contributions.length}</strong></div></div>
       <div className="detail-callout"><div className="callout-icon"><Icon name="spark" size={17} /></div><strong>Have a different approach?</strong><p>Keep the original intact and add your contribution alongside it.</p><button className="text-button" onClick={() => navigate(`/contribute/${item.id}`)}>Share what you learned <Icon name="arrow" size={14} /></button></div>
-      <div className="value-story-card"><div className="value-story-card-top"><span className="callout-icon"><Icon name="spark" size={17} /></span><span className="value-story-card-label">BUSINESS VALUE</span></div><h3>Tell the business value</h3><p>Connect the customer challenge and technical solution to an outcome decision-makers care about.</p><button className="button button-outline button-full" onClick={() => setStoryOpen(true)}>Explore the AI Q&amp;A <Icon name="arrow" size={15} /></button></div>
+      <div className="value-story-card"><div className="value-story-card-top"><span className="callout-icon"><Icon name="spark" size={17} /></span><span className="value-story-card-label">BUSINESS VALUE</span></div><h3>Tell the story of this use case</h3><p>Explain what the customer needed, what the solution changed, and why it matters to decision-makers.</p><button className="button button-outline button-full" onClick={() => setStoryOpen(true)}>Explore the AI Q&amp;A <Icon name="arrow" size={15} /></button></div>
     </aside></div>
     {storyOpen && <BusinessValueStoryDialog item={item} onClose={() => setStoryOpen(false)} />}
   </div>
@@ -595,7 +599,7 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
         <button className="icon-button" onClick={onClose} aria-label="Close business value story preview"><Icon name="close" size={18} /></button>
       </div>
       <div className="value-story-context"><span className="value-story-context-icon"><Icon name="file" size={16} /></span><div><span>BASED ON THIS USE CASE</span><strong>{item.title}</strong></div></div>
-      <div className="value-story-preview-note"><p>Preview the discovery questions and see how Apply Feynman could turn a technical demo into a story for a non-technical audience.</p></div>
+      <div className="value-story-preview-note"><p>Use the discovery questions to shape a business story from this use case. Apply the Feynman Technique to explain what changed and why it matters in everyday language.</p></div>
       <section className="story-preview-section">
         <div className="story-preview-heading"><span className="story-ai-mark"><Icon name="spark" size={15} /></span><div><strong>Value discovery</strong><span>A future guided conversation</span></div></div>
         <p className="story-assistant-message">Let’s connect the technical work to the outcome the customer needs. A few questions can help shape a clear, credible story.</p>
