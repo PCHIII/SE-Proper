@@ -433,22 +433,20 @@ function AboutPage({ navigate }: { navigate: (path: string) => void }) {
     <section className="about-section about-value-section">
       <div className="about-section-heading">
         <div className="eyebrow eyebrow-quiet">BUSINESS VALUE</div>
-        <h2>Turn a use case into a business story</h2>
-        <p>Start with a use case you built or found in SE Proper. The Business Value preview helps you turn its technical details into a story about what the customer needed, what the solution changed, and why that change matters to decision-makers.</p>
+        <h2>Turn a technical use case into a business story</h2>
+        <p>When you find a use case for an upcoming demo, AI will help you identify the value in the work another SE shared and turn it into a story for the people in the room.</p>
       </div>
       <div className="about-value-panel">
         <div className="about-value-copy">
           <span className="about-card-icon about-mint"><Icon name="spark" size={19} /></span>
-          <h3>Use the Feynman Technique to simplify the story</h3>
-          <p>Explain the change in everyday language so someone unfamiliar with the technology can follow it. For example, a demo about routing AI access requests to app owners becomes a story about accountability. Security leaders can see who approved access, what they granted, and when it expires.</p>
-          <p>Ask a teammate to tell the story back in their own words. If they get stuck, simplify that part.</p>
+          <h3>One use case, different audiences</h3>
+          <p>In the Workday-to-Okta example, the pilot reduced manual account setup steps. An executive sponsor might ask how much staff time that saves. A business process owner might want to see how HR and IT handle the handoff when someone leaves.</p>
+          <p>Open <b>Explore the AI Q&amp;A</b> on a demo use case to try both steps with prepared examples.</p>
           <button className="text-button" onClick={() => navigate('/explore')}>Explore use cases <Icon name="arrow" size={15} /></button>
         </div>
         <div className="about-value-steps" aria-label="Business value storytelling workflow">
-          <div><span>01</span><strong>Customer challenge</strong><p>What was the customer trying to accomplish?</p></div>
-          <div><span>02</span><strong>Technical solution</strong><p>What changed for the people doing the work?</p></div>
-          <div><span>03</span><strong>Business outcome</strong><p>Why did the change matter, and what evidence could show its impact?</p></div>
-          <div><span>04</span><strong>Apply the Feynman Technique (optional)</strong><p>On a demo use case, open <b>Explore the AI Q&amp;A</b> and choose <b>Apply the Feynman Technique</b> to edit and copy a prepared talk track.</p></div>
+          <div><span>01</span><strong>Extract the business value</strong><p>AI will review the customer’s ask, the technical deliverable, and the documented results to identify what changed, why it mattered, and what evidence supports it. If the impact hasn’t been measured, AI can suggest what to validate.</p></div>
+          <div><span>02</span><strong>Apply the Feynman Technique</strong><p>The Feynman Technique takes the business value and customizes the story for your audience. Choose who you’re presenting to for a short, plain-language talk track you can refine for your demo.</p></div>
         </div>
       </div>
     </section>
@@ -585,7 +583,7 @@ function DetailPage({ item, navigate }: { item: UseCase; navigate: (path: string
     </div><aside className="detail-side-column"><div className="resource-panel"><div className="resource-panel-head"><div><div className="eyebrow eyebrow-quiet">ATTACHED FILES</div><h3>Resources <span>{totalFiles}</span></h3></div></div>{item.resources.length ? <div className="resource-list">{item.resources.map((resource) => <ResourceRow resource={resource} key={resource.id} />)}</div> : <p className="no-resource">No files attached to the original use case.</p>}<p className="resource-notice"><Icon name="shield" size={14} /> Sample files can be downloaded by any visitor; new uploads stay in this tab.</p></div>
       <div className="quick-facts"><div className="eyebrow eyebrow-quiet">AT A GLANCE</div><div><span>Category</span><strong>{item.category}</strong></div><div><span>Shared by</span><strong>{item.author}</strong></div><div><span>Last activity</span><strong>{item.updated}</strong></div><div><span>Community additions</span><strong>{item.contributions.length}</strong></div></div>
       <div className="detail-callout"><div className="callout-icon"><Icon name="spark" size={17} /></div><strong>Have a different approach?</strong><p>Keep the original intact and add your contribution alongside it.</p><button className="text-button" onClick={() => navigate(`/contribute/${item.id}`)}>Share what you learned <Icon name="arrow" size={14} /></button></div>
-      <div className="value-story-card"><div className="value-story-card-top"><span className="callout-icon"><Icon name="spark" size={17} /></span><span className="value-story-card-label">BUSINESS VALUE</span></div><h3>Tell the story of this use case</h3><p>Explain what the customer needed, what the solution changed, and why it matters to decision-makers.</p><button className="button button-outline button-full" onClick={() => setStoryOpen(true)}>Explore the AI Q&amp;A <Icon name="arrow" size={15} /></button></div>
+      <div className="value-story-card"><div className="value-story-card-top"><span className="callout-icon"><Icon name="spark" size={17} /></span><span className="value-story-card-label">BUSINESS VALUE</span></div><h3>Tell the story of this use case</h3><p>Identify what changed for the customer and tailor the story to the people in your next demo.</p><button className="button button-outline button-full" onClick={() => setStoryOpen(true)}>Explore the AI Q&amp;A <Icon name="arrow" size={15} /></button></div>
     </aside></div>
     {storyOpen && <BusinessValueStoryDialog item={item} onClose={() => setStoryOpen(false)} />}
   </div>
@@ -599,16 +597,7 @@ function BusinessValueStoryDialog({ item, onClose }: { item: UseCase; onClose: (
         <button className="icon-button" onClick={onClose} aria-label="Close business value story preview"><Icon name="close" size={18} /></button>
       </div>
       <div className="value-story-context"><span className="value-story-context-icon"><Icon name="file" size={16} /></span><div><span>BASED ON THIS USE CASE</span><strong>{item.title}</strong></div></div>
-      <div className="value-story-preview-note"><p>Use the discovery questions to shape a business story from this use case. Apply the Feynman Technique to explain what changed and why it matters in everyday language.</p></div>
-      <section className="story-preview-section">
-        <div className="story-preview-heading"><span className="story-ai-mark"><Icon name="spark" size={15} /></span><div><strong>Value discovery</strong><span>A future guided conversation</span></div></div>
-        <p className="story-assistant-message">Let’s connect the technical work to the outcome the customer needs. A few questions can help shape a clear, credible story.</p>
-        <div className="story-question-list" aria-label="Example business value questions">
-          <div><span>01</span> What business goal was the customer trying to reach?</div>
-          <div><span>02</span> What changed for the people or process after this solution?</div>
-          <div><span>03</span> What metric or evidence could demonstrate the impact?</div>
-        </div>
-      </section>
+      <div className="value-story-preview-note"><p>Review the business value behind this use case, then turn it into a talk track for your audience. This preview uses prepared examples for demo use cases.</p></div>
       <BusinessValueOutline key={item.id} item={item} />
       {item.sources && item.sources.length > 0 && <div className="value-story-sources"><strong>Evidence linked to this use case</strong><div>{item.sources.map((source) => <span key={`${source.provider}-${source.title}`}>{source.provider}</span>)}</div></div>}
       <div className="value-story-dialog-footer"><span><Icon name="shield" size={14} /> Customer context stays in control of the story.</span><button className="button button-dark" onClick={onClose}>Got it</button></div>

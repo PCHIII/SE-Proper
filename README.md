@@ -10,9 +10,9 @@ The demo has no sign-in. Names are self-reported, and the eventual hosted demo w
 
 ## Business-value story prototype
 
-Use-case detail pages preview an AI-guided business-value workflow through example discovery questions and a story outline.
+On a use-case detail page, open **Explore the AI Q&A** to review the customer challenge, what changed, the documented outcome, and what to validate in a demo.
 
-Choose **Apply the Feynman Technique** on a demo use case to see a prepared sample of a plain-language AI draft for a non-technical audience. You can edit the challenge, solution, and outcome, then copy the resulting talk track. New use cases have a manual editor. The mockup runs entirely in the browser using sample drafts.
+Choose an audience (Executive Sponsor, Business Process Owner, Technical Evaluator, Security & Compliance Reviewer, or Day-to-Day User), then select **Apply the Feynman Technique** to tailor the talk track. Demo use cases have prepared drafts for each audience. New use cases have a manual editor with audience-specific guidance. You can edit the challenge, solution, and outcome, then copy the resulting talk track. The prototype runs entirely in the browser.
 
 ## Run locally
 
