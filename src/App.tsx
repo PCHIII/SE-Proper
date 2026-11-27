@@ -144,7 +144,7 @@ function App() {
     <div className="app-frame">
       <aside className={`sidebar ${mobileNavOpen ? 'sidebar-open' : ''}`}>
         <a href="#/" className="brand" onClick={(event) => { event.preventDefault(); navigate('/') }}>
-          <span className="brand-mark"><span /><span /><span /></span>
+          <img className="brand-mark" src={`${import.meta.env.BASE_URL}secret-agent.svg`} width={31} height={31} alt="" />
           <span className="brand-name">SE Proper<small>Solutions, shared.</small></span>
         </a>
         <div className="sidebar-label">WORKSPACE</div>

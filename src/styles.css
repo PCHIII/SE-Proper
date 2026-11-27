@@ -29,9 +29,7 @@ button { cursor: pointer; }
 .app-frame { min-height: 100vh; }
 .sidebar { width: 250px; position: fixed; inset: 0 auto 0 0; display: flex; flex-direction: column; padding: 27px 18px 16px; overflow-y: auto; background: #fff; border-right: 1px solid #eceef3; z-index: 20; }
 .brand { display: flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; padding: 0 11px; }
-.brand-mark { width: 31px; height: 31px; display: flex; align-items: end; gap: 3px; padding: 6px; background: #7769cb; border-radius: 10px; transform: rotate(-7deg); box-shadow: 0 4px 9px #7668c339; }
-.brand-mark span { display: block; width: 5px; background: #fff; border-radius: 4px; transform: skew(-15deg); }
-.brand-mark span:nth-child(1) { height: 10px; opacity: .72; }.brand-mark span:nth-child(2) { height: 16px; }.brand-mark span:nth-child(3) { height: 12px; opacity: .85; }
+.brand-mark { display: block; flex: none; border-radius: 9px; transform: rotate(-5deg); box-shadow: 0 4px 9px #11131326; }
 .brand-name { font: 800 20px/1 'Manrope', sans-serif; letter-spacing: -.65px; }
 .brand-name small { display: block; margin-top: 5px; color: #9a9eac; font: 500 12px/1 'DM Sans', sans-serif; letter-spacing: .08px; }
 .sidebar-label { margin: 48px 11px 13px; color: #a5a9b4; font-size: 12px; font-weight: 700; letter-spacing: 1.2px; }
@@ -303,8 +301,7 @@ html[data-theme="dark"] {
 html[data-theme="dark"] body { color: #e7e9e6; background: #141616; }
 html[data-theme="dark"] .sidebar { background: #101212; border-color: #292d2e; }
 html[data-theme="dark"] .brand { color: #eef0ed; }
-html[data-theme="dark"] .brand-mark { background: #b9fa36; box-shadow: 0 0 18px #b9fa3614; }
-html[data-theme="dark"] .brand-mark span { background: #111313; }
+html[data-theme="dark"] .brand-mark { box-shadow: 0 0 18px #b9fa3614; }
 html[data-theme="dark"] .brand-name small, html[data-theme="dark"] .sidebar-label, html[data-theme="dark"] .sidebar-footer { color: #818784; }
 html[data-theme="dark"] .sidebar-tip { border-color: #303533; background: #191c1c; }
 html[data-theme="dark"] .sidebar-tip strong { color: #dce0dc; }
